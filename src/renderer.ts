@@ -4,7 +4,8 @@ import { Coordinate } from './types';
 export const render = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-    boardState: BoardState
+    boardState: BoardState,
+    previewPiece?: PlacedPiece
 ) => {
     canvas.width = 500;
     canvas.height = 500;
@@ -17,6 +18,10 @@ export const render = (
 
     for (const piece of boardState.pieces) {
         renderPiece(ctx, piece);
+    }
+
+    if (previewPiece !== undefined) {
+        renderPiece(ctx, previewPiece, true);
     }
 
     drawGridLines(ctx);
@@ -60,24 +65,37 @@ export const startPos = (ctx: CanvasRenderingContext2D, c: Coordinate) => {
     ctx.fill();
 };
 
-const renderPiece = (ctx: CanvasRenderingContext2D, piece: PlacedPiece) => {
+export const renderPiece = (
+    ctx: CanvasRenderingContext2D,
+    piece: PlacedPiece,
+    preview?: boolean
+) => {
     for (const tile of getPieceData(piece.pieceType, piece.rotation)) {
         const tileCoordinate: Coordinate = {
             x: tile.x + piece.location.x,
             y: tile.y + piece.location.y,
         };
 
-        renderTile(ctx, tileCoordinate, piece.player);
+        renderTile(ctx, tileCoordinate, piece.player, preview);
     }
 };
 
-const renderTile = (ctx: CanvasRenderingContext2D, location: Coordinate, player: Player) => {
+const renderTile = (
+    ctx: CanvasRenderingContext2D,
+    location: Coordinate,
+    player: Player,
+    preview?: boolean
+) => {
     const cellWidth = 500 / 14;
 
     const tileX = location.x * cellWidth;
     const tileY = location.y * cellWidth;
 
-    ctx.fillStyle = ['green', 'red'][player];
+    if (preview) {
+        ctx.fillStyle = ['rgba(30, 120, 0, 0.5)', 'rgba(255, 0, 0, 0.5)'][player];
+    } else {
+        ctx.fillStyle = ['green', 'red'][player];
+    }
 
     ctx.beginPath();
     ctx.rect(tileX, tileY, cellWidth, cellWidth);

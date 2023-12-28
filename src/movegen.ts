@@ -20,7 +20,7 @@ export interface PlayerState {
     remainingPieces: Set<PieceType>;
 }
 
-interface Move {
+export interface Move {
     piece: PlacedPiece;
 }
 
@@ -340,15 +340,3 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
 
     return uniqueMoves(moves);
 };
-
-console.log(
-    JSON.stringify(
-        rotate90Deg([
-            { x: 0, y: 0 },
-            { x: 0, y: 1 },
-            { x: 0, y: 2 },
-            { x: -1, y: 0 },
-            { x: -1, y: -1 },
-        ])
-    )
-);
