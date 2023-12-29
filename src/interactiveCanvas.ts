@@ -1,3 +1,4 @@
+import { findMove } from './bot';
 import {
     BoardState,
     Move,
@@ -6,6 +7,7 @@ import {
     PlacedPiece,
     getAllLegalMoves,
     getBoundingBox,
+    getPieceData,
     pieceData,
 } from './movegen';
 import { render, renderPiece } from './renderer';
@@ -81,7 +83,16 @@ export class InteractiveCanvas {
         this.selectedPiece = null;
         this.selectedPieceRotation = 0;
 
-        this.board.doMove(getAllLegalMoves(this.board)[0]);
+        const botMove = findMove(this.board);
+        if (botMove === undefined) {
+            console.log('no bot move');
+            this.board.skipTurn();
+        } else {
+            this.board.doMove(botMove);
+        }
+
+        const score = this.score();
+        console.log(`A: ${score.playerA}, B: ${score.playerB}`);
     }
 
     keyDown(e: KeyboardEvent) {
@@ -187,5 +198,18 @@ export class InteractiveCanvas {
         render(this.canvas, this.ctx, this.board, piecePreview);
 
         window.requestAnimationFrame(() => this.drawLoop());
+    }
+
+    score(): { playerA: number; playerB: number } {
+        return {
+            playerA: this.board.pieces
+                .filter((p) => p.player === 0)
+                .map((p) => getPieceData(p.pieceType, 0).length)
+                .reduce((a, b) => a + b, 0),
+            playerB: this.board.pieces
+                .filter((p) => p.player === 1)
+                .map((p) => getPieceData(p.pieceType, 0).length)
+                .reduce((a, b) => a + b, 0),
+        };
     }
 }

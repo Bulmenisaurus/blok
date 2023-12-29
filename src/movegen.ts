@@ -69,6 +69,10 @@ export class BoardState {
         this.toMove = otherPlayer(this.toMove);
     }
 
+    skipTurn() {
+        this.toMove = otherPlayer(this.toMove);
+    }
+
     undoMove(move: Move) {
         const moveIndex = this.pieces.findIndex((p) => {
             return (
@@ -84,6 +88,14 @@ export class BoardState {
         }
 
         this.pieces.splice(moveIndex, 1);
+
+        if (move.piece.player === 0) {
+            this.playerA.remainingPieces.add(move.piece.pieceType);
+        } else {
+            this.playerB.remainingPieces.add(move.piece.pieceType);
+        }
+
+        this.toMove = otherPlayer(this.toMove);
     }
 }
 
