@@ -1,5 +1,6 @@
 import { Coordinate } from './types';
 import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus/set.png
+import { BitBoard, getBitBoardValue, setBitBoardValue } from './bitboard';
 
 export type PieceData = Coordinate[];
 
@@ -41,15 +42,22 @@ export class BoardState {
     playerA: PlayerState;
     playerB: PlayerState;
 
+    playerABitBoard: BitBoard;
+    playerBBitBoard: BitBoard;
+
     constructor() {
         this.pieces = [];
         this.playerA = {
             remainingPieces: new Set(),
         };
 
+        this.playerABitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
         this.playerB = {
             remainingPieces: new Set(),
         };
+
+        this.playerBBitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         for (let i = 0; i < pieceData.length; i++) {
             this.playerA.remainingPieces.add(i);
@@ -66,6 +74,19 @@ export class BoardState {
         } else {
             this.playerB.remainingPieces.delete(move.piece.pieceType);
         }
+
+        // update bitboard
+        const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
+
+        for (const tile of getPieceData(move.piece.pieceType, move.piece.rotation)) {
+            // mark coordinate as set
+            const pieceCoord = {
+                x: tile.x + move.piece.location.x,
+                y: tile.y + move.piece.location.y,
+            };
+            setBitBoardValue(bitBoard, pieceCoord, 1);
+        }
+
         this.toMove = otherPlayer(this.toMove);
     }
 
@@ -93,6 +114,18 @@ export class BoardState {
             this.playerA.remainingPieces.add(move.piece.pieceType);
         } else {
             this.playerB.remainingPieces.add(move.piece.pieceType);
+        }
+
+        // update bitboard
+        const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
+
+        for (const tile of getPieceData(move.piece.pieceType, move.piece.rotation)) {
+            // mark coordinate as set
+            const pieceCoord = {
+                x: tile.x + move.piece.location.x,
+                y: tile.y + move.piece.location.y,
+            };
+            setBitBoardValue(bitBoard, pieceCoord, 0);
         }
 
         this.toMove = otherPlayer(this.toMove);
@@ -192,6 +225,8 @@ const hashCoord = (c: Coordinate) => {
 // - pieces is adjacent to a tile with any of my other pieces
 // - all tiles of a piece end up in the board
 const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
+    const toMove = pseudoLegalMove.piece.player;
+
     for (const tileA of getPieceData(
         pseudoLegalMove.piece.pieceType,
         pseudoLegalMove.piece.rotation
@@ -206,21 +241,37 @@ const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
             return false;
         }
 
-        for (const piece of state.pieces) {
-            for (const tileB of getPieceData(piece.pieceType, piece.rotation)) {
-                const absB = { x: piece.location.x + tileB.x, y: piece.location.y + tileB.y };
+        const myBitBoard = [state.playerABitBoard, state.playerBBitBoard][toMove];
+        const opponentBitBoard = [state.playerBBitBoard, state.playerABitBoard][toMove];
 
-                // check piece adjacent to my own piece
-                if (areAdjacent(absB, absA) && pseudoLegalMove.piece.player === piece.player) {
-                    return false;
-                }
+        const ownTileAdjacent =
+            getBitBoardValue(myBitBoard, { x: absA.x + 1, y: absA.y }) ||
+            getBitBoardValue(myBitBoard, { x: absA.x - 1, y: absA.y }) ||
+            getBitBoardValue(myBitBoard, { x: absA.x, y: absA.y + 1 }) ||
+            getBitBoardValue(myBitBoard, { x: absA.x, y: absA.y - 1 });
 
-                // check pieces do not intersect
-                if (absA.x === absB.x && absA.y === absB.y) {
-                    return false;
-                }
-            }
+        const ownTileIntersect = getBitBoardValue(myBitBoard, { x: absA.x, y: absA.y });
+        const opponentIntersect = getBitBoardValue(opponentBitBoard, { x: absA.x, y: absA.y });
+
+        if (ownTileAdjacent || ownTileIntersect || opponentIntersect) {
+            return false;
         }
+
+        // for (const piece of state.pieces) {
+        //     for (const tileB of getPieceData(piece.pieceType, piece.rotation)) {
+        //         const absB = { x: piece.location.x + tileB.x, y: piece.location.y + tileB.y };
+
+        //         // check piece adjacent to my own piece
+        //         if (areAdjacent(absB, absA) && toMove === piece.player) {
+        //             return false;
+        //         }
+
+        //         // check pieces do not intersect
+        //         if (absA.x === absB.x && absA.y === absB.y) {
+        //             return false;
+        //         }
+        //     }
+        // }
     }
 
     return true;
