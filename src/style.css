@@ -31,6 +31,7 @@ body {
     gap: 10px;
     flex-direction: row;
     overflow: scroll;
+    overscroll-behavior-x: none;
     height: 100%;
     padding: 10px;
 }
