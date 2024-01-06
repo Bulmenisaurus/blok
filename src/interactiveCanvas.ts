@@ -23,6 +23,7 @@ export class InteractiveCanvas {
     selectedPiece: PieceType | null;
     mousePosition: Coordinate;
     selectedPieceRotation: number;
+    selectedPieceFlipped: boolean;
     constructor(board: BoardState) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d')!;
@@ -37,6 +38,7 @@ export class InteractiveCanvas {
         this.selectedPiece = null;
         this.mousePosition = { x: 0, y: 0 };
         this.selectedPieceRotation = 0;
+        this.selectedPieceFlipped = false;
 
         this.canvas.addEventListener('mousemove', (e) => {
             this.mouseMove(e);
@@ -76,13 +78,22 @@ export class InteractiveCanvas {
                 pieceType: this.selectedPiece,
                 player: 0,
                 rotation: this.selectedPieceRotation,
+                reflection: this.selectedPieceFlipped,
             },
         };
+
         this.board.doMove(move);
         this.updateCarouselVisibility();
         this.selectedPiece = null;
         this.selectedPieceRotation = 0;
 
+        // const botMove = getAllLegalMoves(this.board);
+        // if (botMove.length === 1) {
+        //     this.board.doMove(botMove[0]);
+        // } else {
+        //     console.log(botMove);
+        //     this.board.doMove(botMove[1]);
+        // }
         const botMove = findMove(this.board);
         if (botMove === undefined) {
             console.log('no bot move');
@@ -106,6 +117,10 @@ export class InteractiveCanvas {
                 this.selectedPieceRotation += 1;
             }
             this.selectedPieceRotation %= 4;
+        }
+
+        if (e.key === 'f') {
+            this.selectedPieceFlipped = !this.selectedPieceFlipped;
         }
     }
 
@@ -193,6 +208,7 @@ export class InteractiveCanvas {
                 pieceType: this.selectedPiece,
                 player: 0,
                 rotation: this.selectedPieceRotation,
+                reflection: this.selectedPieceFlipped,
             };
         }
         render(this.canvas, this.ctx, this.board, piecePreview);
@@ -204,11 +220,11 @@ export class InteractiveCanvas {
         return {
             playerA: this.board.pieces
                 .filter((p) => p.player === 0)
-                .map((p) => getPieceData(p.pieceType, 0).length)
+                .map((p) => getPieceData(p.pieceType, 0, false).length)
                 .reduce((a, b) => a + b, 0),
             playerB: this.board.pieces
                 .filter((p) => p.player === 1)
-                .map((p) => getPieceData(p.pieceType, 0).length)
+                .map((p) => getPieceData(p.pieceType, 0, false).length)
                 .reduce((a, b) => a + b, 0),
         };
     }

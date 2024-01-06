@@ -87,7 +87,7 @@ const evaluate = (board: BoardState) => {
 export const countPlayerScore = (player: PlayerState) => {
     let score = 1_000;
     for (const remainingPiece of player.remainingPieces) {
-        const pieceTile = getPieceData(remainingPiece, 0);
+        const pieceTile = getPieceData(remainingPiece, 0, false);
         score -= pieceTile.length;
     }
 

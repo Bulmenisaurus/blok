@@ -15,6 +15,7 @@ export interface PlacedPiece {
     location: Coordinate;
     player: Player;
     rotation: number;
+    reflection: boolean;
 }
 
 export interface PlayerState {
@@ -27,8 +28,11 @@ export interface Move {
 
 export const pieceData: Readonly<PieceData[]> = _pieceData;
 
-export const getPieceData = (pieceType: PieceType, rotation: number) => {
+export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
     let data = pieceData[pieceType];
+    if (reflection) {
+        data = reflect(data);
+    }
     for (let i = 0; i < rotation; i++) {
         data = rotate90Deg(data);
     }
@@ -78,7 +82,11 @@ export class BoardState {
         // update bitboard
         const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
 
-        for (const tile of getPieceData(move.piece.pieceType, move.piece.rotation)) {
+        for (const tile of getPieceData(
+            move.piece.pieceType,
+            move.piece.rotation,
+            move.piece.reflection
+        )) {
             // mark coordinate as set
             const pieceCoord = {
                 x: tile.x + move.piece.location.x,
@@ -119,7 +127,11 @@ export class BoardState {
         // update bitboard
         const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
 
-        for (const tile of getPieceData(move.piece.pieceType, move.piece.rotation)) {
+        for (const tile of getPieceData(
+            move.piece.pieceType,
+            move.piece.rotation,
+            move.piece.reflection
+        )) {
             // mark coordinate as set
             const pieceCoord = {
                 x: tile.x + move.piece.location.x,
@@ -229,7 +241,8 @@ const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
 
     for (const tileA of getPieceData(
         pseudoLegalMove.piece.pieceType,
-        pseudoLegalMove.piece.rotation
+        pseudoLegalMove.piece.rotation,
+        pseudoLegalMove.piece.reflection
     )) {
         const absA = {
             x: pseudoLegalMove.piece.location.x + tileA.x,
@@ -256,22 +269,6 @@ const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
         if (ownTileAdjacent || ownTileIntersect || opponentIntersect) {
             return false;
         }
-
-        // for (const piece of state.pieces) {
-        //     for (const tileB of getPieceData(piece.pieceType, piece.rotation)) {
-        //         const absB = { x: piece.location.x + tileB.x, y: piece.location.y + tileB.y };
-
-        //         // check piece adjacent to my own piece
-        //         if (areAdjacent(absB, absA) && toMove === piece.player) {
-        //             return false;
-        //         }
-
-        //         // check pieces do not intersect
-        //         if (absA.x === absB.x && absA.y === absB.y) {
-        //             return false;
-        //         }
-        //     }
-        // }
     }
 
     return true;
@@ -297,6 +294,10 @@ const rotateCoord90Deg = (c: Coordinate) => {
 
 const rotate90Deg = (pieceData: PieceData): PieceData => {
     return pieceData.map((c) => rotateCoord90Deg(c));
+};
+
+const reflect = (pieceData: PieceData): PieceData => {
+    return pieceData.map((p) => ({ x: -p.x, y: p.y }));
 };
 
 interface BoundingBox {
@@ -327,22 +328,23 @@ export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
 };
 
 const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState): Move[] => {
-    // TODO: reflection
-
     const moves: Move[] = [];
 
     for (let rotation = 0; rotation < 4; rotation++) {
-        for (const corner of getCorners(getPieceData(piece, rotation))) {
-            // position of the (0,0) tile
-            const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
-            let placedPiece: PlacedPiece = {
-                location: pieceMiddle,
-                player: state.toMove,
-                pieceType: piece,
-                rotation: rotation,
-            };
+        for (const reflection of [true, false]) {
+            for (const corner of getCorners(getPieceData(piece, rotation, reflection))) {
+                // position of the (0,0) tile
+                const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
+                let placedPiece: PlacedPiece = {
+                    location: pieceMiddle,
+                    player: state.toMove,
+                    pieceType: piece,
+                    rotation,
+                    reflection,
+                };
 
-            moves.push({ piece: placedPiece });
+                moves.push({ piece: placedPiece });
+            }
         }
     }
     return moves.filter((p) => isMoveLegal(p, state));
@@ -368,6 +370,7 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
                         location: { x: 4, y: 4 },
                         player: 0,
                         rotation: 0,
+                        reflection: false,
                     },
                 },
             ];
@@ -379,6 +382,7 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
                         location: { x: 9, y: 9 },
                         player: 1,
                         rotation: 0,
+                        reflection: false,
                     },
                 },
             ];
@@ -389,7 +393,11 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
     const moves: Move[] = [];
 
     for (const placedPiece of myPlacedPieces) {
-        const pieceData = getPieceData(placedPiece.pieceType, placedPiece.rotation);
+        const pieceData = getPieceData(
+            placedPiece.pieceType,
+            placedPiece.rotation,
+            placedPiece.reflection
+        );
         for (const cornerAttacher of getCornerAttachers(pieceData)) {
             const cornerAbsolute: Coordinate = {
                 x: cornerAttacher.x + placedPiece.location.x,

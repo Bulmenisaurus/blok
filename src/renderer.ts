@@ -70,7 +70,7 @@ export const renderPiece = (
     piece: PlacedPiece,
     preview?: boolean
 ) => {
-    for (const tile of getPieceData(piece.pieceType, piece.rotation)) {
+    for (const tile of getPieceData(piece.pieceType, piece.rotation, piece.reflection)) {
         const tileCoordinate: Coordinate = {
             x: tile.x + piece.location.x,
             y: tile.y + piece.location.y,
