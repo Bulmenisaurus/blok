@@ -1,6 +1,6 @@
 import { BoardState, Move, PlayerState, getAllLegalMoves, getPieceData } from './movegen';
 
-export const findMove = (board: BoardState): Move | undefined => {
+export const findMove = (board: BoardState, overrideDepth?: number): Move | undefined => {
     let bestMove: Move | undefined = undefined;
     let bestMoveScore = -Infinity;
 
@@ -18,7 +18,8 @@ export const findMove = (board: BoardState): Move | undefined => {
         // } else {
         // we just made a move, so now its time to evaluate from the perspective of the opponent
 
-        const opponentScore = recursiveBoardSearchAlphaBeta(2, board, -Infinity, Infinity);
+        const depth = overrideDepth || 2;
+        const opponentScore = recursiveBoardSearchAlphaBeta(depth, board, -Infinity, Infinity);
 
         ourScore = -opponentScore;
         // }

@@ -431,14 +431,15 @@
   };
 
   // src/bot.ts
-  var findMove = (board) => {
+  var findMove = (board, overrideDepth) => {
     let bestMove = void 0;
     let bestMoveScore = -Infinity;
     const startTime = Date.now();
     for (const move of getAllLegalMoves(board)) {
       board.doMove(move);
       let ourScore = 0;
-      const opponentScore = recursiveBoardSearchAlphaBeta(2, board, -Infinity, Infinity);
+      const depth = overrideDepth || 2;
+      const opponentScore = recursiveBoardSearchAlphaBeta(depth, board, -Infinity, Infinity);
       ourScore = -opponentScore;
       board.undoMove(move);
       if (ourScore > bestMoveScore) {
@@ -599,7 +600,12 @@
           reflection: this.selectedPieceFlipped
         }
       };
+      if (window._moves === void 0) {
+        window._moves = [];
+      }
+      const savedMoves = window._moves;
       this.board.doMove(move);
+      savedMoves.push(move);
       this.updateCarouselVisibility();
       this.selectedPiece = null;
       this.selectedPieceRotation = 0;
@@ -608,10 +614,12 @@
         console.log("no bot move");
         this.board.skipTurn();
       } else {
+        savedMoves.push(botMove);
         this.board.doMove(botMove);
       }
       const score = this.score();
       console.log(`A: ${score.playerA}, B: ${score.playerB}`);
+      console.log(savedMoves);
     }
     keyDown(e) {
       if (e.key === "Escape") {
