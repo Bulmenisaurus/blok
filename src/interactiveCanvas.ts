@@ -82,16 +82,7 @@ export class InteractiveCanvas {
             },
         };
 
-        //@ts-ignore
-        if (window._moves === undefined) {
-            //@ts-ignore
-            window._moves = [];
-        }
-        //@ts-ignore
-        const savedMoves: Move[] = window._moves;
-
         this.board.doMove(move);
-        savedMoves.push(move);
         this.updateCarouselVisibility();
         this.selectedPiece = null;
         this.selectedPieceRotation = 0;
@@ -108,13 +99,11 @@ export class InteractiveCanvas {
             console.log('no bot move');
             this.board.skipTurn();
         } else {
-            savedMoves.push(botMove);
             this.board.doMove(botMove);
         }
 
         const score = this.score();
         console.log(`A: ${score.playerA}, B: ${score.playerB}`);
-        console.log(savedMoves);
     }
 
     keyDown(e: KeyboardEvent) {

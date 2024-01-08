@@ -155,6 +155,31 @@ var pieces_default = [
   ]
 ];
 
+// src/piece-permutations.json
+var piece_permutations_default = [
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 2 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 2 }], rotation: 2, reflection: false }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], rotation: 3, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], rotation: 3, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }], rotation: 2, reflection: false }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], rotation: 3, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], rotation: 3, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 1, y: 0 }, { x: 1, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: -1, y: 0 }, { x: -1, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }, { x: -1, y: 0 }, { x: -1, y: 1 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }, { x: 1, y: 0 }, { x: 1, y: 1 }], rotation: 2, reflection: false }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }], rotation: 3, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 3, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }], rotation: 2, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: 1 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], rotation: 1, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 1, y: 0 }, { x: 2, y: 0 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 2, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], rotation: 1, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }], rotation: 0, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], rotation: 3, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }], rotation: 2, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }, { x: -1, y: 0 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 0 }, { x: 0, y: 1 }], rotation: 2, reflection: false }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: 0 }], rotation: 3, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 0 }], rotation: 3, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: 1, y: 1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 2, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }], rotation: 3, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }], rotation: 3, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: 1 }], rotation: 0, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 1, reflection: false }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }], rotation: 2, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 3, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: 1, y: 1 }], rotation: 3, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 0 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }], rotation: 2, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }], rotation: 3, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }], rotation: 0, reflection: true }, { data: [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 1 }], rotation: 1, reflection: true }, { data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], rotation: 1, reflection: false }],
+  [{ data: [{ x: 0, y: 0 }], rotation: 0, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }], rotation: 1, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }], rotation: 1, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 0, y: 2 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 0 }], rotation: 1, reflection: true }],
+  [{ data: [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: -1 }, { x: 0, y: -2 }], rotation: 0, reflection: false }, { data: [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }], rotation: 1, reflection: true }]
+];
+
 // src/bitboard.ts
 var getBitBoardValue = (bitBoard, c) => {
   const validYCoordinate = c.y >= 0 && c.y <= 13;
@@ -180,6 +205,7 @@ var setBitBoardValue = (bitBoard, c, value) => {
 // src/movegen.ts
 var otherPlayer = (player) => player === 1 ? 0 : 1;
 var pieceData = pieces_default;
+var permutationData = piece_permutations_default;
 var getPieceData = (pieceType, rotation, reflection) => {
   let data = pieceData[pieceType];
   if (reflection) {
@@ -367,19 +393,17 @@ var reflect = (pieceData2) => {
 };
 var getLegalMovesFrom = (from, piece, state) => {
   const moves = [];
-  for (let rotation = 0; rotation < 4; rotation++) {
-    for (const reflection of [true, false]) {
-      for (const corner of getCorners(getPieceData(piece, rotation, reflection))) {
-        const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
-        let placedPiece = {
-          location: pieceMiddle,
-          player: state.toMove,
-          pieceType: piece,
-          rotation,
-          reflection
-        };
-        moves.push({ piece: placedPiece });
-      }
+  for (const permutation of permutationData[piece]) {
+    for (const corner of getCorners(permutation.data)) {
+      const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
+      let placedPiece = {
+        location: pieceMiddle,
+        player: state.toMove,
+        pieceType: piece,
+        rotation: permutation.rotation,
+        reflection: permutation.reflection
+      };
+      moves.push({ piece: placedPiece });
     }
   }
   return moves.filter((p) => isMoveLegal(p, state));

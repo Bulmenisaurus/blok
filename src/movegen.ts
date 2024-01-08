@@ -1,5 +1,6 @@
 import { Coordinate } from './types';
 import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus/set.png
+import _permutationData from './piece-permutations.json';
 import { BitBoard, getBitBoardValue, setBitBoardValue } from './bitboard';
 
 export type PieceData = Coordinate[];
@@ -26,7 +27,14 @@ export interface Move {
     piece: PlacedPiece;
 }
 
+export interface Permutation {
+    rotation: number;
+    reflection: boolean;
+    data: PieceData;
+}
+
 export const pieceData: Readonly<PieceData[]> = _pieceData;
+export const permutationData: Readonly<Permutation[][]> = _permutationData;
 
 export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
     let data = pieceData[pieceType];
@@ -330,23 +338,22 @@ export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
 const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState): Move[] => {
     const moves: Move[] = [];
 
-    for (let rotation = 0; rotation < 4; rotation++) {
-        for (const reflection of [true, false]) {
-            for (const corner of getCorners(getPieceData(piece, rotation, reflection))) {
-                // position of the (0,0) tile
-                const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
-                let placedPiece: PlacedPiece = {
-                    location: pieceMiddle,
-                    player: state.toMove,
-                    pieceType: piece,
-                    rotation,
-                    reflection,
-                };
+    for (const permutation of permutationData[piece]) {
+        for (const corner of getCorners(permutation.data)) {
+            // position of the (0,0) tile
+            const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
+            let placedPiece: PlacedPiece = {
+                location: pieceMiddle,
+                player: state.toMove,
+                pieceType: piece,
+                rotation: permutation.rotation,
+                reflection: permutation.reflection,
+            };
 
-                moves.push({ piece: placedPiece });
-            }
+            moves.push({ piece: placedPiece });
         }
     }
+
     return moves.filter((p) => isMoveLegal(p, state));
 };
 
