@@ -431,6 +431,11 @@
           x: cornerAttacher.x + placedPiece.location.x,
           y: cornerAttacher.y + placedPiece.location.y
         };
+        const playerATile = getBitBoardValue(board.playerABitBoard, cornerAbsolute);
+        const playerBTile = getBitBoardValue(board.playerBBitBoard, cornerAbsolute);
+        if (playerATile || playerBTile) {
+          continue;
+        }
         for (const unplacedPiece of myState.remainingPieces) {
           moves.push(...getLegalMovesFrom(cornerAbsolute, unplacedPiece, board));
         }
