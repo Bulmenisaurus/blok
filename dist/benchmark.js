@@ -341,9 +341,6 @@ var coordPresent = (coords, check) => {
   }
   return false;
 };
-var hashCoord = (c) => {
-  return c.x << 16 | c.y;
-};
 var isMoveLegal = (pseudoLegalMove, state) => {
   const toMove = pseudoLegalMove.piece.player;
   for (const tileA of getPieceData(
@@ -369,18 +366,6 @@ var isMoveLegal = (pseudoLegalMove, state) => {
     }
   }
   return true;
-};
-var uniqueMoves = (move) => {
-  const seen = /* @__PURE__ */ new Set();
-  return move.filter((m) => {
-    const hash = hashCoord(m.piece.location);
-    if (seen.has(hash)) {
-      return false;
-    } else {
-      seen.add(hash);
-      return true;
-    }
-  });
 };
 var rotateCoord90Deg = (c) => {
   return { x: c.y, y: -c.x };
@@ -455,7 +440,7 @@ var getAllLegalMoves = (board) => {
       }
     }
   }
-  return uniqueMoves(moves);
+  return moves;
 };
 
 // src/bot.ts

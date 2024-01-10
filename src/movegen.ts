@@ -228,18 +228,6 @@ const coordPresent = (coords: Coordinate[], check: Coordinate) => {
     return false;
 };
 
-const areAdjacent = (c1: Coordinate, c2: Coordinate): boolean => {
-    const dx = Math.abs(c1.x - c2.x);
-    const dy = Math.abs(c1.y - c2.y);
-
-    return dx + dy === 1;
-};
-
-const hashCoord = (c: Coordinate) => {
-    // assumes that both components are unsigned 16 bit integers
-    return (c.x << 16) | c.y;
-};
-
 // check if a pseudo-legal move is actually legal
 // - piece shares a tile with any other of my pieces or any of my opponents pieces
 // - pieces is adjacent to a tile with any of my other pieces
@@ -280,19 +268,6 @@ const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
     }
 
     return true;
-};
-
-const uniqueMoves = (move: Move[]) => {
-    const seen = new Set<number>();
-    return move.filter((m) => {
-        const hash = hashCoord(m.piece.location);
-        if (seen.has(hash)) {
-            return false;
-        } else {
-            seen.add(hash);
-            return true;
-        }
-    });
 };
 
 const rotateCoord90Deg = (c: Coordinate) => {
@@ -416,5 +391,5 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
         }
     }
 
-    return uniqueMoves(moves);
+    return moves;
 };
