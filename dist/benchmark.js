@@ -448,7 +448,14 @@ var findMove = (board, overrideDepth) => {
   let bestMove = void 0;
   let bestMoveScore = -Infinity;
   const startTime = Date.now();
-  for (const move of getAllLegalMoves(board)) {
+  const allMoves = getAllLegalMoves(board).slice(0, 50);
+  const filteredMoves = allMoves.filter((m) => {
+    if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
+      return false;
+    }
+    return true;
+  });
+  for (const move of filteredMoves) {
     board.doMove(move);
     let ourScore = 0;
     const depth = overrideDepth || 2;
@@ -468,7 +475,7 @@ var recursiveBoardSearchAlphaBeta = (depth, board, alpha, beta) => {
   if (depth === 0) {
     return evaluate(board);
   }
-  const moves = getAllLegalMoves(board);
+  const moves = getAllLegalMoves(board).slice(0, 50);
   if (moves.length === 0) {
     return evaluate(board);
   }
@@ -508,7 +515,7 @@ var bench = (moves) => {
     for (const move of moves) {
       board.doMove(move);
     }
-    findMove(board, 2);
+    findMove(board, 0);
     const endTime = /* @__PURE__ */ new Date();
     const diff = endTime.getTime() - startTime.getTime();
     timing.push(diff);

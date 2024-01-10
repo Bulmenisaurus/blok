@@ -444,7 +444,14 @@
     let bestMove = void 0;
     let bestMoveScore = -Infinity;
     const startTime = Date.now();
-    for (const move of getAllLegalMoves(board)) {
+    const allMoves = getAllLegalMoves(board).slice(0, 50);
+    const filteredMoves = allMoves.filter((m) => {
+      if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
+        return false;
+      }
+      return true;
+    });
+    for (const move of filteredMoves) {
       board.doMove(move);
       let ourScore = 0;
       const depth = overrideDepth || 2;
@@ -464,7 +471,7 @@
     if (depth === 0) {
       return evaluate(board);
     }
-    const moves = getAllLegalMoves(board);
+    const moves = getAllLegalMoves(board).slice(0, 50);
     if (moves.length === 0) {
       return evaluate(board);
     }

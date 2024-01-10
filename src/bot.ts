@@ -6,7 +6,16 @@ export const findMove = (board: BoardState, overrideDepth?: number): Move | unde
 
     const startTime = Date.now();
 
-    for (const move of getAllLegalMoves(board)) {
+    const allMoves = getAllLegalMoves(board).slice(0, 50);
+    const filteredMoves = allMoves.filter((m) => {
+        if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
+            return false;
+        }
+
+        return true;
+    });
+
+    for (const move of filteredMoves) {
         board.doMove(move);
 
         let ourScore = 0;
@@ -48,7 +57,7 @@ const recursiveBoardSearchAlphaBeta = (
         return evaluate(board);
     }
 
-    const moves: Move[] = getAllLegalMoves(board);
+    const moves: Move[] = getAllLegalMoves(board).slice(0, 50);
 
     // if game over, return eval
     if (moves.length === 0) {

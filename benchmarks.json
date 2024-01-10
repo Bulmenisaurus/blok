@@ -1,1 +1,1 @@
-[{"name":"v1","timings":[2778,6798.8,1579.2]},{"name":"v2-precompute-permutations","timings":[1295.6,3204.6,728]}]
+[{"name":"fix-movegen-slice-50","timings":[2227.2,5714.4,5912.8]}]

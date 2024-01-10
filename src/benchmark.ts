@@ -19,7 +19,7 @@ const bench = (moves: Move[]): number => {
             board.doMove(move);
         }
 
-        findMove(board, 2);
+        findMove(board, 0);
         const endTime = new Date();
 
         const diff = endTime.getTime() - startTime.getTime();
