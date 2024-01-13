@@ -163,6 +163,8 @@ export class InteractiveCanvas {
         pieceCanvas.width = pieceBoundingBox.width * 100;
         pieceCanvas.height = pieceBoundingBox.height * 100;
 
+        pieceCanvas.style.height = `${pieceBoundingBox.height * 20}%`;
+
         for (const tile of piece) {
             const shiftedCoords: Coordinate = {
                 x: tile.x - pieceBoundingBox.bottomLeft.x,

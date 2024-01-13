@@ -19,6 +19,10 @@ body {
 #canvas-container canvas {
     max-height: 100%;
     max-width: 100%;
+
+    /* prevents the canvas from being larger than the container in chrome */
+    /* https://stackoverflow.com/a/36247448/13996389 */
+    min-height: 0;
 }
 
 #carousel-container {
@@ -28,12 +32,14 @@ body {
 
 #blocks-carousel {
     display: flex;
+    justify-content: space-between;
     gap: 10px;
     flex-direction: row;
-    overflow: scroll;
+    overflow: auto;
     overscroll-behavior-x: none;
     height: 100%;
-    padding: 10px;
+    padding: 0 10px;
+    align-items: center;
 }
 
 #blocks-carousel canvas {
