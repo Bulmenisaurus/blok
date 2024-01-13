@@ -67,10 +67,15 @@ export const recursiveBoardSearchAlphaBeta = (
  *  - 0 if it is a tie.
  */
 const evaluate = (board: BoardState) => {
-    const mobility = getAllLegalMoves(board).length / 20;
+    const pAMobility = getAllLegalMoves(board).length / 20;
+    board.skipTurn();
+    const pBMobility = getAllLegalMoves(board).length / 20;
+    board.skipTurn();
 
-    const evaluation = countPlayerScore(board.playerA) - countPlayerScore(board.playerB) + mobility;
-
+    const evaluation =
+        countPlayerScore(board.playerA) -
+        countPlayerScore(board.playerB) +
+        (pAMobility - pBMobility);
     const perspective = board.toMove === 0 ? 1 : -1;
 
     return evaluation * perspective;
