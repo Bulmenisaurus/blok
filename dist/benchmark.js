@@ -448,71 +448,21 @@ var getAllLegalMoves = (board) => {
   return moves;
 };
 
-// src/bot.ts
-var findMove = (board, overrideDepth) => {
-  let bestMove = void 0;
-  let bestMoveScore = -Infinity;
-  const startTime = Date.now();
-  const allMoves = getAllLegalMoves(board).slice(0, 50);
-  const filteredMoves = allMoves.filter((m) => {
-    if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
-      return false;
-    }
-    return true;
-  });
-  for (const move of filteredMoves) {
-    board.doMove(move);
-    let ourScore = 0;
-    const depth = overrideDepth || 2;
-    const opponentScore = recursiveBoardSearchAlphaBeta(depth, board, -Infinity, Infinity);
-    ourScore = -opponentScore;
-    board.undoMove(move);
-    if (ourScore > bestMoveScore) {
-      bestMoveScore = ourScore;
-      bestMove = move;
-    }
-  }
-  const endTime = Date.now();
-  console.log(`Took ${endTime - startTime}ms to evaluate positions. Bestmove ${bestMoveScore}`);
-  return bestMove;
-};
-var recursiveBoardSearchAlphaBeta = (depth, board, alpha, beta) => {
-  if (depth === 0) {
-    return evaluate(board);
-  }
-  const moves = getAllLegalMoves(board).slice(0, 50);
-  if (moves.length === 0) {
-    return evaluate(board);
-  }
-  for (const move of moves) {
-    board.doMove(move);
-    const evaluation = -recursiveBoardSearchAlphaBeta(depth - 1, board, -beta, -alpha);
-    board.undoMove(move);
-    if (evaluation >= beta) {
-      return beta;
-    }
-    alpha = Math.max(alpha, evaluation);
-  }
-  return alpha;
-};
-var evaluate = (board) => {
-  const evaluation = countPlayerScore(board.playerA) - countPlayerScore(board.playerB);
-  const perspective = board.toMove === 0 ? 1 : -1;
-  return evaluation * perspective;
-};
-var countPlayerScore = (player) => {
-  let score = 1e3;
-  for (const remainingPiece of player.remainingPieces) {
-    const pieceTile = getPieceData(remainingPiece, 0, false);
-    score -= pieceTile.length;
-  }
-  return score;
-};
-
 // src/benchmark.ts
 var fs = __toESM(require("fs"));
 var readline = __toESM(require("readline"));
-var bench = (moves) => {
+var recursiveMoveGen = (board, depth) => {
+  if (depth <= 0) {
+    return;
+  }
+  const moves = getAllLegalMoves(board).slice(0, 50);
+  for (const move of moves) {
+    board.doMove(move);
+    recursiveMoveGen(board, depth - 1);
+    board.undoMove(move);
+  }
+};
+var bench = (moves, name) => {
   const timing = [];
   for (let i = 0; i < 5; i++) {
     const startTime = /* @__PURE__ */ new Date();
@@ -520,24 +470,25 @@ var bench = (moves) => {
     for (const move of moves) {
       board.doMove(move);
     }
-    findMove(board, 0);
+    recursiveMoveGen(board, 3);
     const endTime = /* @__PURE__ */ new Date();
     const diff = endTime.getTime() - startTime.getTime();
+    console.log(`[${i + 1}/5] ${name} ${diff}ms`);
     timing.push(diff);
   }
   return timing.reduce((a, b) => a + b, 0) / timing.length;
 };
 var benchStart = () => {
   const moves = [{ "piece": { "location": { "x": 5, "y": 5 }, "pieceType": 6, "player": 0, "rotation": 1, "reflection": false } }, { "piece": { "pieceType": 0, "location": { "x": 9, "y": 9 }, "player": 1, "rotation": 0, "reflection": false } }];
-  return bench(moves);
+  return bench(moves, "start");
 };
 var benchMiddle = () => {
   const moves = [{ "piece": { "location": { "x": 5, "y": 5 }, "pieceType": 6, "player": 0, "rotation": 1, "reflection": false } }, { "piece": { "pieceType": 0, "location": { "x": 9, "y": 9 }, "player": 1, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 8, "y": 4 }, "pieceType": 7, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 8, "y": 13 }, "player": 1, "pieceType": 5, "rotation": 1, "reflection": false } }, { "piece": { "location": { "x": 7, "y": 9 }, "pieceType": 8, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 12, "y": 10 }, "player": 1, "pieceType": 4, "rotation": 0, "reflection": true } }, { "piece": { "location": { "x": 3, "y": 3 }, "pieceType": 9, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 10, "y": 4 }, "player": 1, "pieceType": 20, "rotation": 0, "reflection": true } }, { "piece": { "location": { "x": 4, "y": 8 }, "pieceType": 10, "player": 0, "rotation": 1, "reflection": false } }, { "piece": { "location": { "x": 6, "y": 10 }, "player": 1, "pieceType": 8, "rotation": 2, "reflection": true } }];
-  return bench(moves);
+  return bench(moves, "middle");
 };
 var benchEnd = () => {
   const moves = [{ "piece": { "location": { "x": 5, "y": 5 }, "pieceType": 6, "player": 0, "rotation": 1, "reflection": false } }, { "piece": { "pieceType": 0, "location": { "x": 9, "y": 9 }, "player": 1, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 8, "y": 4 }, "pieceType": 7, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 8, "y": 13 }, "player": 1, "pieceType": 5, "rotation": 1, "reflection": false } }, { "piece": { "location": { "x": 7, "y": 9 }, "pieceType": 8, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 12, "y": 10 }, "player": 1, "pieceType": 4, "rotation": 0, "reflection": true } }, { "piece": { "location": { "x": 3, "y": 3 }, "pieceType": 9, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 10, "y": 4 }, "player": 1, "pieceType": 20, "rotation": 0, "reflection": true } }, { "piece": { "location": { "x": 4, "y": 8 }, "pieceType": 10, "player": 0, "rotation": 1, "reflection": false } }, { "piece": { "location": { "x": 6, "y": 10 }, "player": 1, "pieceType": 8, "rotation": 2, "reflection": true } }, { "piece": { "location": { "x": 6, "y": 1 }, "pieceType": 11, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 13, "y": 7 }, "player": 1, "pieceType": 19, "rotation": 2, "reflection": true } }, { "piece": { "location": { "x": 0, "y": 9 }, "pieceType": 5, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 12, "y": 2 }, "player": 1, "pieceType": 6, "rotation": 0, "reflection": true } }, { "piece": { "location": { "x": 1, "y": 6 }, "pieceType": 12, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 3, "y": 10 }, "player": 1, "pieceType": 2, "rotation": 3, "reflection": false } }, { "piece": { "location": { "x": 9, "y": 6 }, "pieceType": 16, "player": 0, "rotation": 0, "reflection": false } }, { "piece": { "location": { "x": 8, "y": 0 }, "player": 1, "pieceType": 10, "rotation": 1, "reflection": true } }];
-  return bench(moves);
+  return bench(moves, "end");
 };
 var question = (int, questionText) => {
   const response = new Promise((resolve) => {

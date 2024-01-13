@@ -1,1 +1,1 @@
-[{"name":"fix-movegen-slice-50","timings":[2227.2,5714.4,5912.8]},{"name":"skip-occupied-corners-slice-50","timings":[1716.8,2596.2,2545]}]
+[{"name":"v1","timings":[1963.4,2905.8,2709.4]}]
