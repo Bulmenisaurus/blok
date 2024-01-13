@@ -1,9 +1,11 @@
 import { BoardState, Move, PlayerState, getAllLegalMoves, getPieceData } from './movegen';
+import { WorkerManager } from './workerManager';
 
-export const findMove = (board: BoardState, overrideDepth?: number): Move | undefined => {
-    let bestMove: Move | undefined = undefined;
-    let bestMoveScore = -Infinity;
-
+export const findMove = async (
+    board: BoardState,
+    workers: WorkerManager,
+    overrideDepth?: number
+): Promise<Move | undefined> => {
     const startTime = Date.now();
 
     const allMoves = getAllLegalMoves(board).slice(0, 50);
@@ -14,40 +16,19 @@ export const findMove = (board: BoardState, overrideDepth?: number): Move | unde
 
         return true;
     });
-
-    for (const move of filteredMoves) {
-        board.doMove(move);
-
-        let ourScore = 0;
-
-        // // if our moves resulted in a finish, interrupt search immediately
-        // const playerFinished = countPlayerScore(aiColor, board) === 980;
-        // if (playerFinished) {
-        //     ourScore = evaluate(board, aiColor);
-        // } else {
-        // we just made a move, so now its time to evaluate from the perspective of the opponent
-
-        const depth = overrideDepth || 2;
-        const opponentScore = recursiveBoardSearchAlphaBeta(depth, board, -Infinity, Infinity);
-
-        ourScore = -opponentScore;
-        // }
-
-        board.undoMove(move);
-
-        if (ourScore > bestMoveScore) {
-            bestMoveScore = ourScore;
-            bestMove = move;
-        }
-    }
+    const response = await workers.findMove(filteredMoves, board);
 
     const endTime = Date.now();
-    console.log(`Took ${endTime - startTime}ms to evaluate positions. Bestmove ${bestMoveScore}`);
+    console.log(`Took ${endTime - startTime}ms to evaluate positions. Bestmove ${response?.score}`);
 
-    return bestMove;
+    if (response === null) {
+        return undefined;
+    } else {
+        return response.move;
+    }
 };
 
-const recursiveBoardSearchAlphaBeta = (
+export const recursiveBoardSearchAlphaBeta = (
     depth: number,
     board: BoardState,
     alpha: number,
@@ -86,7 +67,9 @@ const recursiveBoardSearchAlphaBeta = (
  *  - 0 if it is a tie.
  */
 const evaluate = (board: BoardState) => {
-    const evaluation = countPlayerScore(board.playerA) - countPlayerScore(board.playerB);
+    const mobility = getAllLegalMoves(board).length / 20;
+
+    const evaluation = countPlayerScore(board.playerA) - countPlayerScore(board.playerB) + mobility;
 
     const perspective = board.toMove === 0 ? 1 : -1;
 

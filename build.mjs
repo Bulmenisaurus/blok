@@ -3,7 +3,7 @@ import * as esbuild from 'esbuild';
 const watch = process.argv.some((arg) => arg === '--watch');
 
 const browserBuild = await esbuild.context({
-    entryPoints: ['src/script.ts'],
+    entryPoints: ['src/script.ts', 'src/worker.ts'],
     bundle: true,
     outdir: 'dist',
 });

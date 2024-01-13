@@ -12,6 +12,7 @@ import {
 } from './movegen';
 import { render, renderPiece } from './renderer';
 import { Coordinate } from './types';
+import { WorkerManager } from './workerManager';
 
 export class InteractiveCanvas {
     canvas: HTMLCanvasElement;
@@ -24,13 +25,15 @@ export class InteractiveCanvas {
     mousePosition: Coordinate;
     selectedPieceRotation: number;
     selectedPieceFlipped: boolean;
-    constructor(board: BoardState) {
+    workers: WorkerManager;
+    constructor(board: BoardState, workers: WorkerManager) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d')!;
 
         this.canvas = canvas;
         this.ctx = ctx;
         this.board = board;
+        this.workers = workers;
         this.carousel = document.getElementById('blocks-carousel')!;
         this.carouselCanvases = [];
         this.initCarousel();
@@ -94,16 +97,17 @@ export class InteractiveCanvas {
         //     console.log(botMove);
         //     this.board.doMove(botMove[1]);
         // }
-        const botMove = findMove(this.board);
-        if (botMove === undefined) {
-            console.log('no bot move');
-            this.board.skipTurn();
-        } else {
-            this.board.doMove(botMove);
-        }
+        const botMove = findMove(this.board, this.workers).then((move) => {
+            if (move === undefined) {
+                console.log('no bot move');
+                this.board.skipTurn();
+            } else {
+                this.board.doMove(move);
+            }
 
-        const score = this.score();
-        console.log(`A: ${score.playerA}, B: ${score.playerB}`);
+            const score = this.score();
+            console.log(`A: ${score.playerA}, B: ${score.playerB}`);
+        });
     }
 
     keyDown(e: KeyboardEvent) {

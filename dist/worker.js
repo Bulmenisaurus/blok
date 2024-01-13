@@ -354,24 +354,6 @@
   var reflect = (pieceData2) => {
     return pieceData2.map((p) => ({ x: -p.x, y: p.y }));
   };
-  var getBoundingBox = (pieceData2) => {
-    let minX = pieceData2[0].x;
-    let minY = pieceData2[0].y;
-    let maxX = pieceData2[0].x;
-    let maxY = pieceData2[0].y;
-    for (const tile of pieceData2) {
-      minX = Math.min(minX, tile.x);
-      minY = Math.min(minY, tile.y);
-      maxX = Math.max(maxX, tile.x);
-      maxY = Math.max(maxY, tile.y);
-    }
-    return {
-      bottomLeft: { x: minX, y: minY },
-      topRight: { x: maxX, y: maxY },
-      width: maxX - minX + 1,
-      height: maxY - minY + 1
-    };
-  };
   var getLegalMovesFrom = (from, piece, state) => {
     const moves = [];
     for (const permutation of permutationData[piece]) {
@@ -445,311 +427,69 @@
   };
 
   // src/bot.ts
-  var findMove = async (board, workers, overrideDepth) => {
-    const startTime = Date.now();
-    const allMoves = getAllLegalMoves(board).slice(0, 50);
-    const filteredMoves = allMoves.filter((m) => {
-      if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
-        return false;
+  var recursiveBoardSearchAlphaBeta = (depth, board, alpha, beta) => {
+    if (depth === 0) {
+      return evaluate(board);
+    }
+    const moves = getAllLegalMoves(board).slice(0, 50);
+    if (moves.length === 0) {
+      return evaluate(board);
+    }
+    for (const move of moves) {
+      board.doMove(move);
+      const evaluation = -recursiveBoardSearchAlphaBeta(depth - 1, board, -beta, -alpha);
+      board.undoMove(move);
+      if (evaluation >= beta) {
+        return beta;
       }
-      return true;
-    });
-    const response = await workers.findMove(filteredMoves, board);
-    const endTime = Date.now();
-    console.log(`Took ${endTime - startTime}ms to evaluate positions. Bestmove ${response?.score}`);
-    if (response === null) {
-      return void 0;
+      alpha = Math.max(alpha, evaluation);
+    }
+    return alpha;
+  };
+  var evaluate = (board) => {
+    const mobility = getAllLegalMoves(board).length / 20;
+    const evaluation = countPlayerScore(board.playerA) - countPlayerScore(board.playerB) + mobility;
+    const perspective = board.toMove === 0 ? 1 : -1;
+    return evaluation * perspective;
+  };
+  var countPlayerScore = (player) => {
+    let score = 1e3;
+    for (const remainingPiece of player.remainingPieces) {
+      const pieceTile = getPieceData(remainingPiece, 0, false);
+      score -= pieceTile.length;
+    }
+    return score;
+  };
+
+  // src/worker.ts
+  onmessage = (e) => {
+    const board = new BoardState();
+    for (const piece of e.data.boardStateMoves) {
+      board.doMove({
+        piece
+      });
+    }
+    let bestMove = void 0;
+    let bestMoveScore = -Infinity;
+    for (const move of e.data.searchMoves) {
+      board.doMove(move);
+      let ourScore = 0;
+      const depth = 2;
+      const opponentScore = recursiveBoardSearchAlphaBeta(depth, board, -Infinity, Infinity);
+      ourScore = -opponentScore;
+      board.undoMove(move);
+      if (ourScore > bestMoveScore) {
+        bestMoveScore = ourScore;
+        bestMove = move;
+      }
+    }
+    if (bestMove === void 0) {
+      postMessage(null);
     } else {
-      return response.move;
-    }
-  };
-
-  // src/renderer.ts
-  var render = (canvas, ctx, boardState, previewPiece) => {
-    canvas.width = 500;
-    canvas.height = 500;
-    drawBackground(ctx);
-    startPos(ctx, { x: 4, y: 4 });
-    startPos(ctx, { x: 9, y: 9 });
-    for (const piece of boardState.pieces) {
-      renderPiece(ctx, piece);
-    }
-    if (previewPiece !== void 0) {
-      renderPiece(ctx, previewPiece, true);
-    }
-    drawGridLines(ctx);
-  };
-  var drawBackground = (ctx) => {
-    ctx.fillStyle = "#ccc";
-    ctx.fillRect(0, 0, 500, 500);
-  };
-  var drawGridLines = (ctx) => {
-    for (let i = 0; i < 13; i++) {
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = "#fff";
-      ctx.beginPath();
-      ctx.moveTo(0, 500 / 14 * (i + 1));
-      ctx.lineTo(500, 500 / 14 * (i + 1));
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(500 / 14 * (i + 1), 0);
-      ctx.lineTo(500 / 14 * (i + 1), 500);
-      ctx.stroke();
-    }
-  };
-  var startPos = (ctx, c) => {
-    const cellSize = 500 / 14;
-    const cellTopLeftX = c.x * cellSize;
-    const cellTopLeftY = c.y * cellSize;
-    const cellMiddleX = cellTopLeftX + cellSize / 2;
-    const cellMiddleY = cellTopLeftY + cellSize / 2;
-    ctx.beginPath();
-    ctx.arc(cellMiddleX, cellMiddleY, cellSize * 0.2, 0, Math.PI * 2);
-    ctx.fillStyle = "#aaa";
-    ctx.fill();
-  };
-  var renderPiece = (ctx, piece, preview) => {
-    for (const tile of getPieceData(piece.pieceType, piece.rotation, piece.reflection)) {
-      const tileCoordinate = {
-        x: tile.x + piece.location.x,
-        y: tile.y + piece.location.y
-      };
-      renderTile(ctx, tileCoordinate, piece.player, preview);
-    }
-  };
-  var renderTile = (ctx, location, player, preview) => {
-    const cellWidth = 500 / 14;
-    const tileX = location.x * cellWidth;
-    const tileY = location.y * cellWidth;
-    if (preview) {
-      ctx.fillStyle = ["rgba(30, 120, 0, 0.5)", "rgba(255, 0, 0, 0.5)"][player];
-    } else {
-      ctx.fillStyle = ["green", "red"][player];
-    }
-    ctx.beginPath();
-    ctx.rect(tileX, tileY, cellWidth, cellWidth);
-    ctx.fill();
-  };
-
-  // src/interactiveCanvas.ts
-  var InteractiveCanvas = class {
-    constructor(board, workers) {
-      const canvas = document.getElementById("canvas");
-      const ctx = canvas.getContext("2d");
-      this.canvas = canvas;
-      this.ctx = ctx;
-      this.board = board;
-      this.workers = workers;
-      this.carousel = document.getElementById("blocks-carousel");
-      this.carouselCanvases = [];
-      this.initCarousel();
-      this.selectedPiece = null;
-      this.mousePosition = { x: 0, y: 0 };
-      this.selectedPieceRotation = 0;
-      this.selectedPieceFlipped = false;
-      this.canvas.addEventListener("mousemove", (e) => {
-        this.mouseMove(e);
-      });
-      this.canvas.addEventListener("click", (e) => {
-        this.click(e);
-      });
-      window.addEventListener("keydown", (e) => {
-        this.keyDown(e);
-      });
-      window.requestAnimationFrame(() => this.drawLoop());
-    }
-    mouseMove(e) {
-      const canvasWidth = this.canvas.getBoundingClientRect().width;
-      const canvasHeight = this.canvas.getBoundingClientRect().height;
-      const mouseBoardC = {
-        x: Math.floor(14 * e.offsetX / canvasWidth),
-        y: Math.floor(14 * e.offsetY / canvasHeight)
-      };
-      this.mousePosition = mouseBoardC;
-    }
-    click(e) {
-      if (this.selectedPiece === null) {
-        console.log("tried placing without selecting any piece");
-        return;
-      }
-      const move = {
-        piece: {
-          location: this.mousePosition,
-          pieceType: this.selectedPiece,
-          player: 0,
-          rotation: this.selectedPieceRotation,
-          reflection: this.selectedPieceFlipped
-        }
-      };
-      this.board.doMove(move);
-      this.updateCarouselVisibility();
-      this.selectedPiece = null;
-      this.selectedPieceRotation = 0;
-      const botMove = findMove(this.board, this.workers).then((move2) => {
-        if (move2 === void 0) {
-          console.log("no bot move");
-          this.board.skipTurn();
-        } else {
-          this.board.doMove(move2);
-        }
-        const score = this.score();
-        console.log(`A: ${score.playerA}, B: ${score.playerB}`);
+      postMessage({
+        move: bestMove,
+        score: bestMoveScore
       });
     }
-    keyDown(e) {
-      if (e.key === "Escape") {
-        this.selectedPiece = null;
-      }
-      if (e.key.toLowerCase() === "r") {
-        if (e.shiftKey) {
-          this.selectedPieceRotation += 3;
-        } else {
-          this.selectedPieceRotation += 1;
-        }
-        this.selectedPieceRotation %= 4;
-      }
-      if (e.key === "f") {
-        this.selectedPieceFlipped = !this.selectedPieceFlipped;
-      }
-    }
-    initCarousel() {
-      for (const [pieceType, piece] of pieceData.entries()) {
-        const pieceCanvas = this.carouselPiecePreview(piece);
-        this.carousel.append(pieceCanvas);
-        this.carouselCanvases.push(pieceCanvas);
-        pieceCanvas.addEventListener("click", () => {
-          if (this.selectedPiece === pieceType) {
-            this.selectedPiece = null;
-          } else {
-            this.selectedPiece = pieceType;
-          }
-        });
-      }
-    }
-    updateCarouselVisibility() {
-      for (const [pieceType, piece] of pieceData.entries()) {
-        if (this.board.playerA.remainingPieces.has(pieceType)) {
-          this.carouselCanvases[pieceType].classList.remove("hidden");
-        } else {
-          this.carouselCanvases[pieceType].classList.add("hidden");
-        }
-      }
-    }
-    carouselPiecePreview(piece) {
-      const pieceCanvas = document.createElement("canvas");
-      const pieceCtx = pieceCanvas.getContext("2d");
-      const pieceBoundingBox = getBoundingBox(piece);
-      pieceCanvas.width = pieceBoundingBox.width * 100;
-      pieceCanvas.height = pieceBoundingBox.height * 100;
-      for (const tile of piece) {
-        const shiftedCoords = {
-          x: tile.x - pieceBoundingBox.bottomLeft.x,
-          y: tile.y - pieceBoundingBox.bottomLeft.y
-        };
-        const canvasCoords = {
-          x: shiftedCoords.x * 100,
-          y: shiftedCoords.y * 100
-        };
-        pieceCtx.beginPath();
-        pieceCtx.rect(canvasCoords.x, canvasCoords.y, 100, 100);
-        pieceCtx.fillStyle = "green";
-        pieceCtx.fill();
-        const numRows = pieceBoundingBox.height;
-        const numCols = pieceBoundingBox.width;
-        for (let i = 0; i < numRows; i++) {
-          pieceCtx.lineWidth = 5;
-          pieceCtx.strokeStyle = "#fff";
-          pieceCtx.beginPath();
-          pieceCtx.moveTo(0, pieceCanvas.height / numRows * (i + 1));
-          pieceCtx.lineTo(pieceCanvas.width, pieceCanvas.height / numRows * (i + 1));
-          pieceCtx.stroke();
-        }
-        for (let i = 0; i < numCols; i++) {
-          pieceCtx.beginPath();
-          pieceCtx.moveTo(pieceCanvas.width / numCols * (i + 1), 0);
-          pieceCtx.lineTo(pieceCanvas.width / numCols * (i + 1), pieceCanvas.height);
-          pieceCtx.stroke();
-        }
-      }
-      return pieceCanvas;
-    }
-    drawLoop() {
-      let piecePreview;
-      if (this.selectedPiece !== null) {
-        piecePreview = {
-          location: this.mousePosition,
-          pieceType: this.selectedPiece,
-          player: 0,
-          rotation: this.selectedPieceRotation,
-          reflection: this.selectedPieceFlipped
-        };
-      }
-      render(this.canvas, this.ctx, this.board, piecePreview);
-      window.requestAnimationFrame(() => this.drawLoop());
-    }
-    score() {
-      return {
-        playerA: this.board.pieces.filter((p) => p.player === 0).map((p) => getPieceData(p.pieceType, 0, false).length).reduce((a, b) => a + b, 0),
-        playerB: this.board.pieces.filter((p) => p.player === 1).map((p) => getPieceData(p.pieceType, 0, false).length).reduce((a, b) => a + b, 0)
-      };
-    }
   };
-
-  // src/workerManager.ts
-  var WorkerManager = class {
-    constructor() {
-      this.workers = [];
-      this.numWorkers = navigator.hardwareConcurrency;
-      for (let i = 0; i < this.numWorkers; i++) {
-        this.workers.push(new Worker("./dist/worker.js"));
-      }
-    }
-    async findMove(moves, board) {
-      const workerTasks = [];
-      for (let i = 0; i < this.numWorkers; i++) {
-        workerTasks.push([]);
-      }
-      for (let i = 0; i < moves.length; i++) {
-        workerTasks[i % this.numWorkers].push(moves[i]);
-      }
-      const requests = [];
-      for (let i = 0; i < this.numWorkers; i++) {
-        requests.push(this.workerRequest(this.workers[i], board, workerTasks[i]));
-      }
-      console.log(requests);
-      const responses = await Promise.all(requests);
-      let bestResponse = null;
-      for (const response of responses) {
-        if (response === null) {
-          continue;
-        }
-        if (bestResponse === null) {
-          bestResponse = response;
-        }
-        if (response.score > bestResponse.score) {
-          bestResponse = response;
-        }
-      }
-      return bestResponse;
-    }
-    workerRequest(worker, board, task) {
-      const responsePromise = new Promise((resolve) => {
-        worker.onmessage = (message2) => {
-          resolve(message2.data);
-          worker.onmessage = null;
-        };
-      });
-      const message = { boardStateMoves: board.pieces, searchMoves: task };
-      worker.postMessage(message);
-      return responsePromise;
-    }
-  };
-
-  // src/script.ts
-  var main = () => {
-    const boardState = new BoardState();
-    const workers = new WorkerManager();
-    const interactiveCanvas = new InteractiveCanvas(boardState, workers);
-  };
-  main();
 })();
