@@ -129,7 +129,12 @@ export class InteractiveCanvas {
     }
 
     initCarousel() {
-        for (const [pieceType, piece] of pieceData.entries()) {
+        // order pieces by length
+        const pieceOrder: PieceType[] = [
+            20, 0, 1, 2, 4, 5, 6, 7, 9, 10, 19, 11, 12, 13, 14, 15, 18, 3, 17, 16,
+        ];
+        for (const pieceType of pieceOrder) {
+            const piece = getPieceData(pieceType, 0, false);
             const pieceCanvas = this.carouselPiecePreview(piece);
             this.carousel.append(pieceCanvas);
             this.carouselCanvases.push(pieceCanvas);
