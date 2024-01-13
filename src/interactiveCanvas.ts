@@ -19,7 +19,7 @@ export class InteractiveCanvas {
     ctx: CanvasRenderingContext2D;
     board: BoardState;
     carousel: HTMLElement;
-    carouselCanvases: HTMLCanvasElement[];
+    carouselCanvases: { [key: number]: HTMLCanvasElement };
 
     selectedPiece: PieceType | null;
     mousePosition: Coordinate;
@@ -87,6 +87,7 @@ export class InteractiveCanvas {
 
         this.board.doMove(move);
         this.updateCarouselVisibility();
+        this.updateScore();
         this.selectedPiece = null;
         this.selectedPieceRotation = 0;
 
@@ -104,9 +105,7 @@ export class InteractiveCanvas {
             } else {
                 this.board.doMove(move);
             }
-
-            const score = this.score();
-            console.log(`A: ${score.playerA}, B: ${score.playerB}`);
+            this.updateScore();
         });
     }
 
@@ -131,13 +130,13 @@ export class InteractiveCanvas {
     initCarousel() {
         // order pieces by length
         const pieceOrder: PieceType[] = [
-            20, 0, 1, 2, 4, 5, 6, 7, 9, 10, 19, 11, 12, 13, 14, 15, 18, 3, 17, 16,
+            20, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 19, 11, 12, 13, 14, 15, 18, 3, 17, 16,
         ];
         for (const pieceType of pieceOrder) {
             const piece = getPieceData(pieceType, 0, false);
             const pieceCanvas = this.carouselPiecePreview(piece);
             this.carousel.append(pieceCanvas);
-            this.carouselCanvases.push(pieceCanvas);
+            this.carouselCanvases[pieceType] = pieceCanvas;
 
             pieceCanvas.addEventListener('click', () => {
                 if (this.selectedPiece === pieceType) {
@@ -238,5 +237,15 @@ export class InteractiveCanvas {
                 .map((p) => getPieceData(p.pieceType, 0, false).length)
                 .reduce((a, b) => a + b, 0),
         };
+    }
+
+    updateScore() {
+        const userScore: HTMLElement = document.querySelector('#user-score-container > .score')!;
+        const botScore: HTMLElement = document.querySelector('#bot-score-container > .score')!;
+
+        const { playerA, playerB } = this.score();
+
+        userScore.innerText = playerA.toString();
+        botScore.innerText = playerB.toString();
     }
 }

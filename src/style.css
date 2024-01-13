@@ -8,8 +8,21 @@ body {
     height: 100vh;
 }
 
+#score {
+    height: 8vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+#score > div {
+    display: flex;
+    flex-direction: column;
+}
+
 #canvas-container {
-    height: 80vh;
+    height: 77vh;
     width: 100vw;
 
     display: grid;
@@ -26,7 +39,7 @@ body {
 }
 
 #carousel-container {
-    height: 20vh;
+    height: 15vh;
     width: 100vw;
 }
 

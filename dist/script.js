@@ -583,6 +583,7 @@
       };
       this.board.doMove(move);
       this.updateCarouselVisibility();
+      this.updateScore();
       this.selectedPiece = null;
       this.selectedPieceRotation = 0;
       const botMove = findMove(this.board, this.workers).then((move2) => {
@@ -592,8 +593,7 @@
         } else {
           this.board.doMove(move2);
         }
-        const score = this.score();
-        console.log(`A: ${score.playerA}, B: ${score.playerB}`);
+        this.updateScore();
       });
     }
     keyDown(e) {
@@ -622,6 +622,7 @@
         5,
         6,
         7,
+        8,
         9,
         10,
         19,
@@ -639,7 +640,7 @@
         const piece = getPieceData(pieceType, 0, false);
         const pieceCanvas = this.carouselPiecePreview(piece);
         this.carousel.append(pieceCanvas);
-        this.carouselCanvases.push(pieceCanvas);
+        this.carouselCanvases[pieceType] = pieceCanvas;
         pieceCanvas.addEventListener("click", () => {
           if (this.selectedPiece === pieceType) {
             this.selectedPiece = null;
@@ -716,6 +717,13 @@
         playerA: this.board.pieces.filter((p) => p.player === 0).map((p) => getPieceData(p.pieceType, 0, false).length).reduce((a, b) => a + b, 0),
         playerB: this.board.pieces.filter((p) => p.player === 1).map((p) => getPieceData(p.pieceType, 0, false).length).reduce((a, b) => a + b, 0)
       };
+    }
+    updateScore() {
+      const userScore = document.querySelector("#user-score-container > .score");
+      const botScore = document.querySelector("#bot-score-container > .score");
+      const { playerA, playerB } = this.score();
+      userScore.innerText = playerA.toString();
+      botScore.innerText = playerB.toString();
     }
   };
 
