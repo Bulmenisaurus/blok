@@ -186,11 +186,11 @@
   var permutationData = piece_permutations_default;
   var getPieceData = (pieceType, rotation, reflection) => {
     let data = pieceData[pieceType];
-    if (reflection) {
-      data = reflect(data);
-    }
     for (let i = 0; i < rotation; i++) {
       data = rotate90Deg(data);
+    }
+    if (reflection) {
+      data = reflect(data);
     }
     return data;
   };

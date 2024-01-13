@@ -38,13 +38,12 @@ export const permutationData: Readonly<Permutation[][]> = _permutationData;
 
 export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
     let data = pieceData[pieceType];
-    if (reflection) {
-        data = reflect(data);
-    }
     for (let i = 0; i < rotation; i++) {
         data = rotate90Deg(data);
     }
-
+    if (reflection) {
+        data = reflect(data);
+    }
     return data;
 };
 
