@@ -397,7 +397,8 @@
     if (depth === 0) {
       return evaluate(board);
     }
-    const moves = getAllLegalMoves(board).slice(0, 50);
+    let moves = getAllLegalMoves(board);
+    moves = moves.slice(Math.max(0, moves.length - 50));
     if (moves.length === 0) {
       return evaluate(board);
     }

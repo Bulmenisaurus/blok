@@ -8,7 +8,9 @@ export const findMove = async (
 ): Promise<Move | undefined> => {
     const startTime = Date.now();
 
-    const allMoves = getAllLegalMoves(board).slice(0, 50);
+    let allMoves = getAllLegalMoves(board);
+    // last 50 moves
+    allMoves = allMoves.slice(Math.max(0, allMoves.length - 50));
     const filteredMoves = allMoves.filter((m) => {
         if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
             return false;
@@ -38,7 +40,8 @@ export const recursiveBoardSearchAlphaBeta = (
         return evaluate(board);
     }
 
-    const moves: Move[] = getAllLegalMoves(board).slice(0, 50);
+    let moves: Move[] = getAllLegalMoves(board);
+    moves = moves.slice(Math.max(0, moves.length - 50));
 
     // if game over, return eval
     if (moves.length === 0) {

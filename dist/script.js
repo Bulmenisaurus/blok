@@ -417,7 +417,8 @@
   // src/bot.ts
   var findMove = async (board, workers, overrideDepth) => {
     const startTime = Date.now();
-    const allMoves = getAllLegalMoves(board).slice(0, 50);
+    let allMoves = getAllLegalMoves(board);
+    allMoves = allMoves.slice(Math.max(0, allMoves.length - 50));
     const filteredMoves = allMoves.filter((m) => {
       if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
         return false;
