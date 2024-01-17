@@ -7,8 +7,33 @@ import * as fs from 'fs';
  * Create a file saving each orientation
  */
 
-import { PieceData, PieceType, getBoundingBox, getPieceData, pieceData } from './movegen';
+import { PieceData, PieceType, getBoundingBox, pieceData } from './movegen';
 import { Coordinate } from './types';
+
+const rotateCoord90Deg = (c: Coordinate) => {
+    // https://math.stackexchange.com/a/1330166
+    return { x: c.y, y: -c.x };
+};
+
+const rotate90Deg = (pieceData: PieceData): PieceData => {
+    return pieceData.map((c) => rotateCoord90Deg(c));
+};
+
+const reflect = (pieceData: PieceData): PieceData => {
+    return pieceData.map((p) => ({ x: -p.x, y: p.y }));
+};
+
+const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
+    let data = pieceData[pieceType];
+    for (let i = 0; i < rotation; i++) {
+        data = rotate90Deg(data);
+    }
+    if (reflection) {
+        data = reflect(data);
+    }
+    return data;
+};
+
 interface OrientationData {
     orientations: PieceData[];
     orientationDict: number[];

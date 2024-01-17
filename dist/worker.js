@@ -170,16 +170,6 @@
   var orientationData = piece_orientations_default;
   var cornersData = piece_corners_default;
   var cornerAttachersData = piece_corner_attachers_default;
-  var getPieceData = (pieceType, rotation, reflection) => {
-    let data = pieceData[pieceType];
-    for (let i = 0; i < rotation; i++) {
-      data = rotate90Deg(data);
-    }
-    if (reflection) {
-      data = reflect(data);
-    }
-    return data;
-  };
   var getOrientationData = (pieceType, orientation) => {
     return orientationData[pieceType][orientation];
   };
@@ -269,15 +259,6 @@
       }
     }
     return true;
-  };
-  var rotateCoord90Deg = (c) => {
-    return { x: c.y, y: -c.x };
-  };
-  var rotate90Deg = (pieceData2) => {
-    return pieceData2.map((c) => rotateCoord90Deg(c));
-  };
-  var reflect = (pieceData2) => {
-    return pieceData2.map((p) => ({ x: -p.x, y: p.y }));
   };
   var getLegalMovesFrom = (from, piece, state) => {
     const moves = [];
@@ -378,7 +359,7 @@
   var countPlayerScore = (player) => {
     let score = 1e3;
     for (const remainingPiece of player.remainingPieces) {
-      const pieceTile = getPieceData(remainingPiece, 0, false);
+      const pieceTile = getOrientationData(remainingPiece, 0);
       score -= pieceTile.length;
     }
     return score;

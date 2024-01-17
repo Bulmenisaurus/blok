@@ -1,10 +1,9 @@
-import { BoardState, Move, PlayerState, getAllLegalMoves, getPieceData } from './movegen';
+import { BoardState, Move, PlayerState, getAllLegalMoves, getOrientationData } from './movegen';
 import { WorkerManager } from './workerManager';
 
 export const findMove = async (
     board: BoardState,
-    workers: WorkerManager,
-    overrideDepth?: number
+    workers: WorkerManager
 ): Promise<Move | undefined> => {
     const startTime = Date.now();
 
@@ -12,7 +11,7 @@ export const findMove = async (
     // last 50 moves
     allMoves = allMoves.slice(Math.max(0, allMoves.length - 50));
     const filteredMoves = allMoves.filter((m) => {
-        if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
+        if (board.pieces.length < 5 && getOrientationData(m.piece.pieceType, 0).length !== 5) {
             return false;
         }
 
@@ -88,7 +87,7 @@ const evaluate = (board: BoardState) => {
 export const countPlayerScore = (player: PlayerState) => {
     let score = 1_000;
     for (const remainingPiece of player.remainingPieces) {
-        const pieceTile = getPieceData(remainingPiece, 0, false);
+        const pieceTile = getOrientationData(remainingPiece, 0);
         score -= pieceTile.length;
     }
 

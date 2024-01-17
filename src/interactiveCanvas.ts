@@ -6,12 +6,11 @@ import {
     PieceType,
     PlacedPiece,
     RRData,
-    getAllLegalMoves,
     getBoundingBox,
-    getPieceData,
+    getOrientationData,
     pieceData,
 } from './movegen';
-import { render, renderPiece } from './renderer';
+import { render } from './renderer';
 import { Coordinate } from './types';
 import { WorkerManager } from './workerManager';
 
@@ -142,7 +141,7 @@ export class InteractiveCanvas {
             .fill(0)
             .map((_, i) => i);
         for (const pieceType of pieceOrder) {
-            const piece = getPieceData(pieceType, 0, false);
+            const piece = getOrientationData(pieceType, 0);
             const pieceCanvas = this.carouselPiecePreview(piece);
             this.carousel.append(pieceCanvas);
             this.carouselCanvases[pieceType] = pieceCanvas;
@@ -242,11 +241,11 @@ export class InteractiveCanvas {
         return {
             playerA: this.board.pieces
                 .filter((p) => p.player === 0)
-                .map((p) => getPieceData(p.pieceType, 0, false).length)
+                .map((p) => getOrientationData(p.pieceType, 0).length)
                 .reduce((a, b) => a + b, 0),
             playerB: this.board.pieces
                 .filter((p) => p.player === 1)
-                .map((p) => getPieceData(p.pieceType, 0, false).length)
+                .map((p) => getOrientationData(p.pieceType, 0).length)
                 .reduce((a, b) => a + b, 0),
         };
     }

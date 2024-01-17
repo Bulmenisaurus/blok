@@ -1,4 +1,4 @@
-import { BoardState, PlacedPiece, Player, getOrientationData, getPieceData } from './movegen';
+import { BoardState, PlacedPiece, Player, getOrientationData } from './movegen';
 import { Coordinate } from './types';
 
 export const render = (

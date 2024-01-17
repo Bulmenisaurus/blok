@@ -160,31 +160,12 @@ var pieces_default = [
 
 // src/movegen.ts
 var pieceData = pieces_default;
-var getPieceData = (pieceType, rotation, reflection) => {
-  let data = pieceData[pieceType];
-  for (let i = 0; i < rotation; i++) {
-    data = rotate90Deg(data);
-  }
-  if (reflection) {
-    data = reflect(data);
-  }
-  return data;
-};
-var rotateCoord90Deg = (c) => {
-  return { x: c.y, y: -c.x };
-};
-var rotate90Deg = (pieceData3) => {
-  return pieceData3.map((c) => rotateCoord90Deg(c));
-};
-var reflect = (pieceData3) => {
-  return pieceData3.map((p) => ({ x: -p.x, y: p.y }));
-};
-var getBoundingBox = (pieceData3) => {
-  let minX = pieceData3[0].x;
-  let minY = pieceData3[0].y;
-  let maxX = pieceData3[0].x;
-  let maxY = pieceData3[0].y;
-  for (const tile of pieceData3) {
+var getBoundingBox = (pieceData2) => {
+  let minX = pieceData2[0].x;
+  let minY = pieceData2[0].y;
+  let maxX = pieceData2[0].x;
+  let maxY = pieceData2[0].y;
+  for (const tile of pieceData2) {
     minX = Math.min(minX, tile.x);
     minY = Math.min(minY, tile.y);
     maxX = Math.max(maxX, tile.x);
@@ -199,6 +180,25 @@ var getBoundingBox = (pieceData3) => {
 };
 
 // src/data.ts
+var rotateCoord90Deg = (c) => {
+  return { x: c.y, y: -c.x };
+};
+var rotate90Deg = (pieceData2) => {
+  return pieceData2.map((c) => rotateCoord90Deg(c));
+};
+var reflect = (pieceData2) => {
+  return pieceData2.map((p) => ({ x: -p.x, y: p.y }));
+};
+var getPieceData = (pieceType, rotation, reflection) => {
+  let data = pieceData[pieceType];
+  for (let i = 0; i < rotation; i++) {
+    data = rotate90Deg(data);
+  }
+  if (reflection) {
+    data = reflect(data);
+  }
+  return data;
+};
 var createOrientationDictPiece = (type) => {
   let i = 0;
   const RRs = [];

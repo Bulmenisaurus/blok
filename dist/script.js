@@ -174,16 +174,6 @@
   var RRData = piece_rr_default;
   var cornersData = piece_corners_default;
   var cornerAttachersData = piece_corner_attachers_default;
-  var getPieceData = (pieceType, rotation, reflection) => {
-    let data = pieceData[pieceType];
-    for (let i = 0; i < rotation; i++) {
-      data = rotate90Deg(data);
-    }
-    if (reflection) {
-      data = reflect(data);
-    }
-    return data;
-  };
   var getOrientationData = (pieceType, orientation) => {
     return orientationData[pieceType][orientation];
   };
@@ -274,15 +264,6 @@
     }
     return true;
   };
-  var rotateCoord90Deg = (c) => {
-    return { x: c.y, y: -c.x };
-  };
-  var rotate90Deg = (pieceData2) => {
-    return pieceData2.map((c) => rotateCoord90Deg(c));
-  };
-  var reflect = (pieceData2) => {
-    return pieceData2.map((p) => ({ x: -p.x, y: p.y }));
-  };
   var getBoundingBox = (pieceData2) => {
     let minX = pieceData2[0].x;
     let minY = pieceData2[0].y;
@@ -368,12 +349,12 @@
   };
 
   // src/bot.ts
-  var findMove = async (board, workers, overrideDepth) => {
+  var findMove = async (board, workers) => {
     const startTime = Date.now();
     let allMoves = getAllLegalMoves(board);
     allMoves = allMoves.slice(Math.max(0, allMoves.length - 50));
     const filteredMoves = allMoves.filter((m) => {
-      if (board.pieces.length < 5 && getPieceData(m.piece.pieceType, 0, false).length !== 5) {
+      if (board.pieces.length < 5 && getOrientationData(m.piece.pieceType, 0).length !== 5) {
         return false;
       }
       return true;
@@ -540,7 +521,7 @@
     initCarousel() {
       const pieceOrder = Array(21).fill(0).map((_, i) => i);
       for (const pieceType of pieceOrder) {
-        const piece = getPieceData(pieceType, 0, false);
+        const piece = getOrientationData(pieceType, 0);
         const pieceCanvas = this.carouselPiecePreview(piece);
         this.carousel.append(pieceCanvas);
         this.carouselCanvases[pieceType] = pieceCanvas;
@@ -618,8 +599,8 @@
     }
     score() {
       return {
-        playerA: this.board.pieces.filter((p) => p.player === 0).map((p) => getPieceData(p.pieceType, 0, false).length).reduce((a, b) => a + b, 0),
-        playerB: this.board.pieces.filter((p) => p.player === 1).map((p) => getPieceData(p.pieceType, 0, false).length).reduce((a, b) => a + b, 0)
+        playerA: this.board.pieces.filter((p) => p.player === 0).map((p) => getOrientationData(p.pieceType, 0).length).reduce((a, b) => a + b, 0),
+        playerB: this.board.pieces.filter((p) => p.player === 1).map((p) => getOrientationData(p.pieceType, 0).length).reduce((a, b) => a + b, 0)
       };
     }
     updateScore() {

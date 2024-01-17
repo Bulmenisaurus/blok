@@ -42,17 +42,6 @@ export const RRData: Readonly<number[][]> = _rrData;
 export const cornersData: Readonly<PieceData[][]> = _cornersData;
 export const cornerAttachersData: Readonly<PieceData[][]> = _cornerAttachersData;
 
-export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
-    let data = pieceData[pieceType];
-    for (let i = 0; i < rotation; i++) {
-        data = rotate90Deg(data);
-    }
-    if (reflection) {
-        data = reflect(data);
-    }
-    return data;
-};
-
 export const getOrientationData = (pieceType: PieceType, orientation: number) => {
     return orientationData[pieceType][orientation];
 };
@@ -192,19 +181,6 @@ const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
     }
 
     return true;
-};
-
-const rotateCoord90Deg = (c: Coordinate) => {
-    // https://math.stackexchange.com/a/1330166
-    return { x: c.y, y: -c.x };
-};
-
-const rotate90Deg = (pieceData: PieceData): PieceData => {
-    return pieceData.map((c) => rotateCoord90Deg(c));
-};
-
-const reflect = (pieceData: PieceData): PieceData => {
-    return pieceData.map((p) => ({ x: -p.x, y: p.y }));
 };
 
 interface BoundingBox {

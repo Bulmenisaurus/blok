@@ -1,5 +1,4 @@
-import { render, startPos } from './renderer';
-import { BoardState, getAllLegalMoves, getPieceData } from './movegen';
+import { BoardState } from './movegen';
 import { InteractiveCanvas } from './interactiveCanvas';
 import { WorkerManager } from './workerManager';
 
