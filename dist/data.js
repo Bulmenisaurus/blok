@@ -250,6 +250,39 @@ var getCorners = (piece) => {
   });
   return corners;
 };
+var getCornerAttachers = (piece) => {
+  let corners = [];
+  for (const tile of piece) {
+    [
+      { x: tile.x + 1, y: tile.y + 1 },
+      // ↗
+      { x: tile.x + 1, y: tile.y - 1 },
+      // ↘
+      { x: tile.x - 1, y: tile.y - 1 },
+      // ↙
+      { x: tile.x - 1, y: tile.y + 1 }
+      // ↖
+    ].forEach((c) => {
+      if (!coordPresent(corners, c)) {
+        corners.push(c);
+      }
+    });
+  }
+  corners = corners.filter(
+    (c) => [
+      { x: c.x + 1, y: c.y },
+      // →
+      { x: c.x, y: c.y - 1 },
+      // ↓
+      { x: c.x - 1, y: c.y },
+      // ←
+      { x: c.x, y: c.y + 1 }
+      // ↑
+    ].every((adjacent) => !coordPresent(piece, adjacent))
+  );
+  corners = corners.filter((c) => !coordPresent(piece, c));
+  return corners;
+};
 var normalize = (p) => {
   const boundingBox = getBoundingBox(p);
   return p.map((c) => ({ x: c.x - boundingBox.bottomLeft.x, y: c.y - boundingBox.bottomLeft.y }));
@@ -278,11 +311,13 @@ var main = () => {
   const orientationData = [];
   const orientationDicts = [];
   const corner = [];
+  const cornerAttacher = [];
   for (let pieceType = 0; pieceType < 21; pieceType++) {
     const { orientationDict, orientations } = createOrientationDictPiece(pieceType);
     orientationData.push(orientations);
     orientationDicts.push(orientationDict);
     corner.push(orientations.map((o) => getCorners(o)));
+    cornerAttacher.push(orientations.map((o) => getCornerAttachers(o)));
   }
   fs.writeFile("./src/piece-orientations.json", JSON.stringify(orientationData), (err) => {
     if (err !== null)
@@ -293,6 +328,10 @@ var main = () => {
       throw err;
   });
   fs.writeFile("./src/piece-corners.json", JSON.stringify(corner), (err) => {
+    if (err !== null)
+      throw err;
+  });
+  fs.writeFile("./src/piece-corner-attachers.json", JSON.stringify(cornerAttacher), (err) => {
     if (err !== null)
       throw err;
   });

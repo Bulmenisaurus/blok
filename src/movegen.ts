@@ -5,6 +5,7 @@ import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus
 import _orientationData from './piece-orientations.json';
 import _rrData from './piece-rr.json';
 import _cornersData from './piece-corners.json';
+import _cornerAttachersData from './piece-corner-attachers.json';
 
 export type PieceData = Coordinate[];
 
@@ -39,6 +40,7 @@ export const pieceData: Readonly<PieceData[]> = _pieceData;
 export const orientationData: Readonly<PieceData[][]> = _orientationData;
 export const RRData: Readonly<number[][]> = _rrData;
 export const cornersData: Readonly<PieceData[][]> = _cornersData;
+export const cornerAttachersData: Readonly<PieceData[][]> = _cornerAttachersData;
 
 export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
     let data = pieceData[pieceType];
@@ -150,54 +152,6 @@ export class BoardState {
         this.toMove = otherPlayer(this.toMove);
     }
 }
-
-const getCornerAttachers = (piece: PieceData): Coordinate[] => {
-    // the set of all coordinates that are:
-    // - diagonally adjacent to a tile in the piece
-    // - not adjacent to a tile in the piece
-    // - not occupied by a tile in the piece
-
-    let corners: Coordinate[] = [];
-
-    // diagonally adjacent
-    for (const tile of piece) {
-        [
-            { x: tile.x + 1, y: tile.y + 1 }, // ↗
-            { x: tile.x + 1, y: tile.y - 1 }, // ↘
-            { x: tile.x - 1, y: tile.y - 1 }, // ↙
-            { x: tile.x - 1, y: tile.y + 1 }, // ↖
-        ].forEach((c) => {
-            if (!coordPresent(corners, c)) {
-                corners.push(c);
-            }
-        });
-    }
-
-    // not adjacent
-    corners = corners.filter((c) =>
-        [
-            { x: c.x + 1, y: c.y }, // →
-            { x: c.x, y: c.y - 1 }, // ↓
-            { x: c.x - 1, y: c.y }, // ←
-            { x: c.x, y: c.y + 1 }, // ↑
-        ].every((adjacent) => !coordPresent(piece, adjacent))
-    );
-
-    // not occupied
-    corners = corners.filter((c) => !coordPresent(piece, c));
-
-    return corners;
-};
-
-const coordPresent = (coords: Coordinate[], check: Coordinate) => {
-    for (const c of coords) {
-        if (c.x === check.x && c.y === check.y) {
-            return true;
-        }
-    }
-
-    return false;
-};
 
 // check if a pseudo-legal move is actually legal
 // - piece shares a tile with any other of my pieces or any of my opponents pieces
@@ -346,8 +300,8 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
     const moves: Move[] = [];
 
     for (const placedPiece of myPlacedPieces) {
-        const pieceData = getOrientationData(placedPiece.pieceType, placedPiece.orientation);
-        for (const cornerAttacher of getCornerAttachers(pieceData)) {
+        const cornerAttachers = cornerAttachersData[placedPiece.pieceType][placedPiece.orientation];
+        for (const cornerAttacher of cornerAttachers) {
             const cornerAbsolute: Coordinate = {
                 x: cornerAttacher.x + placedPiece.location.x,
                 y: cornerAttacher.y + placedPiece.location.y,

@@ -98,6 +98,44 @@ const getCorners = (piece: PieceData): Coordinate[] => {
     return corners;
 };
 
+const getCornerAttachers = (piece: PieceData): Coordinate[] => {
+    // the set of all coordinates that are:
+    // - diagonally adjacent to a tile in the piece
+    // - not adjacent to a tile in the piece
+    // - not occupied by a tile in the piece
+
+    let corners: Coordinate[] = [];
+
+    // diagonally adjacent
+    for (const tile of piece) {
+        [
+            { x: tile.x + 1, y: tile.y + 1 }, // ↗
+            { x: tile.x + 1, y: tile.y - 1 }, // ↘
+            { x: tile.x - 1, y: tile.y - 1 }, // ↙
+            { x: tile.x - 1, y: tile.y + 1 }, // ↖
+        ].forEach((c) => {
+            if (!coordPresent(corners, c)) {
+                corners.push(c);
+            }
+        });
+    }
+
+    // not adjacent
+    corners = corners.filter((c) =>
+        [
+            { x: c.x + 1, y: c.y }, // →
+            { x: c.x, y: c.y - 1 }, // ↓
+            { x: c.x - 1, y: c.y }, // ←
+            { x: c.x, y: c.y + 1 }, // ↑
+        ].every((adjacent) => !coordPresent(piece, adjacent))
+    );
+
+    // not occupied
+    corners = corners.filter((c) => !coordPresent(piece, c));
+
+    return corners;
+};
+
 const normalize = (p: PieceData) => {
     const boundingBox = getBoundingBox(p);
 
@@ -139,11 +177,13 @@ const main = () => {
     const orientationData: PieceData[][] = [];
     const orientationDicts: number[][] = [];
     const corner: PieceData[][] = [];
+    const cornerAttacher: PieceData[][] = [];
     for (let pieceType = 0; pieceType < 21; pieceType++) {
         const { orientationDict, orientations } = createOrientationDictPiece(pieceType);
         orientationData.push(orientations);
         orientationDicts.push(orientationDict);
         corner.push(orientations.map((o) => getCorners(o)));
+        cornerAttacher.push(orientations.map((o) => getCornerAttachers(o)));
     }
 
     fs.writeFile('./src/piece-orientations.json', JSON.stringify(orientationData), (err) => {
@@ -155,6 +195,10 @@ const main = () => {
     });
 
     fs.writeFile('./src/piece-corners.json', JSON.stringify(corner), (err) => {
+        if (err !== null) throw err;
+    });
+
+    fs.writeFile('./src/piece-corner-attachers.json', JSON.stringify(cornerAttacher), (err) => {
         if (err !== null) throw err;
     });
 };
