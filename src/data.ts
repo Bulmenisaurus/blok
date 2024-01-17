@@ -1,0 +1,117 @@
+import * as fs from 'fs';
+
+/** Generate the data according to docs/orientations.md
+ *
+ * For each piece, generate the eight RRs
+ * Create a dictionary of each of the eight RRs to an orientation
+ * Create a file saving each orientation
+ */
+
+import { PieceData, PieceType, getBoundingBox, getPieceData, pieceData } from './movegen';
+interface OrientationData {
+    orientations: PieceData[];
+    orientationDict: number[];
+}
+
+const createOrientationDictPiece = (type: PieceType): OrientationData => {
+    /*
+        For each RR:
+        Check if it is not already in the list of RRs, if it is not, add it
+    */
+    let i = 0;
+    const RRs: PieceData[] = [];
+
+    // generate each RR
+    for (let rotation = 0; rotation < 4; rotation++) {
+        for (const flip of [false, true]) {
+            const RR = getPieceData(type, rotation, flip);
+            RRs.push(RR);
+            i++;
+        }
+    }
+
+    // list of orientation
+    const orientationDict = [0, 0, 0, 0, 0, 0, 0, 0];
+    let currentOrientationIdx = 0;
+    const orientations: PieceData[] = [];
+    // orientationDict[0] is guaranteed to be 0, as the first item is always not encountered and will have a orientation of 0
+    for (let i = 0; i < 8; i++) {
+        // check each of the orientations before it
+        let encountered = false;
+        for (let j = 0; j < i; j++) {
+            // i'th RR is equal to a previously encountered j'th rr
+            // so they must both point to the same orientation
+            if (pieceDataEqual(RRs[i], RRs[j])) {
+                orientationDict[i] = orientationDict[j];
+                encountered = true;
+            }
+        }
+
+        // this rr has never been seen before, it is a orientation
+
+        if (!encountered) {
+            orientationDict[i] = currentOrientationIdx;
+            currentOrientationIdx++;
+            orientations.push(RRs[i]);
+        }
+    }
+
+    return { orientationDict, orientations };
+};
+
+const normalize = (p: PieceData) => {
+    const boundingBox = getBoundingBox(p);
+
+    return p.map((c) => ({ x: c.x - boundingBox.bottomLeft.x, y: c.y - boundingBox.bottomLeft.y }));
+};
+
+const pieceDataEqual = (piece1: PieceData, piece2: PieceData) => {
+    // translate the piece data, because we just need the overall shape
+    let p1 = normalize(piece1);
+    let p2 = normalize(piece2);
+
+    // uses the property that if A and B are finite sets A ⊂ B ∧ |A| = |B| ⇔ A = B
+
+    // |A| = |B|
+    if (p1.length !== p2.length) {
+        return false;
+    }
+
+    // A ⊂ B
+    for (const c1 of p1) {
+        let itemFound = false;
+        for (const c2 of p2) {
+            const eq = c1.x === c2.x && c1.y == c2.y;
+
+            if (eq) {
+                itemFound = true;
+            }
+        }
+
+        if (!itemFound) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+const main = () => {
+    const orientationData: PieceData[][] = [];
+    const orientationDicts: number[][] = [];
+    for (let pieceType = 0; pieceType < 21; pieceType++) {
+        const { orientationDict, orientations } = createOrientationDictPiece(pieceType);
+        orientationData.push(orientations);
+        orientationDicts.push(orientationDict);
+    }
+
+    fs.writeFile('./src/piece-orientations.json', JSON.stringify(orientationData), (err) => {
+        if (err !== null) throw err;
+    });
+
+    fs.writeFile('./src/piece-rr.json', JSON.stringify(orientationDicts), (err) => {
+        if (err !== null) throw err;
+    });
+};
+
+main();

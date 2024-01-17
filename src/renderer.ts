@@ -1,4 +1,4 @@
-import { BoardState, PlacedPiece, Player, getPieceData } from './movegen';
+import { BoardState, PlacedPiece, Player, getOrientationData, getPieceData } from './movegen';
 import { Coordinate } from './types';
 
 export const render = (
@@ -70,7 +70,7 @@ export const renderPiece = (
     piece: PlacedPiece,
     preview?: boolean
 ) => {
-    for (const tile of getPieceData(piece.pieceType, piece.rotation, piece.reflection)) {
+    for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
         const tileCoordinate: Coordinate = {
             x: tile.x + piece.location.x,
             y: tile.y + piece.location.y,

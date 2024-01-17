@@ -5,6 +5,7 @@ import {
     PieceData,
     PieceType,
     PlacedPiece,
+    RRData,
     getAllLegalMoves,
     getBoundingBox,
     getPieceData,
@@ -75,13 +76,18 @@ export class InteractiveCanvas {
             console.log('tried placing without selecting any piece');
             return;
         }
+
+        const rotationReflection =
+            2 * this.selectedPieceRotation + (this.selectedPieceFlipped ? 1 : 0);
+
+        const orientation = RRData[this.selectedPiece][rotationReflection];
+
         const move: Move = {
             piece: {
                 location: this.mousePosition,
                 pieceType: this.selectedPiece,
                 player: 0,
-                rotation: this.selectedPieceRotation,
-                reflection: this.selectedPieceFlipped,
+                orientation,
             },
         };
 
@@ -129,9 +135,12 @@ export class InteractiveCanvas {
 
     initCarousel() {
         // order pieces by length
-        const pieceOrder: PieceType[] = [
-            20, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 19, 11, 12, 13, 14, 15, 18, 3, 17, 16,
-        ];
+        // const pieceOrder: PieceType[] = [
+        //     20, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 19, 11, 12, 13, 14, 15, 18, 3, 17, 16,
+        // ];
+        const pieceOrder = Array(21)
+            .fill(0)
+            .map((_, i) => i);
         for (const pieceType of pieceOrder) {
             const piece = getPieceData(pieceType, 0, false);
             const pieceCanvas = this.carouselPiecePreview(piece);
@@ -213,12 +222,15 @@ export class InteractiveCanvas {
     drawLoop() {
         let piecePreview: PlacedPiece | undefined;
         if (this.selectedPiece !== null) {
+            const rotationReflection =
+                2 * this.selectedPieceRotation + (this.selectedPieceFlipped ? 1 : 0);
+            const orientation = RRData[this.selectedPiece][rotationReflection];
+
             piecePreview = {
                 location: this.mousePosition,
                 pieceType: this.selectedPiece,
                 player: 0,
-                rotation: this.selectedPieceRotation,
-                reflection: this.selectedPieceFlipped,
+                orientation,
             };
         }
         render(this.canvas, this.ctx, this.board, piecePreview);

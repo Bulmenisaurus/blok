@@ -1,6 +1,7 @@
 import { Coordinate } from './types';
 import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus/set.png
-import _permutationData from './piece-permutations.json';
+import _orientationData from './piece-orientations.json';
+import _rrData from './piece-rr.json';
 import { BitBoard, getBitBoardValue, setBitBoardValue } from './bitboard';
 
 export type PieceData = Coordinate[];
@@ -15,8 +16,7 @@ export interface PlacedPiece {
     pieceType: PieceType;
     location: Coordinate;
     player: Player;
-    rotation: number;
-    reflection: boolean;
+    orientation: number;
 }
 
 export interface PlayerState {
@@ -34,7 +34,8 @@ export interface Permutation {
 }
 
 export const pieceData: Readonly<PieceData[]> = _pieceData;
-export const permutationData: Readonly<Permutation[][]> = _permutationData;
+export const orientationData: Readonly<PieceData[][]> = _orientationData;
+export const RRData: Readonly<number[][]> = _rrData;
 
 export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
     let data = pieceData[pieceType];
@@ -45,6 +46,10 @@ export const getPieceData = (pieceType: PieceType, rotation: number, reflection:
         data = reflect(data);
     }
     return data;
+};
+
+export const getOrientationData = (pieceType: PieceType, orientation: number) => {
+    return orientationData[pieceType][orientation];
 };
 
 export class BoardState {
@@ -89,11 +94,7 @@ export class BoardState {
         // update bitboard
         const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
 
-        for (const tile of getPieceData(
-            move.piece.pieceType,
-            move.piece.rotation,
-            move.piece.reflection
-        )) {
+        for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
             // mark coordinate as set
             const pieceCoord = {
                 x: tile.x + move.piece.location.x,
@@ -134,11 +135,7 @@ export class BoardState {
         // update bitboard
         const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
 
-        for (const tile of getPieceData(
-            move.piece.pieceType,
-            move.piece.rotation,
-            move.piece.reflection
-        )) {
+        for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
             // mark coordinate as set
             const pieceCoord = {
                 x: tile.x + move.piece.location.x,
@@ -234,10 +231,9 @@ const coordPresent = (coords: Coordinate[], check: Coordinate) => {
 const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
     const toMove = pseudoLegalMove.piece.player;
 
-    for (const tileA of getPieceData(
+    for (const tileA of getOrientationData(
         pseudoLegalMove.piece.pieceType,
-        pseudoLegalMove.piece.rotation,
-        pseudoLegalMove.piece.reflection
+        pseudoLegalMove.piece.orientation
     )) {
         const absA = {
             x: pseudoLegalMove.piece.location.x + tileA.x,
@@ -312,16 +308,17 @@ export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
 const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState): Move[] => {
     const moves: Move[] = [];
 
-    for (const permutation of permutationData[piece]) {
-        for (const corner of getCorners(permutation.data)) {
+    for (let i = 0; i < orientationData[piece].length; i++) {
+        const orientation = orientationData[piece][i];
+
+        for (const corner of getCorners(orientation)) {
             // position of the (0,0) tile
             const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
             let placedPiece: PlacedPiece = {
                 location: pieceMiddle,
                 player: state.toMove,
                 pieceType: piece,
-                rotation: permutation.rotation,
-                reflection: permutation.reflection,
+                orientation: i,
             };
 
             moves.push({ piece: placedPiece });
@@ -350,8 +347,7 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
                         pieceType: 5,
                         location: { x: 4, y: 4 },
                         player: 0,
-                        rotation: 0,
-                        reflection: false,
+                        orientation: 0,
                     },
                 },
             ];
@@ -362,8 +358,7 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
                         pieceType: 0,
                         location: { x: 9, y: 9 },
                         player: 1,
-                        rotation: 0,
-                        reflection: false,
+                        orientation: 0,
                     },
                 },
             ];
@@ -374,11 +369,7 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
     const moves: Move[] = [];
 
     for (const placedPiece of myPlacedPieces) {
-        const pieceData = getPieceData(
-            placedPiece.pieceType,
-            placedPiece.rotation,
-            placedPiece.reflection
-        );
+        const pieceData = getOrientationData(placedPiece.pieceType, placedPiece.orientation);
         for (const cornerAttacher of getCornerAttachers(pieceData)) {
             const cornerAbsolute: Coordinate = {
                 x: cornerAttacher.x + placedPiece.location.x,
