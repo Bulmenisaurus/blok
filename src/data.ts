@@ -8,6 +8,7 @@ import * as fs from 'fs';
  */
 
 import { PieceData, PieceType, getBoundingBox, getPieceData, pieceData } from './movegen';
+import { Coordinate } from './types';
 interface OrientationData {
     orientations: PieceData[];
     orientationDict: number[];
@@ -59,6 +60,44 @@ const createOrientationDictPiece = (type: PieceType): OrientationData => {
     return { orientationDict, orientations };
 };
 
+const coordPresent = (coords: Coordinate[], check: Coordinate) => {
+    for (const c of coords) {
+        if (c.x === check.x && c.y === check.y) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+const getCorners = (piece: PieceData): Coordinate[] => {
+    // the set of all coordinates that are:
+    // - part of the piece
+    // - don't have an adjacent tile above and below
+    // - don't have an adjacent tile to left and right
+
+    // part of the piece
+    let corners: Coordinate[] = piece;
+
+    // don't have a neighbor to left and right
+    corners = corners.filter((c) => {
+        let neighborLeft = coordPresent(piece, { x: c.x - 1, y: c.y });
+        let neighborRight = coordPresent(piece, { x: c.x + 1, y: c.y });
+
+        return !(neighborLeft && neighborRight);
+    });
+
+    // don't have a neighbor to the top and bottom
+    corners = corners.filter((c) => {
+        let neighborTop = coordPresent(piece, { x: c.x, y: c.y + 1 });
+        let neighborBottom = coordPresent(piece, { x: c.x, y: c.y - 1 });
+
+        return !(neighborTop && neighborBottom);
+    });
+
+    return corners;
+};
+
 const normalize = (p: PieceData) => {
     const boundingBox = getBoundingBox(p);
 
@@ -99,10 +138,12 @@ const pieceDataEqual = (piece1: PieceData, piece2: PieceData) => {
 const main = () => {
     const orientationData: PieceData[][] = [];
     const orientationDicts: number[][] = [];
+    const corner: PieceData[][] = [];
     for (let pieceType = 0; pieceType < 21; pieceType++) {
         const { orientationDict, orientations } = createOrientationDictPiece(pieceType);
         orientationData.push(orientations);
         orientationDicts.push(orientationDict);
+        corner.push(orientations.map((o) => getCorners(o)));
     }
 
     fs.writeFile('./src/piece-orientations.json', JSON.stringify(orientationData), (err) => {
@@ -110,6 +151,10 @@ const main = () => {
     });
 
     fs.writeFile('./src/piece-rr.json', JSON.stringify(orientationDicts), (err) => {
+        if (err !== null) throw err;
+    });
+
+    fs.writeFile('./src/piece-corners.json', JSON.stringify(corner), (err) => {
         if (err !== null) throw err;
     });
 };

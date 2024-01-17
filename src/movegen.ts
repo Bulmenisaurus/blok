@@ -1,8 +1,10 @@
 import { Coordinate } from './types';
+import { BitBoard, getBitBoardValue, setBitBoardValue } from './bitboard';
+
 import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus/set.png
 import _orientationData from './piece-orientations.json';
 import _rrData from './piece-rr.json';
-import { BitBoard, getBitBoardValue, setBitBoardValue } from './bitboard';
+import _cornersData from './piece-corners.json';
 
 export type PieceData = Coordinate[];
 
@@ -36,6 +38,7 @@ export interface Permutation {
 export const pieceData: Readonly<PieceData[]> = _pieceData;
 export const orientationData: Readonly<PieceData[][]> = _orientationData;
 export const RRData: Readonly<number[][]> = _rrData;
+export const cornersData: Readonly<PieceData[][]> = _cornersData;
 
 export const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolean) => {
     let data = pieceData[pieceType];
@@ -186,34 +189,6 @@ const getCornerAttachers = (piece: PieceData): Coordinate[] => {
     return corners;
 };
 
-const getCorners = (piece: PieceData): Coordinate[] => {
-    // the set of all coordinates that are:
-    // - part of the piece
-    // - don't have an adjacent tile above and below
-    // - don't have an adjacent tile to left and right
-
-    // part of the piece
-    let corners: Coordinate[] = piece;
-
-    // don't have a neighbor to left and right
-    corners = corners.filter((c) => {
-        let neighborLeft = coordPresent(piece, { x: c.x - 1, y: c.y });
-        let neighborRight = coordPresent(piece, { x: c.x + 1, y: c.y });
-
-        return !(neighborLeft && neighborRight);
-    });
-
-    // don't have a neighbor to the top and bottom
-    corners = corners.filter((c) => {
-        let neighborTop = coordPresent(piece, { x: c.x, y: c.y + 1 });
-        let neighborBottom = coordPresent(piece, { x: c.x, y: c.y - 1 });
-
-        return !(neighborTop && neighborBottom);
-    });
-
-    return corners;
-};
-
 const coordPresent = (coords: Coordinate[], check: Coordinate) => {
     for (const c of coords) {
         if (c.x === check.x && c.y === check.y) {
@@ -308,10 +283,12 @@ export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
 const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState): Move[] => {
     const moves: Move[] = [];
 
+    // go over each orientation
     for (let i = 0; i < orientationData[piece].length; i++) {
-        const orientation = orientationData[piece][i];
+        const orientationCorners = cornersData[piece][i];
 
-        for (const corner of getCorners(orientation)) {
+        // each corner of the orientation
+        for (const corner of orientationCorners) {
             // position of the (0,0) tile
             const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
             let placedPiece: PlacedPiece = {

@@ -228,6 +228,28 @@ var createOrientationDictPiece = (type) => {
   }
   return { orientationDict, orientations };
 };
+var coordPresent = (coords, check) => {
+  for (const c of coords) {
+    if (c.x === check.x && c.y === check.y) {
+      return true;
+    }
+  }
+  return false;
+};
+var getCorners = (piece) => {
+  let corners = piece;
+  corners = corners.filter((c) => {
+    let neighborLeft = coordPresent(piece, { x: c.x - 1, y: c.y });
+    let neighborRight = coordPresent(piece, { x: c.x + 1, y: c.y });
+    return !(neighborLeft && neighborRight);
+  });
+  corners = corners.filter((c) => {
+    let neighborTop = coordPresent(piece, { x: c.x, y: c.y + 1 });
+    let neighborBottom = coordPresent(piece, { x: c.x, y: c.y - 1 });
+    return !(neighborTop && neighborBottom);
+  });
+  return corners;
+};
 var normalize = (p) => {
   const boundingBox = getBoundingBox(p);
   return p.map((c) => ({ x: c.x - boundingBox.bottomLeft.x, y: c.y - boundingBox.bottomLeft.y }));
@@ -255,16 +277,22 @@ var pieceDataEqual = (piece1, piece2) => {
 var main = () => {
   const orientationData = [];
   const orientationDicts = [];
+  const corner = [];
   for (let pieceType = 0; pieceType < 21; pieceType++) {
     const { orientationDict, orientations } = createOrientationDictPiece(pieceType);
     orientationData.push(orientations);
     orientationDicts.push(orientationDict);
+    corner.push(orientations.map((o) => getCorners(o)));
   }
   fs.writeFile("./src/piece-orientations.json", JSON.stringify(orientationData), (err) => {
     if (err !== null)
       throw err;
   });
   fs.writeFile("./src/piece-rr.json", JSON.stringify(orientationDicts), (err) => {
+    if (err !== null)
+      throw err;
+  });
+  fs.writeFile("./src/piece-corners.json", JSON.stringify(corner), (err) => {
     if (err !== null)
       throw err;
   });
