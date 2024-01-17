@@ -7,17 +7,20 @@ export const findMove = async (
 ): Promise<Move | undefined> => {
     const startTime = Date.now();
 
-    let allMoves = getAllLegalMoves(board);
+    let moves = getAllLegalMoves(board);
     // last 50 moves
-    allMoves = allMoves.slice(Math.max(0, allMoves.length - 50));
-    const filteredMoves = allMoves.filter((m) => {
+    moves = moves.filter((m) => {
         if (board.pieces.length < 5 && getOrientationData(m.piece.pieceType, 0).length !== 5) {
             return false;
         }
 
         return true;
     });
-    const response = await workers.findMove(filteredMoves, board);
+    const filteredLength = moves.length;
+    moves = moves.slice(Math.max(0, moves.length - 50));
+
+    console.log(`#${moves.length} (from ${filteredLength})`);
+    const response = await workers.findMove(moves, board);
 
     const endTime = Date.now();
     console.log(`Took ${endTime - startTime}ms to evaluate positions. Bestmove ${response?.score}`);
