@@ -8,6 +8,32 @@
         <link rel="stylesheet" href="./src/style.css" />
     </head>
     <body>
+        <div id="popup-bg">
+            <div id="popup">
+                <h1>Play against bot</h1>
+                <div id="controls">
+                    <label for="start-pos">Start position</label>
+                    <select id="start-pos">
+                        <option value="middle">Middle</option>
+                        <option value="corner">Corner</option>
+                    </select>
+                    <label for="play-as">Play as</label>
+                    <select id="play-as">
+                        <option value="green">Green</option>
+                        <option value="red">Red</option>
+                    </select>
+                    <label for="difficulty">Difficulty</label>
+                    <select id="difficulty">
+                        <option value="hard">Hard</option>
+                    </select>
+                    <label for="threads">Threads</label>
+                    <select id="threads"></select>
+                </div>
+                <div id="button-container">
+                    <button id="play">Play</button>
+                </div>
+            </div>
+        </div>
         <div id="score">
             <div id="user-score-container">
                 <span class="name">User</span><span class="score">0</span>

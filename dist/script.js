@@ -616,9 +616,9 @@
 
   // src/workerManager.ts
   var WorkerManager = class {
-    constructor() {
+    constructor(numThreads) {
       this.workers = [];
-      this.numWorkers = navigator.hardwareConcurrency;
+      this.numWorkers = numThreads;
       for (let i = 0; i < this.numWorkers; i++) {
         this.workers.push(new Worker("./dist/worker.js"));
       }
@@ -666,9 +666,29 @@
 
   // src/script.ts
   var main = () => {
-    const boardState = new BoardState();
-    const workers = new WorkerManager();
-    const interactiveCanvas = new InteractiveCanvas(boardState, workers);
+    const popupContainer = document.getElementById("popup-bg");
+    const startPos2 = document.getElementById("start-pos");
+    const player = document.getElementById("play-as");
+    const difficulty = document.getElementById("difficulty");
+    const threads = document.getElementById("threads");
+    const submitButton = document.getElementById("play");
+    const browserNumThreads = navigator.hardwareConcurrency || 1;
+    for (let i = 1; i <= browserNumThreads; i++) {
+      const optionElement = document.createElement("option");
+      optionElement.value = `${i}`;
+      optionElement.innerText = `${i}`;
+      if (i === browserNumThreads) {
+        optionElement.selected = true;
+      }
+      threads.append(optionElement);
+    }
+    submitButton.addEventListener("click", () => {
+      const userNumThreads = parseInt(threads.value);
+      const boardState = new BoardState();
+      const workers = new WorkerManager(userNumThreads);
+      const interactiveCanvas = new InteractiveCanvas(boardState, workers);
+      popupContainer.style.display = "none";
+    });
   };
   main();
 })();

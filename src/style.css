@@ -6,6 +6,7 @@
 
 body {
     height: 100vh;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 #score {
@@ -61,4 +62,47 @@ body {
 
 #blocks-carousel canvas.hidden {
     display: none;
+}
+
+#popup-bg {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    display: grid;
+    place-items: center;
+}
+
+#popup {
+    border: 1px solid black;
+    border-radius: 2px;
+    padding: 20px 30px;
+}
+
+#popup h1 {
+    margin-bottom: 30px;
+}
+
+#popup #controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+#controls select {
+    padding: 5px;
+    background: white;
+    border: 1px solid black;
+}
+
+#button-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+#play {
+    background-color: #7df246;
+    border: none;
+    padding: 10px 20px;
 }

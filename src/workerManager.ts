@@ -14,10 +14,10 @@ export class WorkerManager {
     workers: Worker[];
     numWorkers: number;
 
-    constructor() {
+    constructor(numThreads: number) {
         this.workers = [];
 
-        this.numWorkers = navigator.hardwareConcurrency;
+        this.numWorkers = numThreads;
         for (let i = 0; i < this.numWorkers; i++) {
             this.workers.push(new Worker('./dist/worker.js'));
         }
