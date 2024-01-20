@@ -521,7 +521,29 @@
       }
     }
     initCarousel() {
-      const pieceOrder = Array(21).fill(0).map((_, i) => i);
+      const pieceOrder = [
+        20,
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        19,
+        11,
+        12,
+        13,
+        14,
+        15,
+        18,
+        3,
+        17,
+        16
+      ];
       for (const pieceType of pieceOrder) {
         const piece = getOrientationData(pieceType, 0);
         const pieceCanvas = this.carouselPiecePreview(piece);
