@@ -361,9 +361,9 @@
     return alpha;
   };
   var evaluate = (board) => {
-    const pAMobility = getAllLegalMoves(board).length / 20;
+    const pAMobility = getAllLegalMoves(board).length / 100;
     board.skipTurn();
-    const pBMobility = getAllLegalMoves(board).length / 20;
+    const pBMobility = getAllLegalMoves(board).length / 100;
     board.skipTurn();
     const evaluation = countPlayerScore(board.playerA) - countPlayerScore(board.playerB) + (pAMobility - pBMobility);
     const perspective = board.toMove === 0 ? 1 : -1;

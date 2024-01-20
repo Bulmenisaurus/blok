@@ -73,9 +73,9 @@ export const recursiveBoardSearchAlphaBeta = (
  *  - 0 if it is a tie.
  */
 const evaluate = (board: BoardState) => {
-    const pAMobility = getAllLegalMoves(board).length / 20;
+    const pAMobility = getAllLegalMoves(board).length / 100;
     board.skipTurn();
-    const pBMobility = getAllLegalMoves(board).length / 20;
+    const pBMobility = getAllLegalMoves(board).length / 100;
     board.skipTurn();
 
     const evaluation =
