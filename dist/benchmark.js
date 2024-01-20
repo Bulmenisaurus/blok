@@ -196,7 +196,7 @@ var getOrientationData = (pieceType, orientation) => {
   return orientationData[pieceType][orientation];
 };
 var BoardState = class {
-  constructor() {
+  constructor(startPosition) {
     this.pieces = [];
     this.playerA = {
       remainingPieces: /* @__PURE__ */ new Set()
@@ -211,6 +211,17 @@ var BoardState = class {
       this.playerB.remainingPieces.add(i);
     }
     this.toMove = 0;
+    if (startPosition === "middle") {
+      this.startPositions = [
+        { x: 4, y: 4 },
+        { x: 9, y: 9 }
+      ];
+    } else {
+      this.startPositions = [
+        { x: 0, y: 13 },
+        { x: 13, y: 0 }
+      ];
+    }
   }
   doMove(move) {
     this.pieces.push(move.piece);
@@ -299,32 +310,31 @@ var getLegalMovesFrom = (from, piece, state) => {
   }
   return moves.filter((p) => isMoveLegal(p, state));
 };
+var generateFirstMove = (board) => {
+  const myState = board.toMove === 0 ? board.playerA : board.playerB;
+  const startPos = board.startPositions[board.toMove];
+  const moves = [];
+  for (const piece of myState.remainingPieces) {
+    for (let i = 0; i < orientationData[piece].length; i++) {
+      const pieceTiles = orientationData[piece][i];
+      for (const tile of pieceTiles) {
+        const pieceMiddle = { x: startPos.x - tile.x, y: startPos.y - tile.y };
+        let placedPiece = {
+          location: pieceMiddle,
+          player: board.toMove,
+          pieceType: piece,
+          orientation: i
+        };
+        moves.push({ piece: placedPiece });
+      }
+    }
+  }
+  return moves.filter((p) => isMoveLegal(p, board));
+};
 var getAllLegalMoves = (board) => {
   const myPlacedPieces = board.pieces.filter((p) => p.player === board.toMove);
   if (myPlacedPieces.length === 0) {
-    if (board.toMove === 0) {
-      return [
-        {
-          piece: {
-            pieceType: 5,
-            location: { x: 4, y: 4 },
-            player: 0,
-            orientation: 0
-          }
-        }
-      ];
-    } else {
-      return [
-        {
-          piece: {
-            pieceType: 0,
-            location: { x: 9, y: 9 },
-            player: 1,
-            orientation: 0
-          }
-        }
-      ];
-    }
+    return generateFirstMove(board);
   }
   const myState = board.toMove === 0 ? board.playerA : board.playerB;
   const moves = [];

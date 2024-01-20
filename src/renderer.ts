@@ -13,8 +13,8 @@ export const render = (
     drawBackground(ctx);
 
     // starting positions (4,4) and (9, 9)
-    startPos(ctx, { x: 4, y: 4 });
-    startPos(ctx, { x: 9, y: 9 });
+    startPos(ctx, boardState.startPositions[0]);
+    startPos(ctx, boardState.startPositions[1]);
 
     for (const piece of boardState.pieces) {
         renderPiece(ctx, piece);

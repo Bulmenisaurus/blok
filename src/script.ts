@@ -1,4 +1,4 @@
-import { BoardState } from './movegen';
+import { BoardState, StartPosition } from './movegen';
 import { InteractiveCanvas } from './interactiveCanvas';
 import { WorkerManager } from './workerManager';
 
@@ -28,8 +28,9 @@ const main = () => {
 
     submitButton.addEventListener('click', () => {
         const userNumThreads = parseInt(threads.value);
+        const startPosition = startPos.value as StartPosition;
 
-        const boardState = new BoardState();
+        const boardState = new BoardState(startPosition);
         const workers = new WorkerManager(userNumThreads);
         const interactiveCanvas = new InteractiveCanvas(boardState, workers);
 
