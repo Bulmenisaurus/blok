@@ -3,7 +3,7 @@ import { BoardState, Move } from './movegen';
 import { WorkerMessage, WorkerResponse } from './workerManager';
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {
-    const board = new BoardState();
+    const board = new BoardState(e.data.startPos);
     for (const piece of e.data.boardStateMoves) {
         board.doMove({
             piece: piece,

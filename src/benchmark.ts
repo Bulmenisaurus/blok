@@ -25,7 +25,7 @@ const bench = (moves: Move[], name: string): number => {
 
     for (let i = 0; i < 5; i++) {
         const startTime = new Date();
-        const board = new BoardState();
+        const board = new BoardState('middle');
         for (const move of moves) {
             board.doMove(move);
         }

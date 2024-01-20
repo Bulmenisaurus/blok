@@ -193,6 +193,7 @@
         this.playerB.remainingPieces.add(i);
       }
       this.toMove = 0;
+      this.startPosName = startPosition;
       if (startPosition === "middle") {
         this.startPositions = [
           { x: 4, y: 4 },
@@ -690,7 +691,11 @@
           worker.onmessage = null;
         };
       });
-      const message = { boardStateMoves: board.pieces, searchMoves: task };
+      const message = {
+        boardStateMoves: board.pieces,
+        searchMoves: task,
+        startPos: board.startPosName
+      };
       worker.postMessage(message);
       return responsePromise;
     }

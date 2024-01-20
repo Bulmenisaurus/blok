@@ -189,6 +189,7 @@
         this.playerB.remainingPieces.add(i);
       }
       this.toMove = 0;
+      this.startPosName = startPosition;
       if (startPosition === "middle") {
         this.startPositions = [
           { x: 4, y: 4 },
@@ -377,7 +378,7 @@
 
   // src/worker.ts
   onmessage = (e) => {
-    const board = new BoardState();
+    const board = new BoardState(e.data.startPos);
     for (const piece of e.data.boardStateMoves) {
       board.doMove({
         piece

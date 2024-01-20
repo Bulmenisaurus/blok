@@ -1,4 +1,4 @@
-import { BoardState, Move, PlacedPiece } from './movegen';
+import { BoardState, Move, PlacedPiece, StartPosition } from './movegen';
 
 export type WorkerResponse = null | {
     move: Move;
@@ -6,6 +6,7 @@ export type WorkerResponse = null | {
 };
 
 export interface WorkerMessage {
+    startPos: StartPosition;
     boardStateMoves: PlacedPiece[];
     searchMoves: Move[];
 }
@@ -73,7 +74,11 @@ export class WorkerManager {
             };
         });
 
-        const message: WorkerMessage = { boardStateMoves: board.pieces, searchMoves: task };
+        const message: WorkerMessage = {
+            boardStateMoves: board.pieces,
+            searchMoves: task,
+            startPos: board.startPosName,
+        };
 
         worker.postMessage(message);
 

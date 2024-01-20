@@ -57,6 +57,7 @@ export class BoardState {
     playerABitBoard: BitBoard;
     playerBBitBoard: BitBoard;
 
+    startPosName: StartPosition;
     startPositions: [Coordinate, Coordinate];
 
     constructor(startPosition: StartPosition) {
@@ -80,6 +81,7 @@ export class BoardState {
 
         this.toMove = 0;
 
+        this.startPosName = startPosition;
         if (startPosition === 'middle') {
             this.startPositions = [
                 { x: 4, y: 4 },

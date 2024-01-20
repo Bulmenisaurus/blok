@@ -211,6 +211,7 @@ var BoardState = class {
       this.playerB.remainingPieces.add(i);
     }
     this.toMove = 0;
+    this.startPosName = startPosition;
     if (startPosition === "middle") {
       this.startPositions = [
         { x: 4, y: 4 },
@@ -376,7 +377,7 @@ var bench = (moves, name) => {
   const timing = [];
   for (let i = 0; i < 5; i++) {
     const startTime = /* @__PURE__ */ new Date();
-    const board = new BoardState();
+    const board = new BoardState("middle");
     for (const move of moves) {
       board.doMove(move);
     }
