@@ -453,7 +453,7 @@
 
   // src/interactiveCanvas.ts
   var InteractiveCanvas = class {
-    constructor(board, workers) {
+    constructor(board, workers, shouldPlaySound) {
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
       this.canvas = canvas;
@@ -477,6 +477,9 @@
         this.keyDown(e);
       });
       window.requestAnimationFrame(() => this.drawLoop());
+      if (shouldPlaySound) {
+        this.moveAlertSound = new Audio("./audio/bell.mp3");
+      }
     }
     mouseMove(e) {
       const canvasWidth = this.canvas.getBoundingClientRect().width;
@@ -508,6 +511,9 @@
       this.selectedPiece = null;
       this.selectedPieceRotation = 0;
       const botMove = findMove(this.board, this.workers).then((move2) => {
+        if (this.moveAlertSound) {
+          this.moveAlertSound.play();
+        }
         if (move2 === void 0) {
           console.log("no bot move");
           this.board.skipTurn();
@@ -710,6 +716,7 @@
     const player = document.getElementById("play-as");
     const difficulty = document.getElementById("difficulty");
     const threads = document.getElementById("threads");
+    const sound = document.getElementById("sound");
     const submitButton = document.getElementById("play");
     const browserNumThreads = navigator.hardwareConcurrency || 1;
     for (let i = 1; i <= browserNumThreads; i++) {
@@ -724,9 +731,10 @@
     submitButton.addEventListener("click", () => {
       const userNumThreads = parseInt(threads.value);
       const startPosition = startPos2.value;
+      const shouldPlaySound = sound.value === "on";
       const boardState = new BoardState(startPosition);
       const workers = new WorkerManager(userNumThreads);
-      const interactiveCanvas = new InteractiveCanvas(boardState, workers);
+      const interactiveCanvas = new InteractiveCanvas(boardState, workers, shouldPlaySound);
       popupContainer.style.display = "none";
     });
   };

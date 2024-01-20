@@ -26,7 +26,9 @@ export class InteractiveCanvas {
     selectedPieceRotation: number;
     selectedPieceFlipped: boolean;
     workers: WorkerManager;
-    constructor(board: BoardState, workers: WorkerManager) {
+    moveAlertSound: HTMLAudioElement | undefined;
+
+    constructor(board: BoardState, workers: WorkerManager, shouldPlaySound: boolean) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d')!;
 
@@ -56,6 +58,10 @@ export class InteractiveCanvas {
         });
 
         window.requestAnimationFrame(() => this.drawLoop());
+
+        if (shouldPlaySound) {
+            this.moveAlertSound = new Audio('./audio/bell.mp3');
+        }
     }
 
     mouseMove(e: MouseEvent) {
@@ -104,6 +110,10 @@ export class InteractiveCanvas {
         //     this.board.doMove(botMove[1]);
         // }
         const botMove = findMove(this.board, this.workers).then((move) => {
+            if (this.moveAlertSound) {
+                this.moveAlertSound.play();
+            }
+
             if (move === undefined) {
                 console.log('no bot move');
                 this.board.skipTurn();

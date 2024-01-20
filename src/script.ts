@@ -9,6 +9,7 @@ const main = () => {
     const player = document.getElementById('play-as') as HTMLSelectElement;
     const difficulty = document.getElementById('difficulty') as HTMLSelectElement;
     const threads = document.getElementById('threads') as HTMLSelectElement;
+    const sound = document.getElementById('sound') as HTMLInputElement;
 
     const submitButton = document.getElementById('play') as HTMLButtonElement;
 
@@ -29,10 +30,11 @@ const main = () => {
     submitButton.addEventListener('click', () => {
         const userNumThreads = parseInt(threads.value);
         const startPosition = startPos.value as StartPosition;
+        const shouldPlaySound = sound.value === 'on';
 
         const boardState = new BoardState(startPosition);
         const workers = new WorkerManager(userNumThreads);
-        const interactiveCanvas = new InteractiveCanvas(boardState, workers);
+        const interactiveCanvas = new InteractiveCanvas(boardState, workers, shouldPlaySound);
 
         popupContainer.style.display = 'none';
     });
