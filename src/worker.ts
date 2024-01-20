@@ -1,5 +1,6 @@
+import { BoardState } from './board';
 import { recursiveBoardSearchAlphaBeta } from './bot';
-import { BoardState, Move } from './movegen';
+import { Move } from './movegen';
 import { WorkerMessage, WorkerResponse } from './workerManager';
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {

@@ -1,6 +1,6 @@
+import { BoardState } from './board';
 import { findMove } from './bot';
 import {
-    BoardState,
     Move,
     PieceData,
     PieceType,

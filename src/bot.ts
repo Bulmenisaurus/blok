@@ -1,4 +1,5 @@
-import { BoardState, Move, PlayerState, getAllLegalMoves, getOrientationData } from './movegen';
+import { BoardState } from './board';
+import { Move, PlayerState, getAllLegalMoves, getOrientationData } from './movegen';
 import { WorkerManager } from './workerManager';
 
 export const findMove = async (

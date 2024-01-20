@@ -1,6 +1,7 @@
-import { BoardState, Move, getAllLegalMoves } from './movegen';
+import { Move, getAllLegalMoves } from './movegen';
 import * as fs from 'fs';
 import * as readline from 'readline';
+import { BoardState } from './board';
 
 const recursiveMoveGen = (board: BoardState, depth: number) => {
     if (depth <= 0) {

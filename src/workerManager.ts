@@ -1,4 +1,5 @@
-import { BoardState, Move, PlacedPiece, StartPosition } from './movegen';
+import { Move, PlacedPiece, StartPosition } from './movegen';
+import { BoardState } from './board';
 
 export type WorkerResponse = null | {
     move: Move;
