@@ -373,10 +373,15 @@
     });
     const filteredLength = moves.length;
     moves = moves.slice(Math.max(0, moves.length - 50));
-    console.log(`#${moves.length} (from ${filteredLength})`);
+    console.log(`searching ${moves.length} (from ${filteredLength} before slicing)`);
     const response = await workers.findMove(moves, board);
     const endTime = Date.now();
-    console.log(`Took ${endTime - startTime}ms to evaluate positions. Bestmove ${response?.score}`);
+    if (response === null) {
+      console.log(`Took ${endTime - startTime}ms to evaluate positions. No best move.`);
+    } else {
+      const score = Math.round(response.score * 100) / 100;
+      console.log(`Took ${endTime - startTime}ms to evaluate positions. Score: ${score}`);
+    }
     if (response === null) {
       return void 0;
     } else {
