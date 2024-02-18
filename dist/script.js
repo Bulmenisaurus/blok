@@ -472,6 +472,7 @@
       this.mousePosition = { x: 0, y: 0 };
       this.selectedPieceRotation = 0;
       this.selectedPieceFlipped = false;
+      this.legalMoves = getAllLegalMoves(board);
       this.canvas.addEventListener("mousemove", (e) => {
         this.mouseMove(e);
       });
@@ -510,12 +511,16 @@
           orientation
         }
       };
+      if (!this.isMoveLegal(move)) {
+        console.error("Illegal move");
+        return;
+      }
       this.board.doMove(move);
       this.updateCarouselVisibility();
       this.updateScore();
       this.selectedPiece = null;
       this.selectedPieceRotation = 0;
-      const botMove = findMove(this.board, this.workers).then((move2) => {
+      findMove(this.board, this.workers).then((move2) => {
         if (this.moveAlertSound) {
           this.moveAlertSound.play();
         }
@@ -526,6 +531,7 @@
           this.board.doMove(move2);
         }
         this.updateScore();
+        this.legalMoves = getAllLegalMoves(this.board);
       });
     }
     keyDown(e) {
@@ -657,6 +663,12 @@
       const { playerA, playerB } = this.score();
       userScore.innerText = playerA.toString();
       botScore.innerText = playerB.toString();
+    }
+    isMoveLegal(move) {
+      return !!this.legalMoves.find(
+        (legalMove) => move.piece.location.x === legalMove.piece.location.x && move.piece.location.y === legalMove.piece.location.y && move.piece.orientation === legalMove.piece.orientation
+      );
+      return true;
     }
   };
 
