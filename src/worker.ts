@@ -1,10 +1,10 @@
-import { BoardState } from './board';
-import { recursiveBoardSearchAlphaBeta } from './bot';
-import { Move } from './movegen';
+import { Board } from './board';
+import { recursiveBoardSearchAlphaBeta } from './minmax/bot';
+import { Move } from './movegen/movegen';
 import { WorkerMessage, WorkerResponse } from './workerManager';
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {
-    const board = new BoardState(e.data.startPos);
+    const board = new Board(e.data.startPos);
     for (const piece of e.data.boardStateMoves) {
         board.doMove({
             piece: piece,

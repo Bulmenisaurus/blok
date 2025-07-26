@@ -44,7 +44,7 @@ var setBitBoardValue = (bitBoard, c, value) => {
   }
 };
 
-// src/pieces.json
+// src/movegen/pieces.json
 var pieces_default = [
   [
     { x: 0, y: 0 },
@@ -177,92 +177,16 @@ var pieces_default = [
   ]
 ];
 
-// src/piece-orientations.json
+// src/movegen/piece-orientations.json
 var piece_orientations_default = [[[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 2 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 0, y: 1 }, { x: 0, y: 2 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -2, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -2, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 1, y: 0 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }, { x: 1, y: 0 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }, { x: -1, y: 0 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 1, y: 1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: -1, y: 0 }, { x: -2, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 1, y: -1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -2, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 1, y: -1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 0 }, { x: 0, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }, { x: -1, y: 0 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }]], [[{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 1, y: -1 }]], [[{ x: 0, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 0, y: 2 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: 2, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: -1 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: -1, y: 0 }, { x: -2, y: 0 }]]];
 
-// src/piece-corners.json
+// src/movegen/piece-corners.json
 var piece_corners_default = [[[{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -2 }], [{ x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -2 }], [{ x: 1, y: 0 }, { x: 1, y: -1 }, { x: -2, y: 0 }], [{ x: -1, y: 0 }, { x: -1, y: -1 }, { x: 2, y: 0 }], [{ x: 0, y: -1 }, { x: -1, y: -1 }, { x: 0, y: 2 }], [{ x: 0, y: -1 }, { x: 1, y: -1 }, { x: 0, y: 2 }], [{ x: -1, y: 0 }, { x: -1, y: 1 }, { x: 2, y: 0 }], [{ x: 1, y: 0 }, { x: 1, y: 1 }, { x: -2, y: 0 }]], [[{ x: 0, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -2 }], [{ x: 0, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -2 }], [{ x: 1, y: 0 }, { x: 0, y: 1 }, { x: -2, y: 0 }], [{ x: -1, y: 0 }, { x: 0, y: 1 }, { x: 2, y: 0 }], [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 2 }], [{ x: 0, y: -1 }, { x: -1, y: 0 }, { x: 0, y: 2 }], [{ x: -1, y: 0 }, { x: 0, y: -1 }, { x: 2, y: 0 }], [{ x: 1, y: 0 }, { x: 0, y: -1 }, { x: -2, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 2 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 2 }, { x: 1, y: 0 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -2 }, { x: 1, y: 0 }, { x: 1, y: 1 }], [{ x: 0, y: 0 }, { x: 0, y: -2 }, { x: -1, y: 0 }, { x: -1, y: 1 }], [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }]], [[{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 1, y: 0 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 1, y: 1 }]], [[{ x: 0, y: 0 }, { x: 0, y: 2 }, { x: 2, y: 0 }], [{ x: 0, y: 0 }, { x: 0, y: 2 }, { x: -2, y: 0 }], [{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 0, y: -2 }], [{ x: 0, y: 0 }, { x: -2, y: 0 }, { x: 0, y: -2 }]], [[{ x: 0, y: 1 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 1, y: 0 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 1, y: -1 }]], [[{ x: 0, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: 0 }]], [[{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -2 }], [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: -2, y: 0 }], [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: 2, y: 0 }], [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 2 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 1 }, { x: 1, y: 0 }, { x: 1, y: -1 }]], [[{ x: 0, y: 1 }, { x: 1, y: 1 }, { x: 1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 1 }, { x: -1, y: 1 }, { x: -1, y: 0 }, { x: 0, y: -1 }], [{ x: 1, y: 0 }, { x: 1, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }], [{ x: -1, y: 0 }, { x: -1, y: -1 }, { x: 0, y: -1 }, { x: 1, y: 0 }], [{ x: 0, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 0 }, { x: 0, y: 1 }], [{ x: 0, y: -1 }, { x: 1, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }], [{ x: -1, y: 0 }, { x: -1, y: 1 }, { x: 0, y: 1 }, { x: 1, y: 0 }], [{ x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }, { x: -1, y: 0 }]], [[{ x: -1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: 1, y: 1 }], [{ x: 1, y: 0 }, { x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }], [{ x: 0, y: 1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }], [{ x: 0, y: 1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }], [{ x: 0, y: -1 }, { x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }]], [[{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }, { x: 0, y: 1 }]], [[{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: -1 }], [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: -1, y: 1 }], [{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 1, y: 1 }], [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: 1, y: 1 }], [{ x: 0, y: -1 }, { x: 0, y: 1 }, { x: -1, y: 1 }]], [[{ x: -1, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }], [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: -1, y: 0 }], [{ x: 0, y: 1 }, { x: 0, y: -1 }, { x: 1, y: 0 }], [{ x: 1, y: 0 }, { x: -1, y: 0 }, { x: 0, y: 1 }]], [[{ x: 0, y: 0 }, { x: -1, y: 0 }, { x: 0, y: -1 }, { x: 1, y: -1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }, { x: 0, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 1, y: 0 }, { x: 1, y: -1 }]], [[{ x: 0, y: 0 }]], [[{ x: 0, y: 0 }, { x: 0, y: 1 }], [{ x: 0, y: 0 }, { x: 1, y: 0 }]], [[{ x: 0, y: 1 }, { x: 0, y: -1 }], [{ x: 1, y: 0 }, { x: -1, y: 0 }]], [[{ x: 0, y: -1 }, { x: 0, y: 2 }], [{ x: -1, y: 0 }, { x: 2, y: 0 }]], [[{ x: 0, y: 2 }, { x: 0, y: -2 }], [{ x: 2, y: 0 }, { x: -2, y: 0 }]]];
 
-// src/piece-corner-attachers.json
+// src/movegen/piece-corner-attachers.json
 var piece_corner_attachers_default = [[[{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }, { x: -3, y: -1 }, { x: -3, y: 1 }], [{ x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: -3, y: -1 }, { x: -3, y: 1 }]], [[{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: -3, y: -1 }, { x: -3, y: 1 }], [{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: -3, y: -1 }, { x: -3, y: 1 }]], [[{ x: 1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }], [{ x: -1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }], [{ x: -1, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }, { x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }], [{ x: 1, y: -1 }, { x: -3, y: -1 }, { x: -3, y: 1 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }], [{ x: -1, y: 1 }, { x: 1, y: -3 }, { x: -1, y: -3 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }], [{ x: 1, y: 1 }, { x: 1, y: -3 }, { x: -1, y: -3 }, { x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }], [{ x: 1, y: 1 }, { x: -3, y: -1 }, { x: -3, y: 1 }, { x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }], [{ x: -1, y: 1 }, { x: 3, y: 1 }, { x: 3, y: -1 }, { x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }]], [[{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: -2, y: -1 }, { x: -2, y: 1 }], [{ x: -1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }], [{ x: 1, y: 1 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: -2 }, { x: -1, y: -2 }]], [[{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: -1, y: -2 }, { x: 2, y: -2 }], [{ x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }, { x: 1, y: -2 }, { x: -2, y: -2 }], [{ x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }, { x: -2, y: 1 }, { x: -2, y: -2 }], [{ x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }, { x: 2, y: -1 }, { x: 2, y: 2 }]], [[{ x: -1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: -3, y: -1 }, { x: -3, y: 1 }], [{ x: -1, y: 1 }, { x: 3, y: 1 }, { x: 3, y: -1 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 1, y: 1 }, { x: -3, y: -1 }, { x: -3, y: 1 }, { x: 1, y: -3 }, { x: -1, y: -3 }]], [[{ x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }, { x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }], [{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }], [{ x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }], [{ x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }]], [[{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: -2, y: -1 }, { x: -2, y: 1 }]], [[{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: -3, y: -1 }, { x: -3, y: 1 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: 3 }, { x: -1, y: 3 }]], [[{ x: 1, y: 1 }, { x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }, { x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }], [{ x: -1, y: 1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }], [{ x: 1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }]], [[{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }], [{ x: 1, y: 2 }, { x: -2, y: 2 }, { x: -2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }], [{ x: 2, y: 1 }, { x: 2, y: -2 }, { x: -1, y: -2 }, { x: -2, y: -1 }, { x: -2, y: 1 }], [{ x: -2, y: 1 }, { x: -2, y: -2 }, { x: 1, y: -2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -2 }, { x: 2, y: -2 }, { x: 2, y: 1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -2, y: -1 }, { x: -2, y: 2 }, { x: 1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 2, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 2 }, { x: -2, y: -1 }, { x: -2, y: 1 }]], [[{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }], [{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }], [{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }], [{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }]], [[{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 2 }]], [[{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: -1 }, { x: 0, y: 2 }, { x: -2, y: 2 }], [{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }], [{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }], [{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: 1, y: 2 }, { x: -2, y: 0 }, { x: -2, y: 2 }]], [[{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -1, y: -2 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: -2, y: -1 }, { x: -2, y: 1 }], [{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -1, y: -2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: 1, y: 2 }, { x: -1, y: 2 }]], [[{ x: 1, y: 1 }, { x: -2, y: -1 }, { x: -2, y: 1 }, { x: -1, y: -2 }, { x: 2, y: 0 }, { x: 2, y: -2 }], [{ x: -1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: -2 }, { x: -2, y: -2 }, { x: -2, y: 0 }], [{ x: 1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: -2, y: 1 }, { x: 0, y: -2 }, { x: -2, y: -2 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -2 }, { x: 0, y: -2 }]], [[{ x: 1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }]], [[{ x: 1, y: 2 }, { x: -1, y: 2 }, { x: 1, y: -2 }, { x: -1, y: -2 }], [{ x: 2, y: 1 }, { x: 2, y: -1 }, { x: -2, y: -1 }, { x: -2, y: 1 }]], [[{ x: 1, y: -2 }, { x: -1, y: -2 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -2, y: -1 }, { x: -2, y: 1 }, { x: 3, y: 1 }, { x: 3, y: -1 }]], [[{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -3 }, { x: -1, y: -3 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -3, y: -1 }, { x: -3, y: 1 }]]];
 
-// src/board.ts
-var BoardState = class {
-  constructor(startPosition) {
-    this.pieces = [];
-    this.playerA = {
-      remainingPieces: /* @__PURE__ */ new Set()
-    };
-    this.playerABitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    this.playerB = {
-      remainingPieces: /* @__PURE__ */ new Set()
-    };
-    this.playerBBitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    for (let i = 0; i < pieceData.length; i++) {
-      this.playerA.remainingPieces.add(i);
-      this.playerB.remainingPieces.add(i);
-    }
-    this.toMove = 0;
-    this.startPosName = startPosition;
-    if (startPosition === "middle") {
-      this.startPositions = [
-        { x: 4, y: 4 },
-        { x: 9, y: 9 }
-      ];
-    } else {
-      this.startPositions = [
-        { x: 0, y: 13 },
-        { x: 13, y: 0 }
-      ];
-    }
-  }
-  doMove(move) {
-    this.pieces.push(move.piece);
-    if (move.piece.player === 0) {
-      this.playerA.remainingPieces.delete(move.piece.pieceType);
-    } else {
-      this.playerB.remainingPieces.delete(move.piece.pieceType);
-    }
-    const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
-    for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
-      const pieceCoord = {
-        x: tile.x + move.piece.location.x,
-        y: tile.y + move.piece.location.y
-      };
-      setBitBoardValue(bitBoard, pieceCoord, 1);
-    }
-    this.toMove = otherPlayer(this.toMove);
-  }
-  skipTurn() {
-    this.toMove = otherPlayer(this.toMove);
-  }
-  undoMove(move) {
-    const moveIndex = this.pieces.findIndex((p) => {
-      return p.location.x === move.piece.location.x && p.location.y === move.piece.location.y && move.piece.pieceType === p.pieceType;
-    });
-    if (moveIndex === -1) {
-      console.error("Err with move: ", move);
-      throw new Error(`could not identify piece`);
-    }
-    this.pieces.splice(moveIndex, 1);
-    if (move.piece.player === 0) {
-      this.playerA.remainingPieces.add(move.piece.pieceType);
-    } else {
-      this.playerB.remainingPieces.add(move.piece.pieceType);
-    }
-    const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
-    for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
-      const pieceCoord = {
-        x: tile.x + move.piece.location.x,
-        y: tile.y + move.piece.location.y
-      };
-      setBitBoardValue(bitBoard, pieceCoord, 0);
-    }
-    this.toMove = otherPlayer(this.toMove);
-  }
-};
-
-// src/movegen.ts
+// src/movegen/movegen.ts
 var otherPlayer = (player) => player === 1 ? 0 : 1;
 var pieceData = pieces_default;
 var orientationData = piece_orientations_default;
@@ -364,6 +288,84 @@ var getAllLegalMoves = (board) => {
 // src/benchmark.ts
 var fs = __toESM(require("fs"));
 var readline = __toESM(require("readline"));
+
+// src/board.ts
+var Board = class {
+  constructor(startPosition) {
+    this.pieces = [];
+    this.playerA = {
+      remainingPieces: /* @__PURE__ */ new Set()
+    };
+    this.playerABitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    this.playerB = {
+      remainingPieces: /* @__PURE__ */ new Set()
+    };
+    this.playerBBitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for (let i = 0; i < pieceData.length; i++) {
+      this.playerA.remainingPieces.add(i);
+      this.playerB.remainingPieces.add(i);
+    }
+    this.toMove = 0;
+    this.startPosName = startPosition;
+    if (startPosition === "middle") {
+      this.startPositions = [
+        { x: 4, y: 4 },
+        { x: 9, y: 9 }
+      ];
+    } else {
+      this.startPositions = [
+        { x: 0, y: 13 },
+        { x: 13, y: 0 }
+      ];
+    }
+  }
+  doMove(move) {
+    this.pieces.push(move.piece);
+    if (move.piece.player === 0) {
+      this.playerA.remainingPieces.delete(move.piece.pieceType);
+    } else {
+      this.playerB.remainingPieces.delete(move.piece.pieceType);
+    }
+    const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
+    for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
+      const pieceCoord = {
+        x: tile.x + move.piece.location.x,
+        y: tile.y + move.piece.location.y
+      };
+      setBitBoardValue(bitBoard, pieceCoord, 1);
+    }
+    this.toMove = otherPlayer(this.toMove);
+  }
+  skipTurn() {
+    this.toMove = otherPlayer(this.toMove);
+  }
+  undoMove(move) {
+    const moveIndex = this.pieces.findIndex((p) => {
+      return p.location.x === move.piece.location.x && p.location.y === move.piece.location.y && move.piece.pieceType === p.pieceType;
+    });
+    if (moveIndex === -1) {
+      console.error("Err with move: ", move);
+      throw new Error(`could not identify piece`);
+    }
+    this.pieces.splice(moveIndex, 1);
+    if (move.piece.player === 0) {
+      this.playerA.remainingPieces.add(move.piece.pieceType);
+    } else {
+      this.playerB.remainingPieces.add(move.piece.pieceType);
+    }
+    const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
+    for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
+      const pieceCoord = {
+        x: tile.x + move.piece.location.x,
+        y: tile.y + move.piece.location.y
+      };
+      setBitBoardValue(bitBoard, pieceCoord, 0);
+    }
+    this.toMove = otherPlayer(this.toMove);
+  }
+};
+
+// src/benchmark.ts
 var recursiveMoveGen = (board, depth) => {
   if (depth <= 0) {
     return;
@@ -379,7 +381,7 @@ var bench = (moves, name) => {
   const timing = [];
   for (let i = 0; i < 5; i++) {
     const startTime = /* @__PURE__ */ new Date();
-    const board = new BoardState("middle");
+    const board = new Board("middle");
     for (const move of moves) {
       board.doMove(move);
     }

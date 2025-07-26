@@ -7,7 +7,7 @@ import * as fs from 'fs';
  * Create a file saving each orientation
  */
 
-import { PieceData, PieceType, getBoundingBox, pieceData } from './movegen';
+import { PieceData, PieceType, getBoundingBox, pieceData } from './movegen/movegen';
 import { Coordinate } from './types';
 
 const rotateCoord90Deg = (c: Coordinate) => {

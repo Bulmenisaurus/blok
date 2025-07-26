@@ -1,17 +1,17 @@
-import { BoardState } from './board';
-import { Move, PlayerState, getAllLegalMoves, getOrientationData } from './movegen';
-import { WorkerManager } from './workerManager';
+import { Board } from '../board';
+import { Move, PlayerState, getAllLegalMoves, getOrientationData } from '../movegen/movegen';
+import { WorkerManager } from '../workerManager';
 
-export const findMove = async (
-    board: BoardState,
-    workers: WorkerManager
-): Promise<Move | undefined> => {
+export const findMove = async (board: Board, workers: WorkerManager): Promise<Move | undefined> => {
     const startTime = Date.now();
 
     let moves = getAllLegalMoves(board);
     // last 50 moves
     moves = moves.filter((m) => {
-        if (board.pieces.length < 5 && getOrientationData(m.piece.pieceType, 0).length !== 5) {
+        if (
+            board.state.pieces.length < 5 &&
+            getOrientationData(m.piece.pieceType, 0).length !== 5
+        ) {
             return false;
         }
 
@@ -41,7 +41,7 @@ export const findMove = async (
 
 export const recursiveBoardSearchAlphaBeta = (
     depth: number,
-    board: BoardState,
+    board: Board,
     alpha: number,
     beta: number
 ): number => {
@@ -78,17 +78,17 @@ export const recursiveBoardSearchAlphaBeta = (
  *  - negative if the player who's turn it is to move is doing worse
  *  - 0 if it is a tie.
  */
-const evaluate = (board: BoardState) => {
+const evaluate = (board: Board) => {
     const pAMobility = getAllLegalMoves(board).length / 100;
     board.skipTurn();
     const pBMobility = getAllLegalMoves(board).length / 100;
     board.skipTurn();
 
     const evaluation =
-        countPlayerScore(board.playerA) -
-        countPlayerScore(board.playerB) +
+        countPlayerScore(board.state.playerA) -
+        countPlayerScore(board.state.playerB) +
         (pAMobility - pBMobility);
-    const perspective = board.toMove === 0 ? 1 : -1;
+    const perspective = board.state.toMove === 0 ? 1 : -1;
 
     return evaluation * perspective;
 };

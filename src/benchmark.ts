@@ -1,9 +1,9 @@
-import { Move, getAllLegalMoves } from './movegen';
+import { Move, getAllLegalMoves } from './movegen/movegen';
 import * as fs from 'fs';
 import * as readline from 'readline';
-import { BoardState } from './board';
+import { Board } from './board';
 
-const recursiveMoveGen = (board: BoardState, depth: number) => {
+const recursiveMoveGen = (board: Board, depth: number) => {
     if (depth <= 0) {
         return;
     }
@@ -26,7 +26,7 @@ const bench = (moves: Move[], name: string): number => {
 
     for (let i = 0; i < 5; i++) {
         const startTime = new Date();
-        const board = new BoardState('middle');
+        const board = new Board('middle');
         for (const move of moves) {
             board.doMove(move);
         }

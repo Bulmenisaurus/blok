@@ -1,10 +1,11 @@
-import { BoardState, PlacedPiece, Player, getOrientationData } from './movegen';
+import { Board } from './board';
+import { PlacedPiece, Player, getOrientationData } from './movegen/movegen';
 import { Coordinate } from './types';
 
 export const render = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
-    boardState: BoardState,
+    boardState: Board,
     previewPiece?: PlacedPiece
 ) => {
     canvas.width = 500;
@@ -16,7 +17,7 @@ export const render = (
     startPos(ctx, boardState.startPositions[0]);
     startPos(ctx, boardState.startPositions[1]);
 
-    for (const piece of boardState.pieces) {
+    for (const piece of boardState.state.pieces) {
         renderPiece(ctx, piece);
     }
 

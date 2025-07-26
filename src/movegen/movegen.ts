@@ -1,12 +1,12 @@
-import { Coordinate } from './types';
-import { getBitBoardValue } from './bitboard';
+import { Coordinate } from '../types';
+import { getBitBoardValue } from '../bitboard';
 
 import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus/set.png
 import _orientationData from './piece-orientations.json';
 import _rrData from './piece-rr.json';
 import _cornersData from './piece-corners.json';
 import _cornerAttachersData from './piece-corner-attachers.json';
-import { BoardState } from './board';
+import { Board } from '../board';
 
 export type PieceData = Coordinate[];
 
@@ -53,7 +53,7 @@ export type StartPosition = 'middle' | 'corner';
 // - piece shares a tile with any other of my pieces or any of my opponents pieces
 // - pieces is adjacent to a tile with any of my other pieces
 // - all tiles of a piece end up in the board
-const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
+const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     const toMove = pseudoLegalMove.piece.player;
 
     for (const tileA of getOrientationData(
@@ -70,8 +70,8 @@ const isMoveLegal = (pseudoLegalMove: Move, state: BoardState): boolean => {
             return false;
         }
 
-        const myBitBoard = [state.playerABitBoard, state.playerBBitBoard][toMove];
-        const opponentBitBoard = [state.playerBBitBoard, state.playerABitBoard][toMove];
+        const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
+        const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
 
         const ownTileAdjacent =
             getBitBoardValue(myBitBoard, { x: absA.x + 1, y: absA.y }) ||
@@ -117,7 +117,7 @@ export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
     };
 };
 
-const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState): Move[] => {
+const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Move[] => {
     const moves: Move[] = [];
 
     // go over each orientation
@@ -130,7 +130,7 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState
             const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
             let placedPiece: PlacedPiece = {
                 location: pieceMiddle,
-                player: state.toMove,
+                player: state.state.toMove,
                 pieceType: piece,
                 orientation: i,
             };
@@ -142,9 +142,9 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: BoardState
     return moves.filter((p) => isMoveLegal(p, state));
 };
 
-const generateFirstMove = (board: BoardState): Move[] => {
-    const myState = board.toMove === 0 ? board.playerA : board.playerB;
-    const startPos = board.startPositions[board.toMove];
+const generateFirstMove = (board: Board): Move[] => {
+    const myState = board.state.toMove === 0 ? board.state.playerA : board.state.playerB;
+    const startPos = board.startPositions[board.state.toMove];
 
     const moves: Move[] = [];
     for (const piece of myState.remainingPieces) {
@@ -158,7 +158,7 @@ const generateFirstMove = (board: BoardState): Move[] => {
                 const pieceMiddle = { x: startPos.x - tile.x, y: startPos.y - tile.y };
                 let placedPiece: PlacedPiece = {
                     location: pieceMiddle,
-                    player: board.toMove,
+                    player: board.state.toMove,
                     pieceType: piece,
                     orientation: i,
                 };
@@ -170,7 +170,7 @@ const generateFirstMove = (board: BoardState): Move[] => {
     return moves.filter((p) => isMoveLegal(p, board));
 };
 
-export const getAllLegalMoves = (board: BoardState): Move[] => {
+export const getAllLegalMoves = (board: Board): Move[] => {
     //for all of my already placed pieces:
     //  - find their "corner attachers" (filter out occupied ones)
     //  - for each of the "corner attachers":
@@ -178,13 +178,13 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
     //          - for each orientation of that non-placed piece
     //              - check if that orientation of that piece in that location intersects or is adjacent to any other piece
 
-    const myPlacedPieces = board.pieces.filter((p) => p.player === board.toMove);
+    const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
 
     if (myPlacedPieces.length === 0) {
         return generateFirstMove(board);
     }
 
-    const myState = board.toMove === 0 ? board.playerA : board.playerB;
+    const myState = board.state.toMove === 0 ? board.state.playerA : board.state.playerB;
     const moves: Move[] = [];
 
     for (const placedPiece of myPlacedPieces) {
@@ -197,8 +197,8 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
 
             // corner attacher must be unoccupied for us to place something there
 
-            const playerATile = getBitBoardValue(board.playerABitBoard, cornerAbsolute);
-            const playerBTile = getBitBoardValue(board.playerBBitBoard, cornerAbsolute);
+            const playerATile = getBitBoardValue(board.state.playerABitBoard, cornerAbsolute);
+            const playerBTile = getBitBoardValue(board.state.playerBBitBoard, cornerAbsolute);
             if (playerATile || playerBTile) {
                 continue;
             }
@@ -211,4 +211,3 @@ export const getAllLegalMoves = (board: BoardState): Move[] => {
 
     return moves;
 };
-export { BoardState };

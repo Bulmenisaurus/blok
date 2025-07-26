@@ -8,12 +8,35 @@ import {
     getOrientationData,
     otherPlayer,
     pieceData,
-} from './movegen';
+} from './movegen/movegen';
 import { Coordinate } from './types';
 
-export class BoardState {
+const getStartPosition = (position: StartPosition): [Coordinate, Coordinate] => {
+    if (position === 'middle') {
+        return [
+            { x: 4, y: 4 },
+            { x: 9, y: 9 },
+        ];
+    } else {
+        return [
+            { x: 0, y: 13 },
+            { x: 13, y: 0 },
+        ];
+    }
+};
+
+/**
+ * The current state of the board.
+ * Pieces stores the coordinates and orientation of all the placed pieces.
+ *
+ */
+interface BoardState {
+    /** The pieces on the board, stored with coordinates, orientation and player */
     pieces: PlacedPiece[];
+    /** The player to move next */
     toMove: Player;
+
+    /** The remaining pieces for each player */
     playerA: PlayerState;
     playerB: PlayerState;
 
@@ -22,52 +45,59 @@ export class BoardState {
 
     startPosName: StartPosition;
     startPositions: [Coordinate, Coordinate];
+}
 
-    constructor(startPosition: StartPosition) {
-        this.pieces = [];
-        this.playerA = {
-            remainingPieces: new Set(),
+/**
+ * The initial uninitialized board state. Doesn't have the player bags.
+ */
+const defaultBoardState: BoardState = {
+    pieces: [],
+    toMove: 0,
+    playerA: { remainingPieces: new Set() },
+    playerB: { remainingPieces: new Set() },
+    playerABitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    startPosName: 'middle',
+    startPositions: [
+        { x: 4, y: 4 },
+        { x: 9, y: 9 },
+    ],
+};
+export class Board {
+    state: BoardState;
+    startPositions: [Coordinate, Coordinate];
+
+    constructor(startPosition: StartPosition, state?: BoardState) {
+        this.state = state || {
+            ...defaultBoardState,
+            startPosName: startPosition,
         };
-
-        this.playerABitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-        this.playerB = {
-            remainingPieces: new Set(),
-        };
-
-        this.playerBBitBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         for (let i = 0; i < pieceData.length; i++) {
-            this.playerA.remainingPieces.add(i);
-            this.playerB.remainingPieces.add(i);
+            this.state.playerA.remainingPieces.add(i);
+            this.state.playerB.remainingPieces.add(i);
         }
 
-        this.toMove = 0;
+        this.startPositions = getStartPosition(startPosition);
+    }
 
-        this.startPosName = startPosition;
-        if (startPosition === 'middle') {
-            this.startPositions = [
-                { x: 4, y: 4 },
-                { x: 9, y: 9 },
-            ];
-        } else {
-            this.startPositions = [
-                { x: 0, y: 13 },
-                { x: 13, y: 0 },
-            ];
-        }
+    copy() {
+        const state = window.structuredClone(this.state);
+        return new Board(state.startPosName, state);
     }
 
     doMove(move: Move) {
-        this.pieces.push(move.piece);
+        this.state.pieces.push(move.piece);
         if (move.piece.player === 0) {
-            this.playerA.remainingPieces.delete(move.piece.pieceType);
+            this.state.playerA.remainingPieces.delete(move.piece.pieceType);
         } else {
-            this.playerB.remainingPieces.delete(move.piece.pieceType);
+            this.state.playerB.remainingPieces.delete(move.piece.pieceType);
         }
 
         // update bitboard
-        const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
+        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][
+            move.piece.player
+        ];
 
         for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
             // mark coordinate as set
@@ -78,15 +108,18 @@ export class BoardState {
             setBitBoardValue(bitBoard, pieceCoord, 1);
         }
 
-        this.toMove = otherPlayer(this.toMove);
+        this.state.toMove = otherPlayer(this.state.toMove);
     }
 
+    /**
+     * Currently used when the player has no legal moves to transfer to the other player.
+     */
     skipTurn() {
-        this.toMove = otherPlayer(this.toMove);
+        this.state.toMove = otherPlayer(this.state.toMove);
     }
 
     undoMove(move: Move) {
-        const moveIndex = this.pieces.findIndex((p) => {
+        const moveIndex = this.state.pieces.findIndex((p) => {
             return (
                 p.location.x === move.piece.location.x &&
                 p.location.y === move.piece.location.y &&
@@ -99,19 +132,21 @@ export class BoardState {
             throw new Error(`could not identify piece`);
         }
 
-        this.pieces.splice(moveIndex, 1);
+        this.state.pieces.splice(moveIndex, 1);
 
         if (move.piece.player === 0) {
-            this.playerA.remainingPieces.add(move.piece.pieceType);
+            this.state.playerA.remainingPieces.add(move.piece.pieceType);
         } else {
-            this.playerB.remainingPieces.add(move.piece.pieceType);
+            this.state.playerB.remainingPieces.add(move.piece.pieceType);
         }
 
         // update bitboard
-        const bitBoard = [this.playerABitBoard, this.playerBBitBoard][move.piece.player];
+        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][
+            move.piece.player
+        ];
 
         for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
-            // mark coordinate as set
+            // mark coordinate as unset
             const pieceCoord = {
                 x: tile.x + move.piece.location.x,
                 y: tile.y + move.piece.location.y,
@@ -119,6 +154,6 @@ export class BoardState {
             setBitBoardValue(bitBoard, pieceCoord, 0);
         }
 
-        this.toMove = otherPlayer(this.toMove);
+        this.state.toMove = otherPlayer(this.state.toMove);
     }
 }

@@ -1,5 +1,5 @@
-import { BoardState } from './board';
-import { findMove } from './bot';
+import { Board } from './board';
+import { findMove } from './minmax/bot';
 import {
     Move,
     PieceData,
@@ -10,15 +10,20 @@ import {
     getBoundingBox,
     getOrientationData,
     pieceData,
-} from './movegen';
+} from './movegen/movegen';
 import { render } from './renderer';
 import { Coordinate } from './types';
 import { WorkerManager } from './workerManager';
 
+/**
+ * The interactive canvas for the game.
+ * Handles the user input and updates the board state.
+ * Also handles the rendering of the board and the pieces.
+ */
 export class InteractiveCanvas {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
-    board: BoardState;
+    board: Board;
     carousel: HTMLElement;
     carouselCanvases: { [key: number]: HTMLCanvasElement };
 
@@ -30,7 +35,7 @@ export class InteractiveCanvas {
     moveAlertSound: HTMLAudioElement | undefined;
     legalMoves: Move[];
 
-    constructor(board: BoardState, workers: WorkerManager, shouldPlaySound: boolean) {
+    constructor(board: Board, workers: WorkerManager, shouldPlaySound: boolean) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d')!;
 
@@ -178,7 +183,7 @@ export class InteractiveCanvas {
 
     updateCarouselVisibility() {
         for (const [pieceType, piece] of pieceData.entries()) {
-            if (this.board.playerA.remainingPieces.has(pieceType)) {
+            if (this.board.state.playerA.remainingPieces.has(pieceType)) {
                 this.carouselCanvases[pieceType].classList.remove('hidden');
             } else {
                 this.carouselCanvases[pieceType].classList.add('hidden');
@@ -259,11 +264,11 @@ export class InteractiveCanvas {
 
     score(): { playerA: number; playerB: number } {
         return {
-            playerA: this.board.pieces
+            playerA: this.board.state.pieces
                 .filter((p) => p.player === 0)
                 .map((p) => getOrientationData(p.pieceType, 0).length)
                 .reduce((a, b) => a + b, 0),
-            playerB: this.board.pieces
+            playerB: this.board.state.pieces
                 .filter((p) => p.player === 1)
                 .map((p) => getOrientationData(p.pieceType, 0).length)
                 .reduce((a, b) => a + b, 0),

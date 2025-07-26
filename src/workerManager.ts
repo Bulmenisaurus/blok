@@ -1,5 +1,5 @@
-import { Move, PlacedPiece, StartPosition } from './movegen';
-import { BoardState } from './board';
+import { Move, PlacedPiece, StartPosition } from './movegen/movegen';
+import { Board } from './board';
 
 export type WorkerResponse = null | {
     move: Move;
@@ -25,7 +25,7 @@ export class WorkerManager {
         }
     }
 
-    async findMove(moves: Move[], board: BoardState): Promise<WorkerResponse> {
+    async findMove(moves: Move[], board: Board): Promise<WorkerResponse> {
         const workerTasks: Move[][] = [];
 
         for (let i = 0; i < this.numWorkers; i++) {
@@ -64,7 +64,7 @@ export class WorkerManager {
         return bestResponse;
     }
 
-    workerRequest(worker: Worker, board: BoardState, task: Move[]): Promise<WorkerResponse> {
+    workerRequest(worker: Worker, board: Board, task: Move[]): Promise<WorkerResponse> {
         const responsePromise = new Promise<WorkerResponse>((resolve) => {
             worker.onmessage = (message: MessageEvent<WorkerResponse>) => {
                 resolve(message.data);

@@ -25,7 +25,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 // src/data.ts
 var fs = __toESM(require("fs"));
 
-// src/pieces.json
+// src/movegen/pieces.json
 var pieces_default = [
   [
     { x: 0, y: 0 },
@@ -158,7 +158,7 @@ var pieces_default = [
   ]
 ];
 
-// src/movegen.ts
+// src/movegen/movegen.ts
 var pieceData = pieces_default;
 var getBoundingBox = (pieceData2) => {
   let minX = pieceData2[0].x;
