@@ -311,7 +311,8 @@ export class InteractiveCanvas {
                     legalMove.piece !== null &&
                     move.piece.location.x === legalMove.piece.location.x &&
                     move.piece.location.y === legalMove.piece.location.y &&
-                    move.piece.orientation === legalMove.piece.orientation)
+                    move.piece.orientation === legalMove.piece.orientation &&
+                    move.piece.pieceType === legalMove.piece.pieceType)
         );
     }
 }

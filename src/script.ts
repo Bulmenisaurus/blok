@@ -21,7 +21,7 @@ const main = () => {
         optionElement.value = `${i}`;
         optionElement.innerText = `${i}`;
 
-        if (i === browserNumThreads) {
+        if (i === 1) {
             optionElement.selected = true;
         }
 
