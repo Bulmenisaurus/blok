@@ -221,8 +221,8 @@ export class InteractiveCanvas {
 
         for (const tile of piece) {
             const shiftedCoords: Coordinate = {
-                x: tile.x - pieceBoundingBox.bottomLeft.x,
-                y: tile.y - pieceBoundingBox.bottomLeft.y,
+                x: tile.x - pieceBoundingBox.topLeft.x,
+                y: tile.y - pieceBoundingBox.topLeft.y,
             };
 
             const canvasCoords: Coordinate = {

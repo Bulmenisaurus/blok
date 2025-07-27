@@ -172,8 +172,8 @@ var getBoundingBox = (pieceData2) => {
     maxY = Math.max(maxY, tile.y);
   }
   return {
-    bottomLeft: { x: minX, y: minY },
-    topRight: { x: maxX, y: maxY },
+    topLeft: { x: minX, y: minY },
+    bottomRight: { x: maxX, y: maxY },
     width: maxX - minX + 1,
     height: maxY - minY + 1
   };
@@ -285,7 +285,7 @@ var getCornerAttachers = (piece) => {
 };
 var normalize = (p) => {
   const boundingBox = getBoundingBox(p);
-  return p.map((c) => ({ x: c.x - boundingBox.bottomLeft.x, y: c.y - boundingBox.bottomLeft.y }));
+  return p.map((c) => ({ x: c.x - boundingBox.topLeft.x, y: c.y - boundingBox.topLeft.y }));
 };
 var pieceDataEqual = (piece1, piece2) => {
   let p1 = normalize(piece1);
@@ -313,8 +313,8 @@ var orientationToBitboard = (orientation) => {
     throw new Error("Orientation has negative coordinates, cannot convert to bitboard");
   }
   const size = getBoundingBox(orientation);
-  if (size.bottomLeft.x !== 0 || size.bottomLeft.y !== 0) {
-    throw new Error("Orientation has non-zero bottom-left corner, cannot convert to bitboard");
+  if (size.topLeft.x !== 0 || size.topLeft.y !== 0) {
+    throw new Error("Orientation has non-zero top-left corner, cannot convert to bitboard");
   }
   const bitboard = Array(size.height).fill(0);
   for (const c of orientation) {
@@ -333,49 +333,52 @@ var orientationDataToBitboardData = (orientationData) => {
   }
   return bitboardData;
 };
+var getShortBoundingBox = (piece) => {
+  const boundingbox = getBoundingBox(piece);
+  if (!(boundingbox.topLeft.x === 0 && boundingbox.topLeft.y === 0)) {
+    console.error(piece, boundingbox);
+    throw new Error(
+      `Expected top left to be (0,0), instead got ${JSON.stringify(boundingbox.topLeft)}`
+    );
+  }
+  return [boundingbox.bottomRight.x, boundingbox.bottomRight.y];
+};
 var main = () => {
   const orientationData = [];
   const orientationDicts = [];
   const corner = [];
   const cornerAttacher = [];
+  const shortBoundingBox = [];
   for (let pieceType = 0; pieceType < 21; pieceType++) {
     const { orientationDict, orientations } = createOrientationDictPiece(pieceType);
     orientationData.push(orientations);
     orientationDicts.push(orientationDict);
     corner.push(orientations.map((o) => getCorners(o)));
     cornerAttacher.push(orientations.map((o) => getCornerAttachers(o)));
+    shortBoundingBox.push(orientations.map((o) => getShortBoundingBox(o)));
   }
-  fs.writeFile(
-    "./src/movegen/piece-orientations.json",
-    JSON.stringify(orientationData),
-    (err) => {
-      if (err !== null)
-        throw err;
+  const handler = (err) => {
+    if (err !== null) {
+      console.error(err);
     }
-  );
+  };
+  fs.writeFile("./src/movegen/piece-orientations.json", JSON.stringify(orientationData), handler);
   fs.writeFile(
     "./src/movegen/piece-orientations-bitboard.json",
     JSON.stringify(orientationDataToBitboardData(orientationData)),
-    (err) => {
-      if (err !== null)
-        throw err;
-    }
+    handler
   );
-  fs.writeFile("./src/movegen/piece-rr.json", JSON.stringify(orientationDicts), (err) => {
-    if (err !== null)
-      throw err;
-  });
-  fs.writeFile("./src/movegen/piece-corners.json", JSON.stringify(corner), (err) => {
-    if (err !== null)
-      throw err;
-  });
+  fs.writeFile("./src/movegen/piece-rr.json", JSON.stringify(orientationDicts), handler);
+  fs.writeFile("./src/movegen/piece-corners.json", JSON.stringify(corner), handler);
   fs.writeFile(
     "./src/movegen/piece-corner-attachers.json",
     JSON.stringify(cornerAttacher),
-    (err) => {
-      if (err !== null)
-        throw err;
-    }
+    handler
+  );
+  fs.writeFile(
+    "./src/movegen/piece-short-bounding-box.json",
+    JSON.stringify(shortBoundingBox),
+    handler
   );
 };
 main();

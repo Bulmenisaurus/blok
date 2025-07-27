@@ -6,6 +6,7 @@ import _orientationData from './piece-orientations.json';
 import _orientationBitboardData from './piece-orientations-bitboard.json';
 import _rrData from './piece-rr.json';
 import _cornersData from './piece-corners.json';
+import _shortBoundingBoxData from './piece-short-bounding-box.json';
 import _cornerAttachersData from './piece-corner-attachers.json';
 import { Board } from '../board';
 
@@ -49,7 +50,10 @@ export const orientationBitBoarddata: Readonly<number[][][]> = _orientationBitbo
 export const RRData: Readonly<number[][]> = _rrData;
 export const cornersData: Readonly<PieceData[][]> = _cornersData;
 export const cornerAttachersData: Readonly<PieceData[][]> = _cornerAttachersData;
-
+export const shortBoundingBoxData: Readonly<[number, number][][]> = _shortBoundingBoxData as [
+    number,
+    number,
+][][];
 export const getOrientationData = (pieceType: PieceType, orientation: number) => {
     return orientationData[pieceType][orientation];
 };
@@ -58,8 +62,8 @@ export type StartPosition = 'middle' | 'corner';
 
 const translateBoundingBox = (c: Coordinate, bb: BoundingBox) => {
     return {
-        bottomLeft: { x: bb.bottomLeft.x + c.x, y: bb.bottomLeft.y + c.y },
-        topRight: { x: bb.topRight.x + c.x, y: bb.topRight.y + c.y },
+        topLeft: { x: bb.topLeft.x + c.x, y: bb.topLeft.y + c.y },
+        bottomRight: { x: bb.bottomRight.x + c.x, y: bb.bottomRight.y + c.y },
     };
 };
 
@@ -69,61 +73,10 @@ const coordinateInBounds = (c: Coordinate) => {
 
 const isInBounds = (pieceCoordinate: Coordinate, boundingBox: BoundingBox) => {
     const translated = translateBoundingBox(pieceCoordinate, boundingBox);
-    return coordinateInBounds(translated.bottomLeft) && coordinateInBounds(translated.topRight);
+    return coordinateInBounds(translated.topLeft) && coordinateInBounds(translated.bottomRight);
 };
 
-// check if a pseudo-legal move is actually legal
-// - piece shares a tile with any other of my pieces or any of my opponents pieces
-// - pieces is adjacent to a tile with any of my other pieces
-// - all tiles of a piece end up in the board
-const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
-    if (pseudoLegalMove.piece === null) {
-        return true;
-    }
-
-    const toMove = pseudoLegalMove.piece.player;
-
-    // check if the move is in bounds
-    // it is in bounds iff the bounding box is also in bounds
-    const location = pseudoLegalMove.piece.location;
-    const boundingBox = getBoundingBox(
-        getOrientationData(pseudoLegalMove.piece.pieceType, pseudoLegalMove.piece.orientation)
-    );
-    if (!isInBounds(location, boundingBox)) {
-        return false;
-    }
-
-    for (const tileA of getOrientationData(
-        pseudoLegalMove.piece.pieceType,
-        pseudoLegalMove.piece.orientation
-    )) {
-        const absA = {
-            x: pseudoLegalMove.piece.location.x + tileA.x,
-            y: pseudoLegalMove.piece.location.y + tileA.y,
-        };
-
-        const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
-        const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
-
-        const ownTileAdjacent =
-            getBitBoardValue(myBitBoard, { x: absA.x + 1, y: absA.y }) ||
-            getBitBoardValue(myBitBoard, { x: absA.x - 1, y: absA.y }) ||
-            getBitBoardValue(myBitBoard, { x: absA.x, y: absA.y + 1 }) ||
-            getBitBoardValue(myBitBoard, { x: absA.x, y: absA.y - 1 });
-
-        const ownTileIntersect = getBitBoardValue(myBitBoard, { x: absA.x, y: absA.y });
-        const opponentIntersect = getBitBoardValue(opponentBitBoard, { x: absA.x, y: absA.y });
-
-        if (ownTileAdjacent || ownTileIntersect || opponentIntersect) {
-            return false;
-        }
-    }
-
-    return true;
-};
-
-// Should perform the same check as isMoveLegal, but using the bitboards
-const isMoveLegalBitboard = (pseudoLegalMove: Move, state: Board): boolean => {
+const isMoveLegalA = (pseudoLegalMove: Move, state: Board): boolean => {
     if (pseudoLegalMove.piece === null) {
         return true;
     }
@@ -187,11 +140,79 @@ const isMoveLegalBitboard = (pseudoLegalMove: Move, state: Board): boolean => {
     return true;
 };
 
+// Should perform the same check as isMoveLegal, but using the bitboards
+const isMoveLegalB = (pseudoLegalMove: Move, state: Board): boolean => {
+    if (pseudoLegalMove.piece === null) {
+        return true;
+    }
+
+    const toMove = pseudoLegalMove.piece.player;
+    const location = pseudoLegalMove.piece.location;
+
+    const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
+    const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
+
+    const shortBoundingBox =
+        shortBoundingBoxData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+    const bottomRightBB = {
+        x: location.x + shortBoundingBox[0],
+        y: location.y + shortBoundingBox[1],
+    };
+    if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
+        return false;
+    }
+    // this is an array of numbers, representing the piece
+    // for example, [1,1,1,3] corresponds to
+    // +------
+    // |x
+    // |x
+    // |x
+    // |xx
+    // i.e. the L piece
+    const pieceBitboard =
+        orientationBitBoarddata[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+
+    // it's easier to check the opponent bitboards first: check if there is no intersection
+    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
+        // translate the row right by the x coordinate of the piece
+        const bitBoardRow = pieceBitboard[bitboardY] << location.x;
+        // now compare it with the actual bitboard
+        const gameRow = opponentBitBoard[bitboardY + location.y];
+        if (bitBoardRow & gameRow) {
+            return false;
+        }
+    }
+
+    // check if there is any intersection with my bitboard
+    // for this we also need to do a "halo" - checking 4 tiles around each piece
+    // thus for each row, we need to add a couple more options: the row, the rows above and below it, and the row shifted left and right
+    for (let bitboardY = -1; bitboardY < pieceBitboard.length + 1; bitboardY++) {
+        const rowAbove = bitboardY - 1 >= 0 ? pieceBitboard[bitboardY - 1] << location.x : 0;
+        const rowBelow =
+            bitboardY + 1 < pieceBitboard.length ? pieceBitboard[bitboardY + 1] << location.x : 0;
+        const rowCurrent =
+            bitboardY >= 0 && bitboardY < pieceBitboard.length
+                ? pieceBitboard[bitboardY] << location.x
+                : 0;
+        const rowLeftRight = (rowCurrent << 1) | (rowCurrent >> 1);
+
+        // the total tiles we need to check for this row - all the adjacent ones
+        const halo = rowAbove | rowBelow | rowCurrent | rowLeftRight;
+
+        const gameRow = myBitBoard[bitboardY + location.y];
+        if (halo & gameRow) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
 interface BoundingBox {
     width: number;
     height: number;
-    bottomLeft: Coordinate;
-    topRight: Coordinate;
+    topLeft: Coordinate;
+    bottomRight: Coordinate;
 }
 export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
     let minX = pieceData[0].x;
@@ -207,8 +228,8 @@ export const getBoundingBox = (pieceData: PieceData): BoundingBox => {
     }
 
     return {
-        bottomLeft: { x: minX, y: minY },
-        topRight: { x: maxX, y: maxY },
+        topLeft: { x: minX, y: minY },
+        bottomRight: { x: maxX, y: maxY },
         width: maxX - minX + 1,
         height: maxY - minY + 1,
     };
@@ -240,18 +261,18 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Mo
     }
 
     // return moves.filter((p) => {
-    //     const l1 = isMoveLegal(p, state);
-    //     const l2 = isMoveLegalBitboard(p, state);
+    //     const l1 = isMoveLegalA(p, state);
+    //     const l2 = isMoveLegalB(p, state);
     //     if (l1 !== l2) {
     //         debugger;
     //         console.error('moves disagree');
 
-    //         isMoveLegal(p, state);
-    //         isMoveLegalBitboard(p, state);
+    //         isMoveLegalA(p, state);
+    //         isMoveLegalB(p, state);
     //     }
     //     return l1;
     // });
-    return moves.filter((p) => isMoveLegal(p, state));
+    return moves.filter((p) => isMoveLegalB(p, state));
 };
 
 const generateFirstMove = (board: Board): Move[] => {
@@ -286,7 +307,7 @@ const generateFirstMove = (board: Board): Move[] => {
             }
         }
     }
-    return moves.filter((p) => isMoveLegal(p, board));
+    return moves.filter((p) => isMoveLegalA(p, board));
 };
 
 export const getAllLegalMoves = (board: Board): Move[] => {
