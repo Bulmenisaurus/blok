@@ -197,6 +197,10 @@ export const getAllLegalMoves = (board: Board): Move[] => {
     //          - for each orientation of that non-placed piece
     //              - check if that orientation of that piece in that location intersects or is adjacent to any other piece
 
+    if (board.gameOver()) {
+        return [];
+    }
+
     const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
 
     if (myPlacedPieces.length === 0) {

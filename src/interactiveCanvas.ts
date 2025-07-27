@@ -300,6 +300,15 @@ export class InteractiveCanvas {
 
         userScore.innerText = playerA.toString();
         botScore.innerText = playerB.toString();
+
+        if (this.board.gameOver()) {
+            const winner = this.board.winner();
+            if (winner === 'draw') {
+                alert('Game is a draw');
+            } else {
+                alert(`Player ${winner} wins!`);
+            }
+        }
     }
 
     isMoveLegal(move: Move): boolean {

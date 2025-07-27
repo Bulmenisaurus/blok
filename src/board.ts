@@ -73,7 +73,7 @@ export class Board {
 
     constructor(startPosition: StartPosition, state?: BoardState) {
         this.state = state || {
-            ...defaultBoardState,
+            ...structuredClone(defaultBoardState),
             startPosName: startPosition,
         };
 
@@ -83,6 +83,15 @@ export class Board {
         }
 
         this.startPositions = getStartPosition(startPosition);
+    }
+
+    reset() {
+        this.state = structuredClone(defaultBoardState);
+        for (let i = 0; i < pieceData.length; i++) {
+            this.state.playerA.remainingPieces.add(i);
+            this.state.playerB.remainingPieces.add(i);
+        }
+        // keep this.startpositions the same (it is unlikely we will change the start midway through a game)
     }
 
     gameOver(): boolean {
