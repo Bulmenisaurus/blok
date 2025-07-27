@@ -6,11 +6,12 @@ export const findMove = async (board: Board, workers: WorkerManager): Promise<Mo
     const startTime = Date.now();
 
     let moves = getAllLegalMoves(board);
+    return moves[Math.floor(Math.random() * moves.length)];
     // last 50 moves
     moves = moves.filter((m) => {
         if (
-            board.state.pieces.length < 5 &&
-            getOrientationData(m.piece.pieceType, 0).length !== 5
+            m.piece === null ||
+            (board.state.pieces.length < 5 && getOrientationData(m.piece.pieceType, 0).length !== 5)
         ) {
             return false;
         }

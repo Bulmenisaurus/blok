@@ -40,21 +40,21 @@ const main = () => {
         popupContainer.style.display = 'none';
 
         // debug
-        const startTime = performance.now();
-        for (let i = 0; i < 1000; i++) {
-            while (true) {
-                const legalMoves = getAllLegalMoves(boardState);
-                if (legalMoves.length === 0) {
-                    break;
-                }
-                const randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
-                boardState.doMove(randomMove);
-                interactiveCanvas.updateCarouselVisibility();
-                interactiveCanvas.updateScore();
-            }
-        }
-        const endTime = performance.now();
-        console.log(`Time taken: ${endTime - startTime} milliseconds`);
+        // const startTime = performance.now();
+        // for (let i = 0; i < 1000; i++) {
+        //     while (true) {
+        //         const legalMoves = getAllLegalMoves(boardState);
+        //         if (legalMoves.length === 0) {
+        //             break;
+        //         }
+        //         const randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
+        //         boardState.doMove(randomMove);
+        //         interactiveCanvas.updateCarouselVisibility();
+        //         interactiveCanvas.updateScore();
+        //     }
+        // }
+        // const endTime = performance.now();
+        // console.log(`Time taken: ${endTime - startTime} milliseconds`);
     });
 
     // debugger;

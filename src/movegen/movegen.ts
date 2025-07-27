@@ -27,8 +27,13 @@ export interface PlayerState {
     remainingPieces: Set<PieceType>;
 }
 
+/**
+ * A move is either a placement of a piece or a transfer of the turn to the other player.
+ */
 export interface Move {
-    piece: PlacedPiece;
+    piece: PlacedPiece | null;
+    /** The number of null moves played in a row before this move, used to keep track in case it is undone */
+    previousNullMoveCounter: number;
 }
 
 export interface Permutation {
@@ -54,6 +59,10 @@ export type StartPosition = 'middle' | 'corner';
 // - pieces is adjacent to a tile with any of my other pieces
 // - all tiles of a piece end up in the board
 const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
+    if (pseudoLegalMove.piece === null) {
+        return true;
+    }
+
     const toMove = pseudoLegalMove.piece.player;
 
     for (const tileA of getOrientationData(
@@ -135,7 +144,10 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Mo
                 orientation: i,
             };
 
-            moves.push({ piece: placedPiece });
+            moves.push({
+                piece: placedPiece,
+                previousNullMoveCounter: state.state.nullMoveCounter,
+            });
         }
     }
 
@@ -163,7 +175,14 @@ const generateFirstMove = (board: Board): Move[] => {
                     orientation: i,
                 };
 
-                moves.push({ piece: placedPiece });
+                if (board.state.nullMoveCounter !== 0) {
+                    throw new Error('Null move counter is not 0 at the beginning of the game?');
+                }
+
+                moves.push({
+                    piece: placedPiece,
+                    previousNullMoveCounter: board.state.nullMoveCounter,
+                });
             }
         }
     }
@@ -207,6 +226,10 @@ export const getAllLegalMoves = (board: Board): Move[] => {
                 moves.push(...getLegalMovesFrom(cornerAbsolute, unplacedPiece, board));
             }
         }
+    }
+
+    if (moves.length === 0) {
+        moves.push({ piece: null, previousNullMoveCounter: board.state.nullMoveCounter });
     }
 
     return moves;

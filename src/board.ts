@@ -45,6 +45,9 @@ interface BoardState {
 
     startPosName: StartPosition;
     startPositions: [Coordinate, Coordinate];
+
+    /** The number of null moves played in a row */
+    nullMoveCounter: number;
 }
 
 /**
@@ -62,6 +65,7 @@ const defaultBoardState: BoardState = {
         { x: 4, y: 4 },
         { x: 9, y: 9 },
     ],
+    nullMoveCounter: 0,
 };
 export class Board {
     state: BoardState;
@@ -81,34 +85,74 @@ export class Board {
         this.startPositions = getStartPosition(startPosition);
     }
 
+    gameOver(): boolean {
+        return this.state.nullMoveCounter >= 2;
+    }
+
+    score(): { playerA: number; playerB: number } {
+        return {
+            playerA: this.state.pieces
+                .filter((p) => p.player === 0)
+                .map((p) => getOrientationData(p.pieceType, 0).length)
+                .reduce((a, b) => a + b, 0),
+            playerB: this.state.pieces
+                .filter((p) => p.player === 1)
+                .map((p) => getOrientationData(p.pieceType, 0).length)
+                .reduce((a, b) => a + b, 0),
+        };
+    }
+
+    winner(): Player | 'draw' | null {
+        if (!this.gameOver()) {
+            return null;
+        }
+
+        const { playerA, playerB } = this.score();
+        if (playerA > playerB) {
+            return 0;
+        } else if (playerB > playerA) {
+            return 1;
+        } else {
+            return 'draw';
+        }
+    }
+
     copy() {
         const state = window.structuredClone(this.state);
         return new Board(state.startPosName, state);
     }
 
     doMove(move: Move) {
-        this.state.pieces.push(move.piece);
-        if (move.piece.player === 0) {
-            this.state.playerA.remainingPieces.delete(move.piece.pieceType);
+        const piece = move.piece;
+        if (piece === null) {
+            this.state.nullMoveCounter++;
+            this.skipTurn();
+            return;
+        }
+
+        // if the move we're doing is not a null move, reset the null move counter
+        this.state.nullMoveCounter = 0;
+
+        this.state.pieces.push(piece);
+        if (piece.player === 0) {
+            this.state.playerA.remainingPieces.delete(piece.pieceType);
         } else {
-            this.state.playerB.remainingPieces.delete(move.piece.pieceType);
+            this.state.playerB.remainingPieces.delete(piece.pieceType);
         }
 
         // update bitboard
-        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][
-            move.piece.player
-        ];
+        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][piece.player];
 
-        for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
+        for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
             // mark coordinate as set
             const pieceCoord = {
-                x: tile.x + move.piece.location.x,
-                y: tile.y + move.piece.location.y,
+                x: tile.x + piece.location.x,
+                y: tile.y + piece.location.y,
             };
             setBitBoardValue(bitBoard, pieceCoord, 1);
         }
 
-        this.state.toMove = otherPlayer(this.state.toMove);
+        this.skipTurn();
     }
 
     /**
@@ -119,11 +163,19 @@ export class Board {
     }
 
     undoMove(move: Move) {
+        const piece = move.piece;
+        this.state.nullMoveCounter = move.previousNullMoveCounter;
+
+        if (piece === null) {
+            this.skipTurn();
+            return;
+        }
+
         const moveIndex = this.state.pieces.findIndex((p) => {
             return (
-                p.location.x === move.piece.location.x &&
-                p.location.y === move.piece.location.y &&
-                move.piece.pieceType === p.pieceType // just in case
+                p.location.x === piece.location.x &&
+                p.location.y === piece.location.y &&
+                piece.pieceType === p.pieceType // just in case
             );
         });
 
@@ -134,26 +186,24 @@ export class Board {
 
         this.state.pieces.splice(moveIndex, 1);
 
-        if (move.piece.player === 0) {
-            this.state.playerA.remainingPieces.add(move.piece.pieceType);
+        if (piece.player === 0) {
+            this.state.playerA.remainingPieces.add(piece.pieceType);
         } else {
-            this.state.playerB.remainingPieces.add(move.piece.pieceType);
+            this.state.playerB.remainingPieces.add(piece.pieceType);
         }
 
         // update bitboard
-        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][
-            move.piece.player
-        ];
+        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][piece.player];
 
-        for (const tile of getOrientationData(move.piece.pieceType, move.piece.orientation)) {
+        for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
             // mark coordinate as unset
             const pieceCoord = {
-                x: tile.x + move.piece.location.x,
-                y: tile.y + move.piece.location.y,
+                x: tile.x + piece.location.x,
+                y: tile.y + piece.location.y,
             };
             setBitBoardValue(bitBoard, pieceCoord, 0);
         }
 
-        this.state.toMove = otherPlayer(this.state.toMove);
+        this.skipTurn();
     }
 }

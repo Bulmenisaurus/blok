@@ -71,6 +71,22 @@ export class InteractiveCanvas {
         if (shouldPlaySound) {
             this.moveAlertSound = new Audio('./audio/bell.mp3');
         }
+
+        const skipButton = document.getElementById('skip-button')!;
+        skipButton.addEventListener('click', () => {
+            const skipMove: Move = {
+                piece: null,
+                previousNullMoveCounter: this.board.state.nullMoveCounter,
+            };
+            if (!this.isMoveLegal(skipMove)) {
+                console.error('Illegal skip move');
+                return;
+            }
+
+            this.board.doMove(skipMove);
+            this.updateScore();
+            this.legalMoves = getAllLegalMoves(this.board);
+        });
     }
 
     mouseMove(e: MouseEvent) {
@@ -103,6 +119,7 @@ export class InteractiveCanvas {
                 player: 0,
                 orientation,
             },
+            previousNullMoveCounter: this.board.state.nullMoveCounter,
         };
 
         if (!this.isMoveLegal(move)) {
@@ -286,12 +303,15 @@ export class InteractiveCanvas {
     }
 
     isMoveLegal(move: Move): boolean {
+        // check if either we can skip or we can place that piece
         return !!this.legalMoves.find(
             (legalMove) =>
-                move.piece.location.x === legalMove.piece.location.x &&
-                move.piece.location.y === legalMove.piece.location.y &&
-                move.piece.orientation === legalMove.piece.orientation
+                (move.piece === null && legalMove.piece === null) ||
+                (move.piece !== null &&
+                    legalMove.piece !== null &&
+                    move.piece.location.x === legalMove.piece.location.x &&
+                    move.piece.location.y === legalMove.piece.location.y &&
+                    move.piece.orientation === legalMove.piece.orientation)
         );
-        return true;
     }
 }
