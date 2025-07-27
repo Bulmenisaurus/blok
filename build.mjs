@@ -16,7 +16,7 @@ if (watch) {
 }
 
 const nodeBuild = await esbuild.context({
-    entryPoints: ['src/benchmark.ts', 'src/data.ts'],
+    entryPoints: ['src/benchmark.ts', 'src/movegen/data.ts'],
     bundle: true,
     outdir: 'dist',
     platform: 'node',

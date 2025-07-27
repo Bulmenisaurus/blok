@@ -22,31 +22,31 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// src/data.ts
+// src/movegen/data.ts
 var fs = __toESM(require("fs"));
 
 // src/movegen/pieces.json
 var pieces_default = [
   [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: 1, y: 1 },
-    { x: 0, y: -1 },
-    { x: 0, y: -2 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: -1, y: 0 },
-    { x: 0, y: -1 },
-    { x: 0, y: -2 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
     { x: 0, y: 2 },
-    { x: -1, y: 0 },
-    { x: -1, y: -1 }
+    { x: 0, y: 3 },
+    { x: 1, y: 3 },
+    { x: 0, y: 1 },
+    { x: 0, y: 0 }
+  ],
+  [
+    { x: 1, y: 2 },
+    { x: 1, y: 3 },
+    { x: 0, y: 2 },
+    { x: 1, y: 1 },
+    { x: 1, y: 0 }
+  ],
+  [
+    { x: 1, y: 1 },
+    { x: 1, y: 2 },
+    { x: 1, y: 3 },
+    { x: 0, y: 1 },
+    { x: 0, y: 0 }
   ],
   [
     { x: 0, y: 0 },
@@ -54,11 +54,11 @@ var pieces_default = [
     { x: 1, y: 0 }
   ],
   [
-    { x: 0, y: 0 },
     { x: 0, y: 1 },
-    { x: 1, y: 1 },
-    { x: 0, y: -1 },
-    { x: 1, y: -1 }
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+    { x: 0, y: 0 },
+    { x: 1, y: 0 }
   ],
   [
     { x: 0, y: 0 },
@@ -68,46 +68,46 @@ var pieces_default = [
     { x: 2, y: 0 }
   ],
   [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: -1, y: 1 },
-    { x: 0, y: -1 },
-    { x: 1, y: -1 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: 1, y: 0 },
-    { x: 0, y: -1 },
-    { x: -1, y: 0 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 1, y: 0 },
-    { x: 0, y: -1 },
-    { x: 0, y: -2 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: -1, y: 1 },
-    { x: 0, y: -1 },
-    { x: 1, y: -1 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
     { x: 1, y: 1 },
+    { x: 1, y: 2 },
+    { x: 0, y: 2 },
     { x: 1, y: 0 },
-    { x: 0, y: -1 }
+    { x: 2, y: 0 }
   ],
   [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 0, y: -1 },
+    { x: 1, y: 1 },
+    { x: 1, y: 2 },
+    { x: 2, y: 1 },
+    { x: 1, y: 0 },
+    { x: 0, y: 1 }
+  ],
+  [
+    { x: 1, y: 2 },
+    { x: 0, y: 2 },
+    { x: 2, y: 2 },
+    { x: 1, y: 1 },
+    { x: 1, y: 0 }
+  ],
+  [
+    { x: 1, y: 1 },
     { x: 0, y: 1 },
-    { x: 1, y: 1 }
+    { x: 0, y: 2 },
+    { x: 1, y: 0 },
+    { x: 2, y: 0 }
+  ],
+  [
+    { x: 0, y: 1 },
+    { x: 0, y: 2 },
+    { x: 1, y: 2 },
+    { x: 1, y: 1 },
+    { x: 0, y: 0 }
+  ],
+  [
+    { x: 1, y: 1 },
+    { x: 0, y: 1 },
+    { x: 1, y: 0 },
+    { x: 1, y: 2 },
+    { x: 2, y: 2 }
   ],
   [
     { x: 0, y: 0 },
@@ -116,22 +116,22 @@ var pieces_default = [
     { x: 0, y: 1 }
   ],
   [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 1, y: 0 },
-    { x: 1, y: -1 }
+    { x: 1, y: 1 },
+    { x: 0, y: 1 },
+    { x: 2, y: 1 },
+    { x: 2, y: 0 }
   ],
   [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 1, y: 0 },
-    { x: 0, y: -1 }
+    { x: 1, y: 1 },
+    { x: 0, y: 1 },
+    { x: 2, y: 1 },
+    { x: 1, y: 0 }
   ],
   [
-    { x: 0, y: 0 },
-    { x: -1, y: 0 },
-    { x: 0, y: -1 },
-    { x: 1, y: -1 }
+    { x: 1, y: 1 },
+    { x: 0, y: 1 },
+    { x: 1, y: 0 },
+    { x: 2, y: 0 }
   ],
   [{ x: 0, y: 0 }],
   [
@@ -139,22 +139,22 @@ var pieces_default = [
     { x: 0, y: 1 }
   ],
   [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: 0, y: -1 }
-  ],
-  [
-    { x: 0, y: 0 },
-    { x: 0, y: 1 },
-    { x: 0, y: -1 },
-    { x: 0, y: 2 }
-  ],
-  [
-    { x: 0, y: 0 },
     { x: 0, y: 1 },
     { x: 0, y: 2 },
-    { x: 0, y: -1 },
-    { x: 0, y: -2 }
+    { x: 0, y: 0 }
+  ],
+  [
+    { x: 0, y: 1 },
+    { x: 0, y: 2 },
+    { x: 0, y: 0 },
+    { x: 0, y: 3 }
+  ],
+  [
+    { x: 0, y: 2 },
+    { x: 0, y: 3 },
+    { x: 0, y: 4 },
+    { x: 0, y: 1 },
+    { x: 0, y: 0 }
   ]
 ];
 
@@ -179,7 +179,7 @@ var getBoundingBox = (pieceData2) => {
   };
 };
 
-// src/data.ts
+// src/movegen/data.ts
 var rotateCoord90Deg = (c) => {
   return { x: c.y, y: -c.x };
 };
@@ -197,7 +197,7 @@ var getPieceData = (pieceType, rotation, reflection) => {
   if (reflection) {
     data = reflect(data);
   }
-  return data;
+  return normalize(data);
 };
 var createOrientationDictPiece = (type) => {
   let i = 0;
@@ -307,6 +307,32 @@ var pieceDataEqual = (piece1, piece2) => {
   }
   return true;
 };
+var orientationToBitboard = (orientation) => {
+  if (orientation.some((c) => c.x < 0 || c.y < 0)) {
+    console.log(orientation);
+    throw new Error("Orientation has negative coordinates, cannot convert to bitboard");
+  }
+  const size = getBoundingBox(orientation);
+  if (size.bottomLeft.x !== 0 || size.bottomLeft.y !== 0) {
+    throw new Error("Orientation has non-zero bottom-left corner, cannot convert to bitboard");
+  }
+  const bitboard = Array(size.height).fill(0);
+  for (const c of orientation) {
+    bitboard[c.y] |= 1 << c.x;
+  }
+  return bitboard;
+};
+var orientationDataToBitboardData = (orientationData) => {
+  const bitboardData = [];
+  for (const piece of orientationData) {
+    const pieceBitboardData = [];
+    for (const orientation of piece) {
+      pieceBitboardData.push(orientationToBitboard(orientation));
+    }
+    bitboardData.push(pieceBitboardData);
+  }
+  return bitboardData;
+};
 var main = () => {
   const orientationData = [];
   const orientationDicts = [];
@@ -319,21 +345,37 @@ var main = () => {
     corner.push(orientations.map((o) => getCorners(o)));
     cornerAttacher.push(orientations.map((o) => getCornerAttachers(o)));
   }
-  fs.writeFile("./src/piece-orientations.json", JSON.stringify(orientationData), (err) => {
+  fs.writeFile(
+    "./src/movegen/piece-orientations.json",
+    JSON.stringify(orientationData),
+    (err) => {
+      if (err !== null)
+        throw err;
+    }
+  );
+  fs.writeFile(
+    "./src/movegen/piece-orientations-bitboard.json",
+    JSON.stringify(orientationDataToBitboardData(orientationData)),
+    (err) => {
+      if (err !== null)
+        throw err;
+    }
+  );
+  fs.writeFile("./src/movegen/piece-rr.json", JSON.stringify(orientationDicts), (err) => {
     if (err !== null)
       throw err;
   });
-  fs.writeFile("./src/piece-rr.json", JSON.stringify(orientationDicts), (err) => {
+  fs.writeFile("./src/movegen/piece-corners.json", JSON.stringify(corner), (err) => {
     if (err !== null)
       throw err;
   });
-  fs.writeFile("./src/piece-corners.json", JSON.stringify(corner), (err) => {
-    if (err !== null)
-      throw err;
-  });
-  fs.writeFile("./src/piece-corner-attachers.json", JSON.stringify(cornerAttacher), (err) => {
-    if (err !== null)
-      throw err;
-  });
+  fs.writeFile(
+    "./src/movegen/piece-corner-attachers.json",
+    JSON.stringify(cornerAttacher),
+    (err) => {
+      if (err !== null)
+        throw err;
+    }
+  );
 };
 main();

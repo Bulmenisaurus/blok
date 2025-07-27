@@ -7,8 +7,9 @@ import * as fs from 'fs';
  * Create a file saving each orientation
  */
 
-import { PieceData, PieceType, getBoundingBox, pieceData } from './movegen/movegen';
-import { Coordinate } from './types';
+//pieceData is pieces.json
+import { PieceData, PieceType, getBoundingBox, pieceData } from './movegen';
+import { Coordinate } from '../types';
 
 const rotateCoord90Deg = (c: Coordinate) => {
     // https://math.stackexchange.com/a/1330166
@@ -31,7 +32,9 @@ const getPieceData = (pieceType: PieceType, rotation: number, reflection: boolea
     if (reflection) {
         data = reflect(data);
     }
-    return data;
+
+    // Normalize coordinates every time. This might be a little stupid but it's better for bitboards.
+    return normalize(data);
 };
 
 interface OrientationData {
@@ -198,6 +201,41 @@ const pieceDataEqual = (piece1: PieceData, piece2: PieceData) => {
     return true;
 };
 
+// given a piece orientation, return a row-by-row bitboard
+const orientationToBitboard = (orientation: PieceData): number[] => {
+    if (orientation.some((c) => c.x < 0 || c.y < 0)) {
+        console.log(orientation);
+
+        throw new Error('Orientation has negative coordinates, cannot convert to bitboard');
+    }
+
+    const size = getBoundingBox(orientation);
+
+    if (size.bottomLeft.x !== 0 || size.bottomLeft.y !== 0) {
+        throw new Error('Orientation has non-zero bottom-left corner, cannot convert to bitboard');
+    }
+
+    const bitboard = Array(size.height).fill(0);
+
+    for (const c of orientation) {
+        bitboard[c.y] |= 1 << c.x;
+    }
+
+    return bitboard;
+};
+
+const orientationDataToBitboardData = (orientationData: PieceData[][]) => {
+    const bitboardData = [];
+    for (const piece of orientationData) {
+        const pieceBitboardData = [];
+        for (const orientation of piece) {
+            pieceBitboardData.push(orientationToBitboard(orientation));
+        }
+        bitboardData.push(pieceBitboardData);
+    }
+    return bitboardData;
+};
+
 const main = () => {
     const orientationData: PieceData[][] = [];
     const orientationDicts: number[][] = [];
@@ -211,21 +249,37 @@ const main = () => {
         cornerAttacher.push(orientations.map((o) => getCornerAttachers(o)));
     }
 
-    fs.writeFile('./src/piece-orientations.json', JSON.stringify(orientationData), (err) => {
+    fs.writeFile(
+        './src/movegen/piece-orientations.json',
+        JSON.stringify(orientationData),
+        (err) => {
+            if (err !== null) throw err;
+        }
+    );
+
+    fs.writeFile(
+        './src/movegen/piece-orientations-bitboard.json',
+        JSON.stringify(orientationDataToBitboardData(orientationData)),
+        (err) => {
+            if (err !== null) throw err;
+        }
+    );
+
+    fs.writeFile('./src/movegen/piece-rr.json', JSON.stringify(orientationDicts), (err) => {
         if (err !== null) throw err;
     });
 
-    fs.writeFile('./src/piece-rr.json', JSON.stringify(orientationDicts), (err) => {
+    fs.writeFile('./src/movegen/piece-corners.json', JSON.stringify(corner), (err) => {
         if (err !== null) throw err;
     });
 
-    fs.writeFile('./src/piece-corners.json', JSON.stringify(corner), (err) => {
-        if (err !== null) throw err;
-    });
-
-    fs.writeFile('./src/piece-corner-attachers.json', JSON.stringify(cornerAttacher), (err) => {
-        if (err !== null) throw err;
-    });
+    fs.writeFile(
+        './src/movegen/piece-corner-attachers.json',
+        JSON.stringify(cornerAttacher),
+        (err) => {
+            if (err !== null) throw err;
+        }
+    );
 };
 
 main();

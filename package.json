@@ -8,7 +8,8 @@
     "build": "node build.mjs",
     "build:watch": "node build.mjs --watch",
     "dev": "esbuild src/script.ts --bundle --watch --outdir=dist --servedir=.",
-    "benchmark": "node dist/benchmark.js"
+    "benchmark": "node dist/benchmark.js",
+    "recalculate-movegen": "node dist/movegen/data.js"
   },
   "keywords": [],
   "author": "",
