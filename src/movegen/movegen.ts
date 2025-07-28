@@ -26,10 +26,6 @@ export interface PlacedPiece {
     orientation: number;
 }
 
-export interface PlayerState {
-    remainingPieces: Set<PieceType>;
-}
-
 /**
  * A move is either a placement of a piece or a transfer of the turn to the other player.
  */
@@ -268,11 +264,16 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Mo
 };
 
 const generateFirstMove = (board: Board): Move[] => {
-    const myState = board.state.toMove === 0 ? board.state.playerA : board.state.playerB;
+    const myState =
+        board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const startPos = board.startPositions[board.state.toMove];
 
     const moves: Move[] = [];
-    for (const piece of myState.remainingPieces) {
+    for (let piece = 0; piece < 21; piece++) {
+        if (!(myState & (1 << piece))) {
+            continue;
+        }
+
         // go over each orientation
         for (let i = 0; i < orientationData[piece].length; i++) {
             const pieceTiles = orientationData[piece][i];
@@ -320,7 +321,8 @@ export const getAllLegalMoves = (board: Board): Move[] => {
         return generateFirstMove(board);
     }
 
-    const myState = board.state.toMove === 0 ? board.state.playerA : board.state.playerB;
+    const myState =
+        board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const moves: Move[] = [];
 
     for (const placedPiece of myPlacedPieces) {
@@ -339,7 +341,11 @@ export const getAllLegalMoves = (board: Board): Move[] => {
                 continue;
             }
 
-            for (const unplacedPiece of myState.remainingPieces) {
+            for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
+                if (!(myState & (1 << unplacedPiece))) {
+                    continue;
+                }
+
                 moves.push(...getLegalMovesFrom(cornerAbsolute, unplacedPiece, board));
             }
         }

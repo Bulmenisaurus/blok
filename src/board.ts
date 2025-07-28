@@ -3,7 +3,6 @@ import {
     Move,
     PlacedPiece,
     Player,
-    PlayerState,
     StartPosition,
     getOrientationData,
     otherPlayer,
@@ -36,9 +35,9 @@ interface BoardState {
     /** The player to move next */
     toMove: Player;
 
-    /** The remaining pieces for each player */
-    playerA: PlayerState;
-    playerB: PlayerState;
+    /** The remaining pieces for each player, as a bitboard */
+    playerARemaining: number;
+    playerBRemaining: number;
 
     playerABitBoard: BitBoard;
     playerBBitBoard: BitBoard;
@@ -56,8 +55,8 @@ interface BoardState {
 const defaultBoardState: BoardState = {
     pieces: [],
     toMove: 0,
-    playerA: { remainingPieces: new Set() },
-    playerB: { remainingPieces: new Set() },
+    playerARemaining: 2 ** 21 - 1,
+    playerBRemaining: 2 ** 21 - 1,
     playerABitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     startPosName: 'middle',
@@ -77,20 +76,12 @@ export class Board {
             startPosName: startPosition,
         };
 
-        for (let i = 0; i < pieceData.length; i++) {
-            this.state.playerA.remainingPieces.add(i);
-            this.state.playerB.remainingPieces.add(i);
-        }
-
         this.startPositions = getStartPosition(startPosition);
     }
 
     reset() {
         this.state = structuredClone(defaultBoardState);
-        for (let i = 0; i < pieceData.length; i++) {
-            this.state.playerA.remainingPieces.add(i);
-            this.state.playerB.remainingPieces.add(i);
-        }
+
         // keep this.startpositions the same (it is unlikely we will change the start midway through a game)
     }
 
@@ -144,9 +135,9 @@ export class Board {
 
         this.state.pieces.push(piece);
         if (piece.player === 0) {
-            this.state.playerA.remainingPieces.delete(piece.pieceType);
+            this.state.playerARemaining &= ~(1 << piece.pieceType);
         } else {
-            this.state.playerB.remainingPieces.delete(piece.pieceType);
+            this.state.playerBRemaining &= ~(1 << piece.pieceType);
         }
 
         // update bitboard
@@ -196,9 +187,9 @@ export class Board {
         this.state.pieces.splice(moveIndex, 1);
 
         if (piece.player === 0) {
-            this.state.playerA.remainingPieces.add(piece.pieceType);
+            this.state.playerARemaining |= 1 << piece.pieceType;
         } else {
-            this.state.playerB.remainingPieces.add(piece.pieceType);
+            this.state.playerBRemaining |= 1 << piece.pieceType;
         }
 
         // update bitboard

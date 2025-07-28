@@ -200,7 +200,7 @@ export class InteractiveCanvas {
 
     updateCarouselVisibility() {
         for (const [pieceType, piece] of pieceData.entries()) {
-            if (this.board.state.playerA.remainingPieces.has(pieceType)) {
+            if (this.board.state.playerARemaining & (1 << pieceType)) {
                 this.carouselCanvases[pieceType].classList.remove('hidden');
             } else {
                 this.carouselCanvases[pieceType].classList.add('hidden');

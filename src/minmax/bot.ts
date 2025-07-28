@@ -1,5 +1,5 @@
 import { Board } from '../board';
-import { Move, PlayerState, getAllLegalMoves, getOrientationData } from '../movegen/movegen';
+import { Move, getAllLegalMoves, getOrientationData } from '../movegen/movegen';
 import { WorkerManager } from '../workerManager';
 
 export const findMove = async (board: Board, workers: WorkerManager): Promise<Move | undefined> => {
@@ -88,8 +88,8 @@ const evaluate = (board: Board) => {
     board.skipTurn();
 
     const evaluation =
-        countPlayerScore(board.state.playerA) -
-        countPlayerScore(board.state.playerB) +
+        countPlayerScore(board.state.playerARemaining) -
+        countPlayerScore(board.state.playerBRemaining) +
         (pAMobility - pBMobility);
     const perspective = board.state.toMove === 0 ? 1 : -1;
 
@@ -97,11 +97,13 @@ const evaluate = (board: Board) => {
 };
 
 // higher = better
-export const countPlayerScore = (player: PlayerState) => {
+export const countPlayerScore = (player: number) => {
     let score = 1_000;
-    for (const remainingPiece of player.remainingPieces) {
-        const pieceTile = getOrientationData(remainingPiece, 0);
-        score -= pieceTile.length;
+    for (let i = 0; i < 21; i++) {
+        if (player & (1 << i)) {
+            const pieceTile = getOrientationData(i, 0);
+            score -= pieceTile.length;
+        }
     }
 
     return score;
