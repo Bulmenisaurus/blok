@@ -4,6 +4,7 @@ import { getBitBoardValue } from '../bitboard';
 import _pieceData from './pieces.json'; // https://www.gottfriedville.net/blokus/set.png
 import _orientationData from './piece-orientations.json';
 import _orientationBitboardData from './piece-orientations-bitboard.json';
+import _orientationBitboardHaloData from './piece-orientations-bitboard-halo.json';
 import _rrData from './piece-rr.json';
 import _cornersData from './piece-corners.json';
 import _shortBoundingBoxData from './piece-short-bounding-box.json';
@@ -47,6 +48,7 @@ export interface Permutation {
 export const pieceData: Readonly<PieceData[]> = _pieceData;
 export const orientationData: Readonly<PieceData[][]> = _orientationData;
 export const orientationBitBoarddata: Readonly<number[][][]> = _orientationBitboardData;
+export const orientationBitBoardHaloData: Readonly<number[][][]> = _orientationBitboardHaloData;
 export const RRData: Readonly<number[][]> = _rrData;
 export const cornersData: Readonly<PieceData[][]> = _cornersData;
 export const cornerAttachersData: Readonly<PieceData[][]> = _cornerAttachersData;
@@ -60,20 +62,8 @@ export const getOrientationData = (pieceType: PieceType, orientation: number) =>
 
 export type StartPosition = 'middle' | 'corner';
 
-const translateBoundingBox = (c: Coordinate, bb: BoundingBox) => {
-    return {
-        topLeft: { x: bb.topLeft.x + c.x, y: bb.topLeft.y + c.y },
-        bottomRight: { x: bb.bottomRight.x + c.x, y: bb.bottomRight.y + c.y },
-    };
-};
-
 const coordinateInBounds = (c: Coordinate) => {
     return c.x >= 0 && c.x <= 13 && c.y >= 0 && c.y <= 13;
-};
-
-const isInBounds = (pieceCoordinate: Coordinate, boundingBox: BoundingBox) => {
-    const translated = translateBoundingBox(pieceCoordinate, boundingBox);
-    return coordinateInBounds(translated.topLeft) && coordinateInBounds(translated.bottomRight);
 };
 
 const isMoveLegalA = (pseudoLegalMove: Move, state: Board): boolean => {
@@ -87,10 +77,13 @@ const isMoveLegalA = (pseudoLegalMove: Move, state: Board): boolean => {
     const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
     const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
 
-    const boundingBox = getBoundingBox(
-        getOrientationData(pseudoLegalMove.piece.pieceType, pseudoLegalMove.piece.orientation)
-    );
-    if (!isInBounds(location, boundingBox)) {
+    const shortBoundingBox =
+        shortBoundingBoxData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+    const bottomRightBB = {
+        x: location.x + shortBoundingBox[0],
+        y: location.y + shortBoundingBox[1],
+    };
+    if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
         return false;
     }
     // this is an array of numbers, representing the piece
@@ -186,21 +179,20 @@ const isMoveLegalB = (pseudoLegalMove: Move, state: Board): boolean => {
     // check if there is any intersection with my bitboard
     // for this we also need to do a "halo" - checking 4 tiles around each piece
     // thus for each row, we need to add a couple more options: the row, the rows above and below it, and the row shifted left and right
-    for (let bitboardY = -1; bitboardY < pieceBitboard.length + 1; bitboardY++) {
-        const rowAbove = bitboardY - 1 >= 0 ? pieceBitboard[bitboardY - 1] << location.x : 0;
-        const rowBelow =
-            bitboardY + 1 < pieceBitboard.length ? pieceBitboard[bitboardY + 1] << location.x : 0;
-        const rowCurrent =
-            bitboardY >= 0 && bitboardY < pieceBitboard.length
-                ? pieceBitboard[bitboardY] << location.x
-                : 0;
-        const rowLeftRight = (rowCurrent << 1) | (rowCurrent >> 1);
+    const haloData =
+        orientationBitBoardHaloData[pseudoLegalMove.piece.pieceType][
+            pseudoLegalMove.piece.orientation
+        ];
 
-        // the total tiles we need to check for this row - all the adjacent ones
-        const halo = rowAbove | rowBelow | rowCurrent | rowLeftRight;
+    for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
+        if (location.y + bitboardY - 1 < 0 || location.y + bitboardY - 1 >= myBitBoard.length) {
+            continue;
+        }
+        const cachedHalo = haloData[bitboardY] << location.x;
 
-        const gameRow = myBitBoard[bitboardY + location.y];
-        if (halo & gameRow) {
+        // shift by 1 to match the halo data
+        const gameRow = myBitBoard[bitboardY + location.y - 1] << 1;
+        if (cachedHalo & gameRow) {
             return false;
         }
     }

@@ -11,5 +11,8 @@ This specific rr indicates that the given piece has only two distinct orientatio
 
 From the rr and pieces.json we hardcode the valid orientations of the pieces, resulting in `piece-orientations.json` (the raw data) and `piece-orientations-bitboard.json`.
 
+`piece-corners.json` stores the location of tiles off of which you can place a piece. For example, for the long piece only has two corners - the two ends!
 
-TODO: we need to represent the orientation data by bitboards too!
+`piece-corner-attachers.json` is similar, but it's off the piece itself, on the tiles diagonally adjacent to it that you can place on.
+
+`piece-short-bounding-box.json` stores a coordinate for each piece, representing the coordinate of the bottom right of the bounding box if the piece was placed at [0,0]. Benchmarks indicated that a sizeable portion of move generation was spent just computing these bounding boxes so they were cached.

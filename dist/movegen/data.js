@@ -322,6 +322,21 @@ var orientationToBitboard = (orientation) => {
   }
   return bitboard;
 };
+var haloBitboard = (bitboard) => {
+  const halo = Array(bitboard.length + 2).fill(0);
+  const shift = 1;
+  for (let bitboardY = -1; bitboardY < bitboard.length + 1; bitboardY++) {
+    const rowAbove = bitboardY - 1 >= 0 ? bitboard[bitboardY - 1] << shift : 0;
+    const rowBelow = bitboardY + 1 < bitboard.length ? bitboard[bitboardY + 1] << shift : 0;
+    const rowCurrent = bitboardY >= 0 && bitboardY < bitboard.length ? bitboard[bitboardY] << shift : 0;
+    const rowLeftRight = rowCurrent << 1 | rowCurrent >> 1;
+    halo[bitboardY + 1] = rowAbove | rowBelow | rowCurrent | rowLeftRight;
+  }
+  return halo;
+};
+var getBitboardDataHalo = (bitboardData) => {
+  return bitboardData.map((piece) => piece.map((orientation) => haloBitboard(orientation)));
+};
 var orientationDataToBitboardData = (orientationData) => {
   const bitboardData = [];
   for (const piece of orientationData) {
@@ -363,9 +378,16 @@ var main = () => {
     }
   };
   fs.writeFile("./src/movegen/piece-orientations.json", JSON.stringify(orientationData), handler);
+  const bitboards = orientationDataToBitboardData(orientationData);
+  const bitboardsHalo = getBitboardDataHalo(bitboards);
   fs.writeFile(
     "./src/movegen/piece-orientations-bitboard.json",
-    JSON.stringify(orientationDataToBitboardData(orientationData)),
+    JSON.stringify(bitboards),
+    handler
+  );
+  fs.writeFile(
+    "./src/movegen/piece-orientations-bitboard-halo.json",
+    JSON.stringify(bitboardsHalo),
     handler
   );
   fs.writeFile("./src/movegen/piece-rr.json", JSON.stringify(orientationDicts), handler);

@@ -224,6 +224,33 @@ const orientationToBitboard = (orientation: PieceData): number[] => {
     return bitboard;
 };
 
+// "smear" the bitboard a bit, so that every bit adjacent to a bit in the bitboard is also set
+// NOTE: also shifts everything to the right!!!!!!!! (so that lower bits are not lost)
+const haloBitboard = (bitboard: number[]): number[] => {
+    // necessarily add one more row above and below
+    const halo = Array(bitboard.length + 2).fill(0);
+    const shift = 1;
+
+    for (let bitboardY = -1; bitboardY < bitboard.length + 1; bitboardY++) {
+        const rowAbove = bitboardY - 1 >= 0 ? bitboard[bitboardY - 1] << shift : 0;
+        const rowBelow = bitboardY + 1 < bitboard.length ? bitboard[bitboardY + 1] << shift : 0;
+        const rowCurrent =
+            bitboardY >= 0 && bitboardY < bitboard.length ? bitboard[bitboardY] << shift : 0;
+        const rowLeftRight = (rowCurrent << 1) | (rowCurrent >> 1);
+
+        // the total tiles we need to check for this row - all the adjacent ones
+        // const halo = rowAbove | rowBelow | rowCurrent | rowLeftRight;
+
+        halo[bitboardY + 1] = rowAbove | rowBelow | rowCurrent | rowLeftRight;
+    }
+
+    return halo;
+};
+
+const getBitboardDataHalo = (bitboardData: number[][][]): number[][][] => {
+    return bitboardData.map((piece) => piece.map((orientation) => haloBitboard(orientation)));
+};
+
 const orientationDataToBitboardData = (orientationData: PieceData[][]) => {
     const bitboardData = [];
     for (const piece of orientationData) {
@@ -274,9 +301,17 @@ const main = () => {
 
     fs.writeFile('./src/movegen/piece-orientations.json', JSON.stringify(orientationData), handler);
 
+    const bitboards = orientationDataToBitboardData(orientationData);
+    const bitboardsHalo = getBitboardDataHalo(bitboards);
     fs.writeFile(
         './src/movegen/piece-orientations-bitboard.json',
-        JSON.stringify(orientationDataToBitboardData(orientationData)),
+        JSON.stringify(bitboards),
+        handler
+    );
+
+    fs.writeFile(
+        './src/movegen/piece-orientations-bitboard-halo.json',
+        JSON.stringify(bitboardsHalo),
         handler
     );
 

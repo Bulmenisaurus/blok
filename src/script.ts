@@ -39,6 +39,13 @@ const main = () => {
 
         popupContainer.style.display = 'none';
 
+        // Check if debug mode is enabled via URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const debugMode = urlParams.get('debug') === 'true';
+
+        if (!debugMode) {
+            return;
+        }
         // debug
         const statistics: { a: number; b: number; tie: number } = { a: 0, b: 0, tie: 0 };
         const moveamounts = [];
