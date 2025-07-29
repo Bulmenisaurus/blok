@@ -156,6 +156,9 @@ export class InteractiveCanvas {
     // Update UI
     // Alert bot
     onUserCompleteTurn(move: Move) {
+        if (this.board.state.toMove !== 0) {
+            throw new Error('calm down buddy, not your turn.');
+        }
         this.board.doMove(move);
         this.updateScore();
         this.updateCarouselVisibility();
