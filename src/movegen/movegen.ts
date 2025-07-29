@@ -355,5 +355,5 @@ export const getAllLegalMoves = (board: Board): Move[] => {
         moves.push({ piece: null, previousNullMoveCounter: board.state.nullMoveCounter });
     }
 
-    return moves.slice(0, 20);
+    return moves.slice(0, 40);
 };

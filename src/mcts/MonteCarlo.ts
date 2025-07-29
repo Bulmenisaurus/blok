@@ -19,27 +19,16 @@ export class MonteCarlo {
         let end = Date.now() + timeout;
 
         let i = 0;
-        let lastOp = '';
-        try {
-            for (; i < 1000 || Date.now() < end; i++) {
-                lastOp = 'select';
-
-                let node = this.select(state);
-                lastOp = 'winner';
-                let winner = node.state.winner();
-                if (node.isLeaf() === false && winner === 'none') {
-                    lastOp = 'expand';
-                    node = this.expand(node);
-                    lastOp = 'simulate';
-                    winner = this.simulate(node);
-                }
-                lastOp = 'backprop';
-                this.backpropagate(node, winner);
+        for (; i < 1000 || Date.now() < end; i++) {
+            let node = this.select(state);
+            let winner = node.state.winner();
+            if (node.isLeaf() === false && winner === 'none') {
+                node = this.expand(node);
+                winner = this.simulate(node);
             }
-        } catch (e) {
-            console.log({ lastOp });
-            throw e;
+            this.backpropagate(node, winner);
         }
+
         console.log('runSearch', i);
     }
 

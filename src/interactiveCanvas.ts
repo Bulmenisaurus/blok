@@ -146,7 +146,7 @@ export class InteractiveCanvas {
         }
 
         if (e.key === '?') {
-            const move = this.legalMoves[0];
+            const move = this.legalMoves[Math.floor(Math.random() * this.legalMoves.length)];
             this.onUserCompleteTurn(move);
         }
     }

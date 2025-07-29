@@ -213,6 +213,9 @@ export class Board {
 
     hash() {
         //TODO: can this hash just be the bitboards?
-        return this.state.pieces.map((p) => this.placedPieceHash(p)).join('/');
+        return (
+            this.state.pieces.map((p) => this.placedPieceHash(p)).join('/') +
+            `+${this.state.nullMoveCounter}`
+        );
     }
 }

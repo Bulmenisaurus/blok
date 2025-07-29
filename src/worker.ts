@@ -10,7 +10,7 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
     board.doMove(e.data.lastMove);
 
     if (board.gameOver()) {
-        console.log('why are you bothering me? The game is over.');
+        throw new Error('why are you bothering me? The game is over.');
     }
 
     // Run MCTS search for a reasonable time (5 seconds)
