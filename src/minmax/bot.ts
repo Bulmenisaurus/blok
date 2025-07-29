@@ -8,7 +8,7 @@ export const findMove = async (board: Board, workers: WorkerManager): Promise<Mo
     let moves = getAllLegalMoves(board);
     // return moves[Math.floor(Math.random() * moves.length)];
     return moves[Math.floor(Math.random() * moves.length)];
-
+    /*
     // last 50 moves
     moves = moves.filter((m) => {
         if (
@@ -40,6 +40,7 @@ export const findMove = async (board: Board, workers: WorkerManager): Promise<Mo
     } else {
         return response.move;
     }
+        */
 };
 
 export const recursiveBoardSearchAlphaBeta = (

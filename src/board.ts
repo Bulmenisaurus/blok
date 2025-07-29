@@ -102,9 +102,9 @@ export class Board {
         };
     }
 
-    winner(): Player | 'draw' | null {
+    winner(): Player | 'draw' | 'none' {
         if (!this.gameOver()) {
-            return null;
+            return 'none';
         }
 
         const { playerA, playerB } = this.score();
@@ -118,7 +118,7 @@ export class Board {
     }
 
     copy() {
-        const state = window.structuredClone(this.state);
+        const state = structuredClone(this.state);
         return new Board(state.startPosName, state);
     }
 
@@ -205,5 +205,14 @@ export class Board {
         }
 
         this.skipTurn();
+    }
+
+    placedPieceHash(piece: PlacedPiece) {
+        return `${piece.pieceType}-${piece.location.x}-${piece.location.y}-${piece.orientation}`;
+    }
+
+    hash() {
+        //TODO: can this hash just be the bitboards?
+        return this.state.pieces.map((p) => this.placedPieceHash(p)).join('/');
     }
 }

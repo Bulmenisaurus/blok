@@ -318,7 +318,7 @@ export const getAllLegalMoves = (board: Board): Move[] => {
     const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
 
     if (myPlacedPieces.length === 0) {
-        return generateFirstMove(board);
+        return generateFirstMove(board).slice(0, 20);
     }
 
     const myState =
@@ -355,5 +355,5 @@ export const getAllLegalMoves = (board: Board): Move[] => {
         moves.push({ piece: null, previousNullMoveCounter: board.state.nullMoveCounter });
     }
 
-    return moves;
+    return moves.slice(0, 20);
 };

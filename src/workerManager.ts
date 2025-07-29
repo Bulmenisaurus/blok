@@ -8,7 +8,7 @@ export type WorkerResponse = null | {
 
 export interface WorkerMessage {
     startPos: StartPosition;
-    boardStateMoves: PlacedPiece[];
+    lastMove: Move;
     searchMoves: Move[];
 }
 
@@ -25,7 +25,14 @@ export class WorkerManager {
         }
     }
 
-    async findMove(moves: Move[], board: Board): Promise<WorkerResponse> {
+    // simplified version of findMove that just uses one worker
+    async findMoveMCTS(moves: Move[], board: Board, lastMove: Move): Promise<Move | undefined> {
+        const request = this.workerRequest(this.workers[0], board, moves, lastMove);
+        const response = await request;
+        return response?.move;
+    }
+
+    async findMove(moves: Move[], board: Board, lastMove: Move): Promise<WorkerResponse> {
         const workerTasks: Move[][] = [];
 
         for (let i = 0; i < this.numWorkers; i++) {
@@ -39,7 +46,7 @@ export class WorkerManager {
         const requests: Promise<WorkerResponse>[] = [];
 
         for (let i = 0; i < this.numWorkers; i++) {
-            requests.push(this.workerRequest(this.workers[i], board, workerTasks[i]));
+            requests.push(this.workerRequest(this.workers[i], board, workerTasks[i], lastMove));
         }
 
         console.log(requests);
@@ -64,7 +71,12 @@ export class WorkerManager {
         return bestResponse;
     }
 
-    workerRequest(worker: Worker, board: Board, task: Move[]): Promise<WorkerResponse> {
+    workerRequest(
+        worker: Worker,
+        board: Board,
+        task: Move[],
+        lastMove: Move
+    ): Promise<WorkerResponse> {
         const responsePromise = new Promise<WorkerResponse>((resolve) => {
             worker.onmessage = (message: MessageEvent<WorkerResponse>) => {
                 resolve(message.data);
@@ -76,9 +88,9 @@ export class WorkerManager {
         });
 
         const message: WorkerMessage = {
-            boardStateMoves: board.pieces,
+            lastMove: lastMove,
             searchMoves: task,
-            startPos: board.startPosName,
+            startPos: board.state.startPosName,
         };
 
         worker.postMessage(message);

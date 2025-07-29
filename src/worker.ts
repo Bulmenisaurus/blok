@@ -1,50 +1,48 @@
 import { Board } from './board';
-import { recursiveBoardSearchAlphaBeta } from './minmax/bot';
-import { Move } from './movegen/movegen';
 import { WorkerMessage, WorkerResponse } from './workerManager';
+import { MonteCarlo } from './mcts/MonteCarlo';
+
+const board = new Board('middle');
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {
-    const board = new Board(e.data.startPos);
-    for (const piece of e.data.boardStateMoves) {
-        board.doMove({
-            piece: piece,
-        });
-    }
+    board.doMove(e.data.lastMove);
 
-    let bestMove: Move | undefined = undefined;
-    let bestMoveScore = -Infinity;
+    // Create Monte Carlo Tree Search instance
+    const mcts = new MonteCarlo(board);
 
-    for (const move of e.data.searchMoves) {
-        board.doMove(move);
+    // Run MCTS search for a reasonable time (5 seconds)
+    console.log('running mcts');
+    mcts.runSearch(board, 5000);
 
-        let ourScore = 0;
+    try {
+        // Get the best move from MCTS
+        const bestMove = mcts.bestPlay(board);
 
-        // // if our moves resulted in a finish, interrupt search immediately
-        // const playerFinished = countPlayerScore(aiColor, board) === 980;
-        // if (playerFinished) {
-        //     ourScore = evaluate(board, aiColor);
-        // } else {
-        // we just made a move, so now its time to evaluate from the perspective of the opponent
+        // Get statistics for the best move
+        const stats = mcts.getStats(board);
+        const bestMoveStats = stats.children.find(
+            (child) =>
+                child.play &&
+                child.play.piece &&
+                bestMove.piece &&
+                child.play.piece.pieceType === bestMove.piece.pieceType &&
+                child.play.piece.location.x === bestMove.piece.location.x &&
+                child.play.piece.location.y === bestMove.piece.location.y &&
+                child.play.piece.orientation === bestMove.piece.orientation
+        );
 
-        const depth = 2;
-        const opponentScore = recursiveBoardSearchAlphaBeta(depth, board, -Infinity, Infinity);
+        const score = bestMoveStats
+            ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0)
+            : 0;
 
-        ourScore = -opponentScore;
-        // }
+        board.doMove(bestMove);
 
-        board.undoMove(move);
-
-        if (ourScore > bestMoveScore) {
-            bestMoveScore = ourScore;
-            bestMove = move;
-        }
-    }
-    if (bestMove === undefined) {
-        postMessage(null);
-    } else {
         postMessage({
             move: bestMove,
-            score: bestMoveScore,
+            score: score,
         } as WorkerResponse);
+    } catch (error) {
+        console.error('MCTS failed to find best move:', error);
+        postMessage(null);
     }
 };

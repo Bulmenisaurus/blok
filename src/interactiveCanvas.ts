@@ -1,5 +1,5 @@
 import { Board } from './board';
-import { findMove } from './minmax/bot';
+import { findMove } from './mcts/mcts-bot';
 import {
     Move,
     PieceData,
@@ -83,9 +83,7 @@ export class InteractiveCanvas {
                 return;
             }
 
-            this.board.doMove(skipMove);
-            this.updateScore();
-            this.legalMoves = getAllLegalMoves(this.board);
+            this.onUserCompleteTurn(skipMove);
         });
     }
 
@@ -127,33 +125,7 @@ export class InteractiveCanvas {
             return;
         }
 
-        this.board.doMove(move);
-        this.updateCarouselVisibility();
-        this.updateScore();
-        this.selectedPiece = null;
-        this.selectedPieceRotation = 0;
-
-        // const botMove = getAllLegalMoves(this.board);
-        // if (botMove.length === 1) {
-        //     this.board.doMove(botMove[0]);
-        // } else {
-        //     console.log(botMove);
-        //     this.board.doMove(botMove[1]);
-        // }
-        findMove(this.board, this.workers).then((move) => {
-            if (this.moveAlertSound) {
-                this.moveAlertSound.play();
-            }
-
-            if (move === undefined) {
-                console.log('no bot move');
-                this.board.skipTurn();
-            } else {
-                this.board.doMove(move);
-            }
-            this.updateScore();
-            this.legalMoves = getAllLegalMoves(this.board);
-        });
+        this.onUserCompleteTurn(move);
     }
 
     keyDown(e: KeyboardEvent) {
@@ -172,6 +144,36 @@ export class InteractiveCanvas {
         if (e.key === 'f') {
             this.selectedPieceFlipped = !this.selectedPieceFlipped;
         }
+
+        if (e.key === '?') {
+            const move = this.legalMoves[0];
+            this.onUserCompleteTurn(move);
+        }
+    }
+
+    // Everything that needs to be done after the player chose a valid move:
+    // Play it
+    // Update UI
+    // Alert bot
+    onUserCompleteTurn(move: Move) {
+        this.board.doMove(move);
+        this.updateScore();
+        this.updateCarouselVisibility();
+
+        findMove(this.board, this.workers, move).then((move) => {
+            if (this.moveAlertSound) {
+                this.moveAlertSound.play();
+            }
+
+            if (move === undefined) {
+                console.log('no bot move');
+                this.board.skipTurn();
+            } else {
+                this.board.doMove(move);
+            }
+            this.updateScore();
+            this.legalMoves = getAllLegalMoves(this.board);
+        });
     }
 
     initCarousel() {
