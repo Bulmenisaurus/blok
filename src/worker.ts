@@ -3,12 +3,15 @@ import { WorkerMessage, WorkerResponse } from './workerManager';
 import { MonteCarlo } from './mcts/MonteCarlo';
 
 const board = new Board('middle');
+// Create Monte Carlo Tree Search instance
+const mcts = new MonteCarlo(board);
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {
     board.doMove(e.data.lastMove);
 
-    // Create Monte Carlo Tree Search instance
-    const mcts = new MonteCarlo(board);
+    if (board.gameOver()) {
+        console.log('why are you bothering me? The game is over.');
+    }
 
     // Run MCTS search for a reasonable time (5 seconds)
     console.log('running mcts');

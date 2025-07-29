@@ -206,7 +206,7 @@ var getAllLegalMoves = (board) => {
   }
   const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
   if (myPlacedPieces.length === 0) {
-    return generateFirstMove(board);
+    return generateFirstMove(board).slice(0, 20);
   }
   const myState = board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
   const moves = [];

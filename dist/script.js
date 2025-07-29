@@ -340,7 +340,7 @@
     }
     const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
     if (myPlacedPieces.length === 0) {
-      return generateFirstMove(board);
+      return generateFirstMove(board).slice(0, 20);
     }
     const myState = board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const moves = [];
@@ -483,9 +483,7 @@
           console.error("Illegal skip move");
           return;
         }
-        this.board.doMove(skipMove);
-        this.updateScore();
-        this.legalMoves = getAllLegalMoves(this.board);
+        this.onUserCompleteTurn(skipMove);
       });
     }
     mouseMove(e) {
@@ -517,24 +515,7 @@
         console.error("Illegal move");
         return;
       }
-      this.board.doMove(move);
-      this.updateCarouselVisibility();
-      this.updateScore();
-      this.selectedPiece = null;
-      this.selectedPieceRotation = 0;
-      findMove(this.board, this.workers, move).then((move2) => {
-        if (this.moveAlertSound) {
-          this.moveAlertSound.play();
-        }
-        if (move2 === void 0) {
-          console.log("no bot move");
-          this.board.skipTurn();
-        } else {
-          this.board.doMove(move2);
-        }
-        this.updateScore();
-        this.legalMoves = getAllLegalMoves(this.board);
-      });
+      this.onUserCompleteTurn(move);
     }
     keyDown(e) {
       if (e.key === "Escape") {
@@ -551,6 +532,37 @@
       if (e.key === "f") {
         this.selectedPieceFlipped = !this.selectedPieceFlipped;
       }
+      if (e.key === "?") {
+        const move = this.legalMoves[0];
+        this.onUserCompleteTurn(move);
+      }
+    }
+    // Everything that needs to be done after the player chose a valid move:
+    // Play it
+    // Update UI
+    // Alert bot
+    onUserCompleteTurn(move) {
+      if (this.board.state.toMove !== 0) {
+        throw new Error("calm down buddy, not your turn.");
+      }
+      this.board.doMove(move);
+      this.updateScore();
+      this.updateCarouselVisibility();
+      console.log({ winner: this.board.winner() });
+      if (this.board)
+        findMove(this.board, this.workers, move).then((move2) => {
+          if (this.moveAlertSound) {
+            this.moveAlertSound.play();
+          }
+          if (move2 === void 0) {
+            console.log("no bot move");
+            this.board.skipTurn();
+          } else {
+            this.board.doMove(move2);
+          }
+          this.updateScore();
+          this.legalMoves = getAllLegalMoves(this.board);
+        });
     }
     initCarousel() {
       const pieceOrder = [

@@ -184,7 +184,7 @@
     }
     const myPlacedPieces = board2.state.pieces.filter((p) => p.player === board2.state.toMove);
     if (myPlacedPieces.length === 0) {
-      return generateFirstMove(board2);
+      return generateFirstMove(board2).slice(0, 20);
     }
     const myState = board2.state.toMove === 0 ? board2.state.playerARemaining : board2.state.playerBRemaining;
     const moves = [];
@@ -428,7 +428,7 @@
       let i = 0;
       let lastOp = "";
       try {
-        for (; i < 100 || Date.now() < end; i++) {
+        for (; i < 1e3 || Date.now() < end; i++) {
           lastOp = "select";
           let node = this.select(state);
           lastOp = "winner";
@@ -572,6 +572,7 @@
         (child) => child.play && child.play.piece && bestMove.piece && child.play.piece.pieceType === bestMove.piece.pieceType && child.play.piece.location.x === bestMove.piece.location.x && child.play.piece.location.y === bestMove.piece.location.y && child.play.piece.orientation === bestMove.piece.orientation
       );
       const score = bestMoveStats ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0) : 0;
+      board.doMove(bestMove);
       postMessage({
         move: bestMove,
         score

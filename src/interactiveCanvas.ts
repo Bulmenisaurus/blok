@@ -163,20 +163,23 @@ export class InteractiveCanvas {
         this.updateScore();
         this.updateCarouselVisibility();
 
-        findMove(this.board, this.workers, move).then((move) => {
-            if (this.moveAlertSound) {
-                this.moveAlertSound.play();
-            }
+        console.log({ winner: this.board.winner() });
 
-            if (move === undefined) {
-                console.log('no bot move');
-                this.board.skipTurn();
-            } else {
-                this.board.doMove(move);
-            }
-            this.updateScore();
-            this.legalMoves = getAllLegalMoves(this.board);
-        });
+        if (this.board)
+            findMove(this.board, this.workers, move).then((move) => {
+                if (this.moveAlertSound) {
+                    this.moveAlertSound.play();
+                }
+
+                if (move === undefined) {
+                    console.log('no bot move');
+                    this.board.skipTurn();
+                } else {
+                    this.board.doMove(move);
+                }
+                this.updateScore();
+                this.legalMoves = getAllLegalMoves(this.board);
+            });
     }
 
     initCarousel() {
