@@ -1,13 +1,6 @@
 import { BitBoard, setBitBoardValue } from './bitboard';
-import {
-    Move,
-    PlacedPiece,
-    Player,
-    StartPosition,
-    getOrientationData,
-    otherPlayer,
-    pieceData,
-} from './movegen/movegen';
+import { Move, PlacedPiece, Player, StartPosition, getOrientationData } from './movegen/movegen';
+import { otherPlayer } from './movegen/movegen-utils';
 import { Coordinate } from './types';
 
 const getStartPosition = (position: StartPosition): [Coordinate, Coordinate] => {
@@ -43,7 +36,6 @@ interface BoardState {
     playerBBitBoard: BitBoard;
 
     startPosName: StartPosition;
-    startPositions: [Coordinate, Coordinate];
 
     /** The number of null moves played in a row */
     nullMoveCounter: number;
@@ -60,10 +52,6 @@ const defaultBoardState: BoardState = {
     playerABitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     startPosName: 'middle',
-    startPositions: [
-        { x: 4, y: 4 },
-        { x: 9, y: 9 },
-    ],
     nullMoveCounter: 0,
 };
 export class Board {
@@ -81,8 +69,6 @@ export class Board {
 
     reset() {
         this.state = structuredClone(defaultBoardState);
-
-        // keep this.startpositions the same (it is unlikely we will change the start midway through a game)
     }
 
     gameOver(): boolean {
@@ -143,6 +129,7 @@ export class Board {
         // update bitboard
         const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][piece.player];
 
+        //TODO: use the piece bitboards, not individual tiles
         for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
             // mark coordinate as set
             const pieceCoord = {
@@ -155,9 +142,6 @@ export class Board {
         this.skipTurn();
     }
 
-    /**
-     * Currently used when the player has no legal moves to transfer to the other player.
-     */
     skipTurn() {
         this.state.toMove = otherPlayer(this.state.toMove);
     }

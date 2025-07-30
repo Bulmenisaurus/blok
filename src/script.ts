@@ -2,7 +2,7 @@ import { getAllLegalMoves, StartPosition } from './movegen/movegen';
 import { InteractiveCanvas } from './interactiveCanvas';
 import { WorkerManager } from './workerManager';
 import { Board } from './board';
-import { MonteCarlo } from './mcts/MonteCarlo';
+import { getAppMode } from './util';
 
 const main = () => {
     const popupContainer = document.getElementById('popup-bg') as HTMLDivElement;
@@ -44,7 +44,7 @@ const main = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const debugMode = urlParams.get('debug') === 'true';
 
-        if (!debugMode) {
+        if (getAppMode() !== 'perf') {
             return;
         }
 

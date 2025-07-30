@@ -8,7 +8,8 @@ import * as fs from 'fs';
  */
 
 //pieceData is pieces.json
-import { PieceData, PieceType, getBoundingBox, pieceData } from './movegen';
+import { PieceData, PieceType, pieceData } from './movegen';
+import { getBoundingBox } from './movegen-utils';
 import { Coordinate } from '../types';
 
 const rotateCoord90Deg = (c: Coordinate) => {

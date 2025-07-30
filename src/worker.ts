@@ -7,7 +7,9 @@ const board = new Board('middle');
 const mcts = new MonteCarlo(board);
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {
-    board.doMove(e.data.lastMove);
+    if (e.data.lastMove) {
+        board.doMove(e.data.lastMove);
+    }
 
     if (board.gameOver()) {
         throw new Error('why are you bothering me? The game is over.');

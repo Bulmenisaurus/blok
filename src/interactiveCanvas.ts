@@ -5,14 +5,16 @@ import {
     PieceData,
     PieceType,
     PlacedPiece,
+    Player,
     RRData,
     getAllLegalMoves,
-    getBoundingBox,
     getOrientationData,
     pieceData,
 } from './movegen/movegen';
+import { getBoundingBox } from './movegen/movegen-utils';
 import { render } from './renderer';
 import { Coordinate } from './types';
+import { getAppMode } from './util';
 import { WorkerManager } from './workerManager';
 
 /**
@@ -23,17 +25,27 @@ import { WorkerManager } from './workerManager';
 export class InteractiveCanvas {
     canvas: HTMLCanvasElement;
     ctx: CanvasRenderingContext2D;
+    /** Current board state. Should always be reflected in the UI */
     board: Board;
     carousel: HTMLElement;
-    carouselCanvases: { [key: number]: HTMLCanvasElement };
+    carouselCanvases: { [key: number]: HTMLCanvasElement } = [];
 
-    selectedPiece: PieceType | null;
-    mousePosition: Coordinate;
-    selectedPieceRotation: number;
-    selectedPieceFlipped: boolean;
+    /** The current selected piece, will be shown on hover */
+    selectedPiece: PieceType | null = null;
+    /** Current position of the mouse, update on mousemove */
+    mousePosition: Coordinate = { x: 0, y: 0 };
+    /** Current rotation of the piece */
+    selectedPieceRotation: number = 0;
+    /** Whether the piece is horizontally flipped or not */
+    selectedPieceFlipped: boolean = false;
+
     workers: WorkerManager;
     moveAlertSound: HTMLAudioElement | undefined;
+
+    /** The legal moves in the current position, used to check move validity */
     legalMoves: Move[];
+    /** The list of moves played this game, used to update the bot */
+    playedMoves: Move[] = [];
 
     constructor(board: Board, workers: WorkerManager, shouldPlaySound: boolean) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -44,27 +56,13 @@ export class InteractiveCanvas {
         this.board = board;
         this.workers = workers;
         this.carousel = document.getElementById('blocks-carousel')!;
-        this.carouselCanvases = [];
         this.initCarousel();
-
-        this.selectedPiece = null;
-        this.mousePosition = { x: 0, y: 0 };
-        this.selectedPieceRotation = 0;
-        this.selectedPieceFlipped = false;
 
         this.legalMoves = getAllLegalMoves(board);
 
-        this.canvas.addEventListener('mousemove', (e) => {
-            this.mouseMove(e);
-        });
-
-        this.canvas.addEventListener('click', (e) => {
-            this.click(e);
-        });
-
-        window.addEventListener('keydown', (e) => {
-            this.keyDown(e);
-        });
+        this.canvas.addEventListener('mousemove', (e) => this.mouseMove(e));
+        this.canvas.addEventListener('click', (e) => this.click(e));
+        window.addEventListener('keydown', (e) => this.keyDown(e));
 
         window.requestAnimationFrame(() => this.drawLoop());
 
@@ -84,6 +82,55 @@ export class InteractiveCanvas {
             }
 
             this.onUserCompleteTurn(skipMove);
+        });
+
+        // Finally, start the game loop
+        this.onMoveReady();
+    }
+    /**
+     * Called after a move has been played or at the beginning
+     * The board state is assumed to have been update already
+     */
+    onMoveReady() {
+        const botPlayer: Player = 1;
+        const toPlay = this.board.state.toMove;
+        const appStatus = getAppMode();
+
+        if (toPlay === botPlayer) {
+            // It is the bot's moves.
+            // Only submit to the bot if we're in the 'ai' mode
+            if (appStatus === 'ai') {
+                this.botMove();
+            } else {
+                const moves = getAllLegalMoves(this.board);
+                const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                this.board.doMove(randomMove);
+                this.updateScore();
+                this.legalMoves = getAllLegalMoves(this.board);
+            }
+        } else {
+            // It is the player's move. Don't do anything.
+        }
+    }
+
+    /**
+     * Sends the signal to the ai to play a move
+     */
+    botMove() {
+        const lastMove = this.playedMoves.at(-1);
+        findMove(this.board, this.workers, lastMove).then((move) => {
+            if (this.moveAlertSound) {
+                this.moveAlertSound.play();
+            }
+
+            if (move === undefined) {
+                console.log('no bot move');
+                this.board.skipTurn();
+            } else {
+                this.board.doMove(move);
+            }
+            this.updateScore();
+            this.legalMoves = getAllLegalMoves(this.board);
         });
     }
 
@@ -165,21 +212,7 @@ export class InteractiveCanvas {
 
         console.log({ winner: this.board.winner() });
 
-        if (this.board)
-            findMove(this.board, this.workers, move).then((move) => {
-                if (this.moveAlertSound) {
-                    this.moveAlertSound.play();
-                }
-
-                if (move === undefined) {
-                    console.log('no bot move');
-                    this.board.skipTurn();
-                } else {
-                    this.board.doMove(move);
-                }
-                this.updateScore();
-                this.legalMoves = getAllLegalMoves(this.board);
-            });
+        this.onMoveReady();
     }
 
     initCarousel() {
@@ -187,9 +220,7 @@ export class InteractiveCanvas {
         const pieceOrder: PieceType[] = [
             20, 0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 19, 11, 12, 13, 14, 15, 18, 3, 17, 16,
         ];
-        // const pieceOrder = Array(21)
-        //     .fill(0)
-        //     .map((_, i) => i);
+
         for (const pieceType of pieceOrder) {
             const piece = getOrientationData(pieceType, 0);
             const pieceCanvas = this.carouselPiecePreview(piece);
@@ -208,11 +239,8 @@ export class InteractiveCanvas {
 
     updateCarouselVisibility() {
         for (const [pieceType, piece] of pieceData.entries()) {
-            if (this.board.state.playerARemaining & (1 << pieceType)) {
-                this.carouselCanvases[pieceType].classList.remove('hidden');
-            } else {
-                this.carouselCanvases[pieceType].classList.add('hidden');
-            }
+            const visible = this.board.state.playerARemaining & (1 << pieceType);
+            this.carouselCanvases[pieceType].classList.toggle('hidden', !visible);
         }
     }
 
@@ -314,7 +342,8 @@ export class InteractiveCanvas {
             if (winner === 'draw') {
                 alert('Game is a draw');
             } else {
-                alert(`Player ${winner} wins!`);
+                const winnerName = winner === 0 ? 'Green' : 'Red';
+                alert(`Player ${winnerName} wins!`);
             }
         }
     }

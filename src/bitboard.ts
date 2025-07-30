@@ -1,6 +1,5 @@
 import { Coordinate } from './types';
 
-// TODO: Uint32Array?
 export type BitBoard = number[];
 export type Bit = 0 | 1;
 
@@ -14,6 +13,7 @@ export const getBitBoardValue = (bitBoard: BitBoard, c: Coordinate): Bit => {
     return ((bitBoard[c.y] >> c.x) & 1) as Bit;
 };
 
+//TODO: might we want to separate out setBit and unsetBit?
 export const setBitBoardValue = (bitBoard: BitBoard, c: Coordinate, value: Bit) => {
     const validYCoordinate = c.y >= 0 && c.y <= 13;
     const validXCoordinate = c.x >= 0 && c.x <= 13;

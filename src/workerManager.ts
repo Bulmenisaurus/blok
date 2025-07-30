@@ -8,7 +8,7 @@ export type WorkerResponse = null | {
 
 export interface WorkerMessage {
     startPos: StartPosition;
-    lastMove: Move;
+    lastMove: Move | undefined;
     searchMoves: Move[];
 }
 
@@ -26,7 +26,11 @@ export class WorkerManager {
     }
 
     // simplified version of findMove that just uses one worker
-    async findMoveMCTS(moves: Move[], board: Board, lastMove: Move): Promise<Move | undefined> {
+    async findMoveMCTS(
+        moves: Move[],
+        board: Board,
+        lastMove: Move | undefined
+    ): Promise<Move | undefined> {
         const request = this.workerRequest(this.workers[0], board, moves, lastMove);
         const response = await request;
         return response?.move;
@@ -75,7 +79,7 @@ export class WorkerManager {
         worker: Worker,
         board: Board,
         task: Move[],
-        lastMove: Move
+        lastMove: Move | undefined
     ): Promise<WorkerResponse> {
         const responsePromise = new Promise<WorkerResponse>((resolve) => {
             worker.onmessage = (message: MessageEvent<WorkerResponse>) => {

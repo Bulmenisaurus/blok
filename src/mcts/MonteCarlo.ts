@@ -1,5 +1,6 @@
 import { Board } from '../board';
-import { getAllLegalMoves, Move, otherPlayer, Player } from '../movegen/movegen';
+import { getAllLegalMoves, Move, Player } from '../movegen/movegen';
+import { otherPlayer } from '../movegen/movegen-utils';
 import { MonteCarloNode } from './MonteCarloNode';
 
 type GameOutcome = Player | 'draw' | 'none';
