@@ -186,13 +186,12 @@ const generateFirstMove = (board: Board): Move[] => {
         board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const startPos = board.startPositions[board.state.toMove];
 
+    if (board.state.nullMoveCounter !== 0) {
+        throw new Error('Null move counter is not 0 at the beginning of the game?');
+    }
+
     const moves: Move[] = [];
     for (let piece = 0; piece < 21; piece++) {
-        //TODO: should be not necessary for the first turn
-        if (!(myState & (1 << piece))) {
-            continue;
-        }
-
         // go over each orientation
         for (let i = 0; i < orientationData[piece].length; i++) {
             const pieceTiles = orientationData[piece][i];
@@ -207,11 +206,6 @@ const generateFirstMove = (board: Board): Move[] => {
                     pieceType: piece,
                     orientation: i,
                 };
-
-                // TODO: check outside of loop
-                if (board.state.nullMoveCounter !== 0) {
-                    throw new Error('Null move counter is not 0 at the beginning of the game?');
-                }
 
                 moves.push({
                     piece: placedPiece,

@@ -105,6 +105,7 @@ export class InteractiveCanvas {
                 const moves = getAllLegalMoves(this.board);
                 const randomMove = moves[Math.floor(Math.random() * moves.length)];
                 this.board.doMove(randomMove);
+                this.playedMoves.push(randomMove);
                 this.updateScore();
                 this.legalMoves = getAllLegalMoves(this.board);
             }
@@ -128,6 +129,7 @@ export class InteractiveCanvas {
                 this.board.skipTurn();
             } else {
                 this.board.doMove(move);
+                this.playedMoves.push(move);
             }
             this.updateScore();
             this.legalMoves = getAllLegalMoves(this.board);
@@ -207,6 +209,7 @@ export class InteractiveCanvas {
             throw new Error('calm down buddy, not your turn.');
         }
         this.board.doMove(move);
+        this.playedMoves.push(move);
         this.updateScore();
         this.updateCarouselVisibility();
 
