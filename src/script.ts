@@ -49,39 +49,39 @@ const main = () => {
         }
 
         // debug
-        // const statistics: { a: number; b: number; tie: number } = { a: 0, b: 0, tie: 0 };
-        // const moveamounts = [];
-        // const startTime = performance.now();
-        // for (let i = 0; i < 1000; i++) {
-        //     while (!boardState.gameOver()) {
-        //         const legalMoves = getAllLegalMoves(boardState);
-        //         if (legalMoves.length === 0) {
-        //             break;
-        //         }
-        //         moveamounts.push(legalMoves.length);
-        //         const randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
-        //         boardState.doMove(randomMove);
-        //     }
-        //     const score = boardState.score();
-        //     if (score.playerA > score.playerB) {
-        //         statistics.a++;
-        //     } else if (score.playerA < score.playerB) {
-        //         statistics.b++;
-        //     } else {
-        //         statistics.tie++;
-        //     }
+        const statistics: { a: number; b: number; tie: number } = { a: 0, b: 0, tie: 0 };
+        const moveamounts = [];
+        const startTime = performance.now();
+        for (let i = 0; i < 1000; i++) {
+            while (!boardState.gameOver()) {
+                const legalMoves = getAllLegalMoves(boardState);
+                if (legalMoves.length === 0) {
+                    break;
+                }
+                moveamounts.push(legalMoves.length);
+                const randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
+                boardState.doMove(randomMove);
+            }
+            const score = boardState.score();
+            if (score.playerA > score.playerB) {
+                statistics.a++;
+            } else if (score.playerA < score.playerB) {
+                statistics.b++;
+            } else {
+                statistics.tie++;
+            }
 
-        //     boardState.reset();
-        // }
+            boardState.reset();
+        }
 
-        // const endTime = performance.now();
-        // console.log(`Time taken: ${endTime - startTime} milliseconds`);
+        const endTime = performance.now();
+        console.log(`Time taken: ${endTime - startTime} milliseconds`);
 
-        // console.log(statistics);
-        // console.log(
-        //     'Average move amount',
-        //     moveamounts.reduce((a, b) => a + b, 0) / moveamounts.length
-        // );
+        console.log(statistics);
+        console.log(
+            'Average move amount',
+            moveamounts.reduce((a, b) => a + b, 0) / moveamounts.length
+        );
     });
 };
 
