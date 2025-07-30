@@ -333,6 +333,10 @@ export const getAllLegalMoves = (board: Board): Move[] => {
                 y: cornerAttacher.y + placedPiece.location.y,
             };
 
+            if (!coordinateInBounds(cornerAbsolute)) {
+                continue;
+            }
+
             // corner attacher must be unoccupied for us to place something there
 
             const playerATile = getBitBoardValue(board.state.playerABitBoard, cornerAbsolute);
