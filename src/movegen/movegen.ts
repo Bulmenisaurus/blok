@@ -28,11 +28,10 @@ export interface PlacedPiece {
 /**
  * A move is either a placement of a piece or a transfer of the turn to the other player.
  */
-export interface Move {
-    piece: PlacedPiece | null;
-    /** The number of null moves played in a row before this move, used to keep track in case it is undone */
-    previousNullMoveCounter: number;
-}
+export type Move = PlacedPiece | null;
+// export interface Move {
+//     piece: PlacedPiece | null;
+// }
 
 export interface Permutation {
     rotation: number;
@@ -68,18 +67,18 @@ export type StartPosition = 'middle' | 'corner';
 const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     // We assume if a null move was generated, it was legal
     // We don't check if there is actually a reason for a null move - like if there are zero valid moves
-    if (pseudoLegalMove.piece === null) {
+    if (pseudoLegalMove === null) {
         return true;
     }
 
-    const toMove = pseudoLegalMove.piece.player;
-    const location = pseudoLegalMove.piece.location;
+    const toMove = pseudoLegalMove.player;
+    const location = pseudoLegalMove.location;
 
     const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
     const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
 
     const shortBoundingBox =
-        shortBoundingBoxData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+        shortBoundingBoxData[pseudoLegalMove.pieceType][pseudoLegalMove.orientation];
     const bottomRightBB = {
         x: location.x + shortBoundingBox[0],
         y: location.y + shortBoundingBox[1],
@@ -96,7 +95,7 @@ const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     // |xx
     // i.e. the L piece
     const pieceBitboard =
-        orientationBitBoarddata[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+        orientationBitBoarddata[pseudoLegalMove.pieceType][pseudoLegalMove.orientation];
 
     // it's easier to check the opponent bitboards first: check if there is no intersection
     for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
@@ -113,9 +112,7 @@ const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     // for this we also need to do a "halo" - checking 4 tiles around each piece
     // thus for each row, we need to add a couple more options: the row, the rows above and below it, and the row shifted left and right
     const haloData =
-        orientationBitBoardHaloData[pseudoLegalMove.piece.pieceType][
-            pseudoLegalMove.piece.orientation
-        ];
+        orientationBitBoardHaloData[pseudoLegalMove.pieceType][pseudoLegalMove.orientation];
 
     for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
         if (location.y + bitboardY - 1 < 0 || location.y + bitboardY - 1 >= myBitBoard.length) {
@@ -165,10 +162,7 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Mo
                 orientation: i,
             };
 
-            moves.push({
-                piece: placedPiece,
-                previousNullMoveCounter: state.state.nullMoveCounter,
-            });
+            moves.push(placedPiece);
         }
     }
 
@@ -207,10 +201,7 @@ const generateFirstMove = (board: Board): Move[] => {
                     orientation: i,
                 };
 
-                moves.push({
-                    piece: placedPiece,
-                    previousNullMoveCounter: board.state.nullMoveCounter,
-                });
+                moves.push(placedPiece);
             }
         }
     }
@@ -281,7 +272,7 @@ export const getAllLegalMoves = (board: Board): Move[] => {
     }
 
     if (moves.length === 0) {
-        moves.push({ piece: null, previousNullMoveCounter: board.state.nullMoveCounter });
+        moves.push(null);
     }
 
     return moves;

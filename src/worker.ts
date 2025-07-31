@@ -48,12 +48,11 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
         const bestMoveStats = stats.children.find(
             (child) =>
                 child.play &&
-                child.play.piece &&
-                bestMove.piece &&
-                child.play.piece.pieceType === bestMove.piece.pieceType &&
-                child.play.piece.location.x === bestMove.piece.location.x &&
-                child.play.piece.location.y === bestMove.piece.location.y &&
-                child.play.piece.orientation === bestMove.piece.orientation
+                bestMove &&
+                child.play.pieceType === bestMove.pieceType &&
+                child.play.location.x === bestMove.location.x &&
+                child.play.location.y === bestMove.location.y &&
+                child.play.orientation === bestMove.orientation
         );
         // clear memory
         console.log('clearing');

@@ -82,10 +82,7 @@ export class InteractiveCanvas {
 
         const skipButton = document.getElementById('skip-button')!;
         skipButton.addEventListener('click', () => {
-            const skipMove: Move = {
-                piece: null,
-                previousNullMoveCounter: this.board.state.nullMoveCounter,
-            };
+            const skipMove: Move = null;
             if (!this.isMoveLegal(skipMove)) {
                 console.error('Illegal skip move');
                 return;
@@ -170,13 +167,10 @@ export class InteractiveCanvas {
         const orientation = RRData[this.selectedPiece][rotationReflection];
 
         const move: Move = {
-            piece: {
-                location: this.mousePosition,
-                pieceType: this.selectedPiece,
-                player: this.userPlayer,
-                orientation,
-            },
-            previousNullMoveCounter: this.board.state.nullMoveCounter,
+            location: this.mousePosition,
+            pieceType: this.selectedPiece,
+            player: this.userPlayer,
+            orientation,
         };
 
         if (!this.isMoveLegal(move)) {
@@ -365,13 +359,13 @@ export class InteractiveCanvas {
         // check if either we can skip or we can place that piece
         return !!this.legalMoves.find(
             (legalMove) =>
-                (move.piece === null && legalMove.piece === null) ||
-                (move.piece !== null &&
-                    legalMove.piece !== null &&
-                    move.piece.location.x === legalMove.piece.location.x &&
-                    move.piece.location.y === legalMove.piece.location.y &&
-                    move.piece.orientation === legalMove.piece.orientation &&
-                    move.piece.pieceType === legalMove.piece.pieceType)
+                (move === null && legalMove === null) ||
+                (move !== null &&
+                    legalMove !== null &&
+                    move.location.x === legalMove.location.x &&
+                    move.location.y === legalMove.location.y &&
+                    move.orientation === legalMove.orientation &&
+                    move.pieceType === legalMove.pieceType)
         );
     }
 }

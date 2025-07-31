@@ -5,10 +5,10 @@ import { Move } from '../movegen/movegen';
 
 //TODO: dedup
 const moveHash = (move: Move) => {
-    if (move.piece === null) {
+    if (move === null) {
         return 'null';
     }
-    return `${move.piece.pieceType}-${move.piece.location.x}-${move.piece.location.y}-${move.piece.orientation}`;
+    return `${move.pieceType}-${move.location.x}-${move.location.y}-${move.orientation}`;
 };
 
 export class MonteCarloNode {
