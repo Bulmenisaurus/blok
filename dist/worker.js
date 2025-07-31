@@ -40,8 +40,13 @@
   // src/movegen/piece-corner-attachers.json
   var piece_corner_attachers_default = [[[{ x: -1, y: 4 }, { x: 2, y: 4 }, { x: 2, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 4 }, { x: -1, y: 2 }, { x: -1, y: 4 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 4, y: 2 }, { x: 4, y: -1 }, { x: 2, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 4, y: -1 }, { x: 4, y: 2 }, { x: 2, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 2, y: 4 }, { x: 0, y: 4 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 1, y: 4 }, { x: -1, y: 4 }, { x: 2, y: 3 }, { x: 2, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 4, y: 1 }, { x: 4, y: -1 }, { x: 3, y: 2 }, { x: 1, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: 4, y: 2 }, { x: 4, y: 0 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }]], [[{ x: 2, y: 0 }, { x: 2, y: 4 }, { x: 0, y: 4 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 4 }, { x: -1, y: 4 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 0, y: -1 }, { x: 4, y: 1 }, { x: 4, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 1, y: 2 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: 2, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: 3, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 0, y: 2 }, { x: 4, y: 2 }, { x: 4, y: 0 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }]], [[{ x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 1 }, { x: -1, y: -1 }, { x: 2, y: -1 }], [{ x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 2 }, { x: -1, y: -1 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 3, y: -1 }, { x: 3, y: 2 }]], [[{ x: -1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 3, y: -1 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }]], [[{ x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 3, y: 3 }, { x: 1, y: 3 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 3 }, { x: 0, y: 3 }]], [[{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 2 }, { x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 2, y: 0 }, { x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 0 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 3 }, { x: -1, y: 3 }, { x: -1, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: -1, y: 2 }, { x: -1, y: -1 }, { x: 2, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }], [{ x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 3 }, { x: 0, y: 3 }], [{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 3, y: -1 }, { x: 3, y: 2 }, { x: 0, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }]], [[{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 2 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 3, y: -1 }, { x: 3, y: 2 }, { x: 1, y: 2 }], [{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 1 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 2 }, { x: 2, y: 0 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 2 }, { x: 0, y: 2 }]], [[{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 2, y: 0 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }]], [[{ x: 1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }]], [[{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 4, y: 1 }, { x: 4, y: -1 }]], [[{ x: 1, y: 5 }, { x: -1, y: 5 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 5, y: 1 }, { x: 5, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]]];
 
-  // src/movegen/movegen.ts
+  // src/movegen/movegen-utils.ts
   var otherPlayer = (player) => player === 1 ? 0 : 1;
+  var coordinateInBounds = (c) => {
+    return c.x >= 0 && c.x <= 13 && c.y >= 0 && c.y <= 13;
+  };
+
+  // src/movegen/movegen.ts
   var orientationData = piece_orientations_default;
   var orientationBitBoarddata = piece_orientations_bitboard_default;
   var orientationBitBoardHaloData = piece_orientations_bitboard_halo_default;
@@ -51,47 +56,7 @@
   var getOrientationData = (pieceType, orientation) => {
     return orientationData[pieceType][orientation];
   };
-  var coordinateInBounds = (c) => {
-    return c.x >= 0 && c.x <= 13 && c.y >= 0 && c.y <= 13;
-  };
-  var isMoveLegalA = (pseudoLegalMove, state) => {
-    if (pseudoLegalMove.piece === null) {
-      return true;
-    }
-    const toMove = pseudoLegalMove.piece.player;
-    const location = pseudoLegalMove.piece.location;
-    const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
-    const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
-    const shortBoundingBox = shortBoundingBoxData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
-    const bottomRightBB = {
-      x: location.x + shortBoundingBox[0],
-      y: location.y + shortBoundingBox[1]
-    };
-    if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
-      return false;
-    }
-    const pieceBitboard = orientationBitBoarddata[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
-    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
-      const bitBoardRow = pieceBitboard[bitboardY] << location.x;
-      const gameRow = opponentBitBoard[bitboardY + location.y];
-      if (bitBoardRow & gameRow) {
-        return false;
-      }
-    }
-    for (let bitboardY = -1; bitboardY < pieceBitboard.length + 1; bitboardY++) {
-      const rowAbove = bitboardY - 1 >= 0 ? pieceBitboard[bitboardY - 1] << location.x : 0;
-      const rowBelow = bitboardY + 1 < pieceBitboard.length ? pieceBitboard[bitboardY + 1] << location.x : 0;
-      const rowCurrent = bitboardY >= 0 && bitboardY < pieceBitboard.length ? pieceBitboard[bitboardY] << location.x : 0;
-      const rowLeftRight = rowCurrent << 1 | rowCurrent >> 1;
-      const halo = rowAbove | rowBelow | rowCurrent | rowLeftRight;
-      const gameRow = myBitBoard[bitboardY + location.y];
-      if (halo & gameRow) {
-        return false;
-      }
-    }
-    return true;
-  };
-  var isMoveLegalB = (pseudoLegalMove, state) => {
+  var isMoveLegal = (pseudoLegalMove, state) => {
     if (pseudoLegalMove.piece === null) {
       return true;
     }
@@ -146,16 +111,16 @@
         });
       }
     }
-    return moves.filter((p) => isMoveLegalB(p, state));
+    return moves.filter((p) => isMoveLegal(p, state));
   };
   var generateFirstMove = (board2) => {
     const myState = board2.state.toMove === 0 ? board2.state.playerARemaining : board2.state.playerBRemaining;
     const startPos = board2.startPositions[board2.state.toMove];
+    if (board2.state.nullMoveCounter !== 0) {
+      throw new Error("Null move counter is not 0 at the beginning of the game?");
+    }
     const moves = [];
     for (let piece = 0; piece < 21; piece++) {
-      if (!(myState & 1 << piece)) {
-        continue;
-      }
       for (let i = 0; i < orientationData[piece].length; i++) {
         const pieceTiles = orientationData[piece][i];
         for (const tile of pieceTiles) {
@@ -166,9 +131,6 @@
             pieceType: piece,
             orientation: i
           };
-          if (board2.state.nullMoveCounter !== 0) {
-            throw new Error("Null move counter is not 0 at the beginning of the game?");
-          }
           moves.push({
             piece: placedPiece,
             previousNullMoveCounter: board2.state.nullMoveCounter
@@ -176,7 +138,7 @@
         }
       }
     }
-    return moves.filter((p) => isMoveLegalA(p, board2));
+    return moves.filter((p) => isMoveLegal(p, board2));
   };
   var getAllLegalMoves = (board2) => {
     if (board2.gameOver()) {
@@ -184,7 +146,7 @@
     }
     const myPlacedPieces = board2.state.pieces.filter((p) => p.player === board2.state.toMove);
     if (myPlacedPieces.length === 0) {
-      return generateFirstMove(board2).slice(0, 20);
+      return generateFirstMove(board2);
     }
     const myState = board2.state.toMove === 0 ? board2.state.playerARemaining : board2.state.playerBRemaining;
     const moves = [];
@@ -195,6 +157,9 @@
           x: cornerAttacher.x + placedPiece.location.x,
           y: cornerAttacher.y + placedPiece.location.y
         };
+        if (!coordinateInBounds(cornerAbsolute)) {
+          continue;
+        }
         const playerATile = getBitBoardValue(board2.state.playerABitBoard, cornerAbsolute);
         const playerBTile = getBitBoardValue(board2.state.playerBBitBoard, cornerAbsolute);
         if (playerATile || playerBTile) {
@@ -211,15 +176,15 @@
     if (moves.length === 0) {
       moves.push({ piece: null, previousNullMoveCounter: board2.state.nullMoveCounter });
     }
-    return moves.slice(0, 20);
+    return moves;
   };
 
   // src/board.ts
   var getStartPosition = (position) => {
     if (position === "middle") {
       return [
-        { x: 4, y: 4 },
-        { x: 9, y: 9 }
+        { x: 6, y: 6 },
+        { x: 7, y: 7 }
       ];
     } else {
       return [
@@ -236,10 +201,6 @@
     playerABitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     startPosName: "middle",
-    startPositions: [
-      { x: 4, y: 4 },
-      { x: 9, y: 9 }
-    ],
     nullMoveCounter: 0
   };
   var Board = class _Board {
@@ -303,9 +264,6 @@
       }
       this.skipTurn();
     }
-    /**
-     * Currently used when the player has no legal moves to transfer to the other player.
-     */
     skipTurn() {
       this.state.toMove = otherPlayer(this.state.toMove);
     }
@@ -343,7 +301,7 @@
       return `${piece.pieceType}-${piece.location.x}-${piece.location.y}-${piece.orientation}`;
     }
     hash() {
-      return this.state.pieces.map((p) => this.placedPieceHash(p)).join("/");
+      return this.state.pieces.map((p) => this.placedPieceHash(p)).join("/") + `+${this.state.nullMoveCounter}`;
     }
   };
 
@@ -426,25 +384,14 @@
       this.makeNode(state);
       let end = Date.now() + timeout;
       let i = 0;
-      let lastOp = "";
-      try {
-        for (; i < 1e3 || Date.now() < end; i++) {
-          lastOp = "select";
-          let node = this.select(state);
-          lastOp = "winner";
-          let winner = node.state.winner();
-          if (node.isLeaf() === false && winner === "none") {
-            lastOp = "expand";
-            node = this.expand(node);
-            lastOp = "simulate";
-            winner = this.simulate(node);
-          }
-          lastOp = "backprop";
-          this.backpropagate(node, winner);
+      for (; i < 1e3 || Date.now() < end; i++) {
+        let node = this.select(state);
+        let winner = node.state.winner();
+        if (node.isLeaf() === false && winner === "none") {
+          node = this.expand(node);
+          winner = this.simulate(node);
         }
-      } catch (e) {
-        console.log({ lastOp });
-        throw e;
+        this.backpropagate(node, winner);
       }
       console.log("runSearch", i);
     }
@@ -560,17 +507,31 @@
 
   // src/worker.ts
   var board = new Board("middle");
+  var mcts = new MonteCarlo(board);
   onmessage = (e) => {
-    board.doMove(e.data.lastMove);
-    const mcts = new MonteCarlo(board);
+    if (e.data.lastMove) {
+      board.doMove(e.data.lastMove);
+    }
+    if (board.gameOver()) {
+      throw new Error("why are you bothering me? The game is over.");
+    }
+    const moves = getAllLegalMoves(board);
+    if (moves.length === 1) {
+      const bestMove = moves[0];
+      postMessage({ move: bestMove, score: 0 });
+      return;
+    }
     console.log("running mcts");
-    mcts.runSearch(board, 5e3);
+    console.log("running 5k search");
+    mcts.runSearch(board, 1e4);
     try {
       const bestMove = mcts.bestPlay(board);
       const stats = mcts.getStats(board);
       const bestMoveStats = stats.children.find(
         (child) => child.play && child.play.piece && bestMove.piece && child.play.piece.pieceType === bestMove.piece.pieceType && child.play.piece.location.x === bestMove.piece.location.x && child.play.piece.location.y === bestMove.piece.location.y && child.play.piece.orientation === bestMove.piece.orientation
       );
+      console.log("clearing");
+      mcts.nodes.clear();
       const score = bestMoveStats ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0) : 0;
       board.doMove(bestMove);
       postMessage({

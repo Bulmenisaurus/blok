@@ -158,8 +158,7 @@ var pieces_default = [
   ]
 ];
 
-// src/movegen/movegen.ts
-var pieceData = pieces_default;
+// src/movegen/movegen-utils.ts
 var getBoundingBox = (pieceData2) => {
   let minX = pieceData2[0].x;
   let minY = pieceData2[0].y;
@@ -178,6 +177,9 @@ var getBoundingBox = (pieceData2) => {
     height: maxY - minY + 1
   };
 };
+
+// src/movegen/movegen.ts
+var pieceData = pieces_default;
 
 // src/movegen/data.ts
 var rotateCoord90Deg = (c) => {

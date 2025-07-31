@@ -6,11 +6,19 @@ export type WorkerResponse = null | {
     score: number;
 };
 
-export interface WorkerMessage {
+export interface WorkerMessageMove {
+    type: 'move';
     startPos: StartPosition;
     lastMove: Move | undefined;
     searchMoves: Move[];
 }
+
+export interface WorkerMessageInit {
+    type: 'init';
+    startPos: StartPosition;
+}
+
+export type WorkerMessage = WorkerMessageMove | WorkerMessageInit;
 
 export class WorkerManager {
     workers: Worker[];
@@ -75,6 +83,21 @@ export class WorkerManager {
         return bestResponse;
     }
 
+    initAll(board: Board) {
+        for (const worker of this.workers) {
+            this.workerInit(worker, board);
+        }
+    }
+
+    workerInit(worker: Worker, board: Board) {
+        const initMessage: WorkerMessageInit = {
+            type: 'init',
+            startPos: board.state.startPosName,
+        };
+
+        worker.postMessage(initMessage);
+    }
+
     workerRequest(
         worker: Worker,
         board: Board,
@@ -92,6 +115,7 @@ export class WorkerManager {
         });
 
         const message: WorkerMessage = {
+            type: 'move',
             lastMove: lastMove,
             searchMoves: task,
             startPos: board.state.startPosName,

@@ -30,13 +30,26 @@ const main = () => {
     }
 
     submitButton.addEventListener('click', () => {
+        // prevent navigating away
+        window.addEventListener('beforeunload', (e) => {
+            e.preventDefault();
+            return false;
+        });
+
         const userNumThreads = parseInt(threads.value);
         const startPosition = startPos.value as StartPosition;
         const shouldPlaySound = sound.value === 'on';
 
         const boardState = new Board(startPosition);
         const workers = new WorkerManager(userNumThreads);
-        const interactiveCanvas = new InteractiveCanvas(boardState, workers, shouldPlaySound);
+
+        workers.initAll(boardState);
+        const interactiveCanvas = new InteractiveCanvas(
+            boardState,
+            workers,
+            shouldPlaySound,
+            player.value
+        );
 
         popupContainer.style.display = 'none';
 

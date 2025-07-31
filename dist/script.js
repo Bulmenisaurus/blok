@@ -176,8 +176,31 @@
   // src/movegen/piece-corner-attachers.json
   var piece_corner_attachers_default = [[[{ x: -1, y: 4 }, { x: 2, y: 4 }, { x: 2, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 4 }, { x: -1, y: 2 }, { x: -1, y: 4 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 4, y: 2 }, { x: 4, y: -1 }, { x: 2, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 4, y: -1 }, { x: 4, y: 2 }, { x: 2, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 2, y: 4 }, { x: 0, y: 4 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 1, y: 4 }, { x: -1, y: 4 }, { x: 2, y: 3 }, { x: 2, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 4, y: 1 }, { x: 4, y: -1 }, { x: 3, y: 2 }, { x: 1, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: 4, y: 2 }, { x: 4, y: 0 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }]], [[{ x: 2, y: 0 }, { x: 2, y: 4 }, { x: 0, y: 4 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 4 }, { x: -1, y: 4 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 0, y: -1 }, { x: 4, y: 1 }, { x: 4, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 1, y: 2 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: 2, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: 3, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 0, y: 2 }, { x: 4, y: 2 }, { x: 4, y: 0 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }]], [[{ x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 1 }, { x: -1, y: -1 }, { x: 2, y: -1 }], [{ x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 2 }, { x: -1, y: -1 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 3, y: -1 }, { x: 3, y: 2 }]], [[{ x: -1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 3, y: -1 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }]], [[{ x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 3, y: 3 }, { x: 1, y: 3 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 3 }, { x: 0, y: 3 }]], [[{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 2 }, { x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 2, y: 0 }, { x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 0 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 3 }, { x: -1, y: 3 }, { x: -1, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: -1, y: 2 }, { x: -1, y: -1 }, { x: 2, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }], [{ x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 3 }, { x: 0, y: 3 }], [{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 3, y: -1 }, { x: 3, y: 2 }, { x: 0, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }]], [[{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 2 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 3, y: -1 }, { x: 3, y: 2 }, { x: 1, y: 2 }], [{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 1 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 2 }, { x: 2, y: 0 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 2 }, { x: 0, y: 2 }]], [[{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 2, y: 0 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }]], [[{ x: 1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }]], [[{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 4, y: 1 }, { x: 4, y: -1 }]], [[{ x: 1, y: 5 }, { x: -1, y: 5 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 5, y: 1 }, { x: 5, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]]];
 
-  // src/movegen/movegen.ts
+  // src/movegen/movegen-utils.ts
   var otherPlayer = (player) => player === 1 ? 0 : 1;
+  var coordinateInBounds = (c) => {
+    return c.x >= 0 && c.x <= 13 && c.y >= 0 && c.y <= 13;
+  };
+  var getBoundingBox = (pieceData2) => {
+    let minX = pieceData2[0].x;
+    let minY = pieceData2[0].y;
+    let maxX = pieceData2[0].x;
+    let maxY = pieceData2[0].y;
+    for (const tile of pieceData2) {
+      minX = Math.min(minX, tile.x);
+      minY = Math.min(minY, tile.y);
+      maxX = Math.max(maxX, tile.x);
+      maxY = Math.max(maxY, tile.y);
+    }
+    return {
+      topLeft: { x: minX, y: minY },
+      bottomRight: { x: maxX, y: maxY },
+      width: maxX - minX + 1,
+      height: maxY - minY + 1
+    };
+  };
+
+  // src/movegen/movegen.ts
   var pieceData = pieces_default;
   var orientationData = piece_orientations_default;
   var orientationBitBoarddata = piece_orientations_bitboard_default;
@@ -189,47 +212,7 @@
   var getOrientationData = (pieceType, orientation) => {
     return orientationData[pieceType][orientation];
   };
-  var coordinateInBounds = (c) => {
-    return c.x >= 0 && c.x <= 13 && c.y >= 0 && c.y <= 13;
-  };
-  var isMoveLegalA = (pseudoLegalMove, state) => {
-    if (pseudoLegalMove.piece === null) {
-      return true;
-    }
-    const toMove = pseudoLegalMove.piece.player;
-    const location = pseudoLegalMove.piece.location;
-    const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
-    const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
-    const shortBoundingBox = shortBoundingBoxData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
-    const bottomRightBB = {
-      x: location.x + shortBoundingBox[0],
-      y: location.y + shortBoundingBox[1]
-    };
-    if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
-      return false;
-    }
-    const pieceBitboard = orientationBitBoarddata[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
-    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
-      const bitBoardRow = pieceBitboard[bitboardY] << location.x;
-      const gameRow = opponentBitBoard[bitboardY + location.y];
-      if (bitBoardRow & gameRow) {
-        return false;
-      }
-    }
-    for (let bitboardY = -1; bitboardY < pieceBitboard.length + 1; bitboardY++) {
-      const rowAbove = bitboardY - 1 >= 0 ? pieceBitboard[bitboardY - 1] << location.x : 0;
-      const rowBelow = bitboardY + 1 < pieceBitboard.length ? pieceBitboard[bitboardY + 1] << location.x : 0;
-      const rowCurrent = bitboardY >= 0 && bitboardY < pieceBitboard.length ? pieceBitboard[bitboardY] << location.x : 0;
-      const rowLeftRight = rowCurrent << 1 | rowCurrent >> 1;
-      const halo = rowAbove | rowBelow | rowCurrent | rowLeftRight;
-      const gameRow = myBitBoard[bitboardY + location.y];
-      if (halo & gameRow) {
-        return false;
-      }
-    }
-    return true;
-  };
-  var isMoveLegalB = (pseudoLegalMove, state) => {
+  var isMoveLegal = (pseudoLegalMove, state) => {
     if (pseudoLegalMove.piece === null) {
       return true;
     }
@@ -266,24 +249,6 @@
     }
     return true;
   };
-  var getBoundingBox = (pieceData3) => {
-    let minX = pieceData3[0].x;
-    let minY = pieceData3[0].y;
-    let maxX = pieceData3[0].x;
-    let maxY = pieceData3[0].y;
-    for (const tile of pieceData3) {
-      minX = Math.min(minX, tile.x);
-      minY = Math.min(minY, tile.y);
-      maxX = Math.max(maxX, tile.x);
-      maxY = Math.max(maxY, tile.y);
-    }
-    return {
-      topLeft: { x: minX, y: minY },
-      bottomRight: { x: maxX, y: maxY },
-      width: maxX - minX + 1,
-      height: maxY - minY + 1
-    };
-  };
   var getLegalMovesFrom = (from, piece, state) => {
     const moves = [];
     for (let i = 0; i < orientationData[piece].length; i++) {
@@ -302,16 +267,16 @@
         });
       }
     }
-    return moves.filter((p) => isMoveLegalB(p, state));
+    return moves.filter((p) => isMoveLegal(p, state));
   };
   var generateFirstMove = (board) => {
     const myState = board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const startPos2 = board.startPositions[board.state.toMove];
+    if (board.state.nullMoveCounter !== 0) {
+      throw new Error("Null move counter is not 0 at the beginning of the game?");
+    }
     const moves = [];
     for (let piece = 0; piece < 21; piece++) {
-      if (!(myState & 1 << piece)) {
-        continue;
-      }
       for (let i = 0; i < orientationData[piece].length; i++) {
         const pieceTiles = orientationData[piece][i];
         for (const tile of pieceTiles) {
@@ -322,9 +287,6 @@
             pieceType: piece,
             orientation: i
           };
-          if (board.state.nullMoveCounter !== 0) {
-            throw new Error("Null move counter is not 0 at the beginning of the game?");
-          }
           moves.push({
             piece: placedPiece,
             previousNullMoveCounter: board.state.nullMoveCounter
@@ -332,7 +294,7 @@
         }
       }
     }
-    return moves.filter((p) => isMoveLegalA(p, board));
+    return moves.filter((p) => isMoveLegal(p, board));
   };
   var getAllLegalMoves = (board) => {
     if (board.gameOver()) {
@@ -340,7 +302,7 @@
     }
     const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
     if (myPlacedPieces.length === 0) {
-      return generateFirstMove(board).slice(0, 20);
+      return generateFirstMove(board);
     }
     const myState = board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const moves = [];
@@ -351,6 +313,9 @@
           x: cornerAttacher.x + placedPiece.location.x,
           y: cornerAttacher.y + placedPiece.location.y
         };
+        if (!coordinateInBounds(cornerAbsolute)) {
+          continue;
+        }
         const playerATile = getBitBoardValue(board.state.playerABitBoard, cornerAbsolute);
         const playerBTile = getBitBoardValue(board.state.playerBBitBoard, cornerAbsolute);
         if (playerATile || playerBTile) {
@@ -367,7 +332,7 @@
     if (moves.length === 0) {
       moves.push({ piece: null, previousNullMoveCounter: board.state.nullMoveCounter });
     }
-    return moves.slice(0, 20);
+    return moves;
   };
 
   // src/mcts/mcts-bot.ts
@@ -443,32 +408,40 @@
     ctx.fill();
   };
 
+  // src/util.ts
+  var getAppMode = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const appModeParam = urlParams.get("debug") || "ai";
+    return appModeParam;
+  };
+
   // src/interactiveCanvas.ts
   var InteractiveCanvas = class {
-    constructor(board, workers, shouldPlaySound) {
+    constructor(board, workers, shouldPlaySound, userPlayer) {
+      this.carouselCanvases = [];
+      /** The current selected piece, will be shown on hover */
+      this.selectedPiece = null;
+      /** Current position of the mouse, update on mousemove */
+      this.mousePosition = { x: 0, y: 0 };
+      /** Current rotation of the piece */
+      this.selectedPieceRotation = 0;
+      /** Whether the piece is horizontally flipped or not */
+      this.selectedPieceFlipped = false;
+      /** The list of moves played this game, used to update the bot */
+      this.playedMoves = [];
       const canvas = document.getElementById("canvas");
       const ctx = canvas.getContext("2d");
+      this.userPlayer = userPlayer === "green" ? 0 : 1;
       this.canvas = canvas;
       this.ctx = ctx;
       this.board = board;
       this.workers = workers;
       this.carousel = document.getElementById("blocks-carousel");
-      this.carouselCanvases = [];
       this.initCarousel();
-      this.selectedPiece = null;
-      this.mousePosition = { x: 0, y: 0 };
-      this.selectedPieceRotation = 0;
-      this.selectedPieceFlipped = false;
       this.legalMoves = getAllLegalMoves(board);
-      this.canvas.addEventListener("mousemove", (e) => {
-        this.mouseMove(e);
-      });
-      this.canvas.addEventListener("click", (e) => {
-        this.click(e);
-      });
-      window.addEventListener("keydown", (e) => {
-        this.keyDown(e);
-      });
+      this.canvas.addEventListener("mousemove", (e) => this.mouseMove(e));
+      this.canvas.addEventListener("click", (e) => this.click(e));
+      window.addEventListener("keydown", (e) => this.keyDown(e));
       window.requestAnimationFrame(() => this.drawLoop());
       if (shouldPlaySound) {
         this.moveAlertSound = new Audio("./audio/bell.mp3");
@@ -484,6 +457,49 @@
           return;
         }
         this.onUserCompleteTurn(skipMove);
+      });
+      this.onMoveReady();
+    }
+    /**
+     * Called after a move has been played or at the beginning
+     * The board state is assumed to have been update already
+     */
+    onMoveReady() {
+      const botPlayer = otherPlayer(this.userPlayer);
+      const toPlay = this.board.state.toMove;
+      const appStatus = getAppMode();
+      if (toPlay === botPlayer) {
+        if (appStatus === "ai") {
+          this.botMove();
+        } else {
+          const moves = getAllLegalMoves(this.board);
+          const randomMove = moves[Math.floor(Math.random() * moves.length)];
+          this.board.doMove(randomMove);
+          this.playedMoves.push(randomMove);
+          this.updateScore();
+          this.legalMoves = getAllLegalMoves(this.board);
+        }
+      } else {
+      }
+    }
+    /**
+     * Sends the signal to the ai to play a move
+     */
+    botMove() {
+      const lastMove = this.playedMoves.at(-1);
+      findMove(this.board, this.workers, lastMove).then((move) => {
+        if (this.moveAlertSound) {
+          this.moveAlertSound.play();
+        }
+        if (move === void 0) {
+          console.log("no bot move");
+          this.board.skipTurn();
+        } else {
+          this.board.doMove(move);
+          this.playedMoves.push(move);
+        }
+        this.updateScore();
+        this.legalMoves = getAllLegalMoves(this.board);
       });
     }
     mouseMove(e) {
@@ -506,7 +522,7 @@
         piece: {
           location: this.mousePosition,
           pieceType: this.selectedPiece,
-          player: 0,
+          player: this.userPlayer,
           orientation
         },
         previousNullMoveCounter: this.board.state.nullMoveCounter
@@ -533,7 +549,7 @@
         this.selectedPieceFlipped = !this.selectedPieceFlipped;
       }
       if (e.key === "?") {
-        const move = this.legalMoves[0];
+        const move = this.legalMoves[Math.floor(Math.random() * this.legalMoves.length)];
         this.onUserCompleteTurn(move);
       }
     }
@@ -542,27 +558,15 @@
     // Update UI
     // Alert bot
     onUserCompleteTurn(move) {
-      if (this.board.state.toMove !== 0) {
+      if (this.board.state.toMove !== this.userPlayer) {
         throw new Error("calm down buddy, not your turn.");
       }
       this.board.doMove(move);
+      this.playedMoves.push(move);
       this.updateScore();
       this.updateCarouselVisibility();
       console.log({ winner: this.board.winner() });
-      if (this.board)
-        findMove(this.board, this.workers, move).then((move2) => {
-          if (this.moveAlertSound) {
-            this.moveAlertSound.play();
-          }
-          if (move2 === void 0) {
-            console.log("no bot move");
-            this.board.skipTurn();
-          } else {
-            this.board.doMove(move2);
-          }
-          this.updateScore();
-          this.legalMoves = getAllLegalMoves(this.board);
-        });
+      this.onMoveReady();
     }
     initCarousel() {
       const pieceOrder = [
@@ -604,11 +608,8 @@
     }
     updateCarouselVisibility() {
       for (const [pieceType, piece] of pieceData.entries()) {
-        if (this.board.state.playerARemaining & 1 << pieceType) {
-          this.carouselCanvases[pieceType].classList.remove("hidden");
-        } else {
-          this.carouselCanvases[pieceType].classList.add("hidden");
-        }
+        const visible = this.board.state.playerARemaining & 1 << pieceType;
+        this.carouselCanvases[pieceType].classList.toggle("hidden", !visible);
       }
     }
     carouselPiecePreview(piece) {
@@ -629,7 +630,7 @@
         };
         pieceCtx.beginPath();
         pieceCtx.rect(canvasCoords.x, canvasCoords.y, 100, 100);
-        pieceCtx.fillStyle = "green";
+        pieceCtx.fillStyle = this.userPlayer === 0 ? "green" : "red";
         pieceCtx.fill();
         const numRows = pieceBoundingBox.height;
         const numCols = pieceBoundingBox.width;
@@ -658,7 +659,7 @@
         piecePreview = {
           location: this.mousePosition,
           pieceType: this.selectedPiece,
-          player: 0,
+          player: this.userPlayer,
           orientation
         };
       }
@@ -682,7 +683,8 @@
         if (winner === "draw") {
           alert("Game is a draw");
         } else {
-          alert(`Player ${winner} wins!`);
+          const winnerName = winner === 0 ? "Green" : "Red";
+          alert(`Player ${winnerName} wins!`);
         }
       }
     }
@@ -757,8 +759,8 @@
   var getStartPosition = (position) => {
     if (position === "middle") {
       return [
-        { x: 4, y: 4 },
-        { x: 9, y: 9 }
+        { x: 6, y: 6 },
+        { x: 7, y: 7 }
       ];
     } else {
       return [
@@ -775,10 +777,6 @@
     playerABitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     startPosName: "middle",
-    startPositions: [
-      { x: 4, y: 4 },
-      { x: 9, y: 9 }
-    ],
     nullMoveCounter: 0
   };
   var Board = class _Board {
@@ -842,9 +840,6 @@
       }
       this.skipTurn();
     }
-    /**
-     * Currently used when the player has no legal moves to transfer to the other player.
-     */
     skipTurn() {
       this.state.toMove = otherPlayer(this.state.toMove);
     }
@@ -882,7 +877,7 @@
       return `${piece.pieceType}-${piece.location.x}-${piece.location.y}-${piece.orientation}`;
     }
     hash() {
-      return this.state.pieces.map((p) => this.placedPieceHash(p)).join("/");
+      return this.state.pieces.map((p) => this.placedPieceHash(p)).join("/") + `+${this.state.nullMoveCounter}`;
     }
   };
 
@@ -906,18 +901,57 @@
       threads.append(optionElement);
     }
     submitButton.addEventListener("click", () => {
+      window.addEventListener("beforeunload", (e) => {
+        e.preventDefault();
+        return false;
+      });
       const userNumThreads = parseInt(threads.value);
       const startPosition = startPos2.value;
       const shouldPlaySound = sound.value === "on";
       const boardState = new Board(startPosition);
       const workers = new WorkerManager(userNumThreads);
-      const interactiveCanvas = new InteractiveCanvas(boardState, workers, shouldPlaySound);
+      const interactiveCanvas = new InteractiveCanvas(
+        boardState,
+        workers,
+        shouldPlaySound,
+        player.value
+      );
       popupContainer.style.display = "none";
       const urlParams = new URLSearchParams(window.location.search);
       const debugMode = urlParams.get("debug") === "true";
-      if (!debugMode) {
+      if (getAppMode() !== "perf") {
         return;
       }
+      const statistics = { a: 0, b: 0, tie: 0 };
+      const moveamounts = [];
+      const startTime = performance.now();
+      for (let i = 0; i < 1e3; i++) {
+        while (!boardState.gameOver()) {
+          const legalMoves = getAllLegalMoves(boardState);
+          if (legalMoves.length === 0) {
+            break;
+          }
+          moveamounts.push(legalMoves.length);
+          const randomMove = legalMoves[Math.floor(Math.random() * legalMoves.length)];
+          boardState.doMove(randomMove);
+        }
+        const score = boardState.score();
+        if (score.playerA > score.playerB) {
+          statistics.a++;
+        } else if (score.playerA < score.playerB) {
+          statistics.b++;
+        } else {
+          statistics.tie++;
+        }
+        boardState.reset();
+      }
+      const endTime = performance.now();
+      console.log(`Time taken: ${endTime - startTime} milliseconds`);
+      console.log(statistics);
+      console.log(
+        "Average move amount",
+        moveamounts.reduce((a, b) => a + b, 0) / moveamounts.length
+      );
     });
   };
   main();

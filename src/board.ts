@@ -5,9 +5,13 @@ import { Coordinate } from './types';
 
 const getStartPosition = (position: StartPosition): [Coordinate, Coordinate] => {
     if (position === 'middle') {
+        // return [
+        //     { x: 4, y: 4 },
+        //     { x: 9, y: 9 },
+        // ];
         return [
-            { x: 4, y: 4 },
-            { x: 9, y: 9 },
+            { x: 6, y: 6 },
+            { x: 7, y: 7 },
         ];
     } else {
         return [

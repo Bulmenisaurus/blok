@@ -11,7 +11,7 @@ import {
     getOrientationData,
     pieceData,
 } from './movegen/movegen';
-import { getBoundingBox } from './movegen/movegen-utils';
+import { getBoundingBox, otherPlayer } from './movegen/movegen-utils';
 import { render } from './renderer';
 import { Coordinate } from './types';
 import { getAppMode } from './util';
@@ -30,6 +30,9 @@ export class InteractiveCanvas {
     carousel: HTMLElement;
     carouselCanvases: { [key: number]: HTMLCanvasElement } = [];
 
+    /** The player that the user controls */
+    userPlayer: Player;
+
     /** The current selected piece, will be shown on hover */
     selectedPiece: PieceType | null = null;
     /** Current position of the mouse, update on mousemove */
@@ -47,9 +50,16 @@ export class InteractiveCanvas {
     /** The list of moves played this game, used to update the bot */
     playedMoves: Move[] = [];
 
-    constructor(board: Board, workers: WorkerManager, shouldPlaySound: boolean) {
+    constructor(
+        board: Board,
+        workers: WorkerManager,
+        shouldPlaySound: boolean,
+        userPlayer: string
+    ) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d')!;
+
+        this.userPlayer = userPlayer === 'green' ? 0 : 1;
 
         this.canvas = canvas;
         this.ctx = ctx;
@@ -92,7 +102,7 @@ export class InteractiveCanvas {
      * The board state is assumed to have been update already
      */
     onMoveReady() {
-        const botPlayer: Player = 1;
+        const botPlayer: Player = otherPlayer(this.userPlayer);
         const toPlay = this.board.state.toMove;
         const appStatus = getAppMode();
 
@@ -163,7 +173,7 @@ export class InteractiveCanvas {
             piece: {
                 location: this.mousePosition,
                 pieceType: this.selectedPiece,
-                player: 0,
+                player: this.userPlayer,
                 orientation,
             },
             previousNullMoveCounter: this.board.state.nullMoveCounter,
@@ -205,7 +215,7 @@ export class InteractiveCanvas {
     // Update UI
     // Alert bot
     onUserCompleteTurn(move: Move) {
-        if (this.board.state.toMove !== 0) {
+        if (this.board.state.toMove !== this.userPlayer) {
             throw new Error('calm down buddy, not your turn.');
         }
         this.board.doMove(move);
@@ -271,7 +281,7 @@ export class InteractiveCanvas {
 
             pieceCtx.beginPath();
             pieceCtx.rect(canvasCoords.x, canvasCoords.y, 100, 100);
-            pieceCtx.fillStyle = 'green';
+            pieceCtx.fillStyle = this.userPlayer === 0 ? 'green' : 'red';
             pieceCtx.fill();
 
             const numRows = pieceBoundingBox.height;
@@ -309,7 +319,7 @@ export class InteractiveCanvas {
             piecePreview = {
                 location: this.mousePosition,
                 pieceType: this.selectedPiece,
-                player: 0,
+                player: this.userPlayer,
                 orientation,
             };
         }

@@ -1,12 +1,24 @@
 import { Board } from './board';
 import { WorkerMessage, WorkerResponse } from './workerManager';
 import { MonteCarlo } from './mcts/MonteCarlo';
+import { getAllLegalMoves } from './movegen/movegen';
 
-const board = new Board('middle');
+let board: Board | undefined;
 // Create Monte Carlo Tree Search instance
-const mcts = new MonteCarlo(board);
+let mcts: MonteCarlo | undefined;
 
 onmessage = (e: MessageEvent<WorkerMessage>) => {
+    if (e.data.type === 'init') {
+        console.log('initialization');
+        board = new Board(e.data.startPos);
+        mcts = new MonteCarlo(board);
+        return;
+    }
+
+    if (board === undefined || mcts === undefined) {
+        throw new Error('No initialization! :(');
+    }
+
     if (e.data.lastMove) {
         board.doMove(e.data.lastMove);
     }
@@ -15,9 +27,17 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
         throw new Error('why are you bothering me? The game is over.');
     }
 
+    const moves = getAllLegalMoves(board);
+    if (moves.length === 1) {
+        const bestMove = moves[0];
+        postMessage({ move: bestMove, score: 0 });
+        return;
+    }
+
     // Run MCTS search for a reasonable time (5 seconds)
     console.log('running mcts');
-    mcts.runSearch(board, 5000);
+    console.log('running 5k search');
+    mcts.runSearch(board, 10_000);
 
     try {
         // Get the best move from MCTS
@@ -35,6 +55,9 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
                 child.play.piece.location.y === bestMove.piece.location.y &&
                 child.play.piece.orientation === bestMove.piece.orientation
         );
+        // clear memory
+        console.log('clearing');
+        mcts.nodes.clear();
 
         const score = bestMoveStats
             ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0)
