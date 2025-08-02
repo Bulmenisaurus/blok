@@ -73,6 +73,8 @@ export class InteractiveCanvas {
 
         this.legalMoves = getAllLegalMoves(board);
 
+        this.updateScore();
+
         this.canvas.addEventListener('mousemove', (e) => this.mouseMove(e));
         this.canvas.addEventListener('click', (e) => this.click(e));
         window.addEventListener('keydown', (e) => this.keyDown(e));
@@ -348,6 +350,11 @@ export class InteractiveCanvas {
 
         userScore.innerText = playerA.toString();
         botScore.innerText = playerB.toString();
+
+        // update the skip button
+        const canSkip = this.legalMoves.includes(NULL_MOVE);
+        const skipButton = document.getElementById('skip-button') as HTMLButtonElement;
+        skipButton.disabled = !canSkip;
 
         if (this.board.gameOver()) {
             const winner = this.board.winner();

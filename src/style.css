@@ -22,6 +22,11 @@ body {
     flex-direction: column;
 }
 
+#user-score-container,
+#bot-score-container {
+    padding: 10px;
+}
+
 #canvas-container {
     height: 77vh;
     width: 100vw;
@@ -109,4 +114,23 @@ body {
     background-color: #7df246;
     border: none;
     padding: 10px 20px;
+}
+
+#skip {
+    display: flex;
+    justify-content: center;
+}
+
+#skip-button {
+    padding: 10px 20px;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 2px;
+    cursor: pointer;
+    color: black;
+}
+
+#skip-button:disabled {
+    background-color: #aaaaaa;
+    cursor: not-allowed;
 }
