@@ -46,13 +46,7 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
         // Get statistics for the best move
         const stats = mcts.getStats(board);
         const bestMoveStats = stats.children.find(
-            (child) =>
-                child.play &&
-                bestMove &&
-                child.play.pieceType === bestMove.pieceType &&
-                child.play.location.x === bestMove.location.x &&
-                child.play.location.y === bestMove.location.y &&
-                child.play.orientation === bestMove.orientation
+            (child) => child.play && bestMove && child.play === bestMove
         );
         // clear memory
         console.log('clearing');

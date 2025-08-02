@@ -1,12 +1,20 @@
 import { Board } from './board';
-import { PlacedPiece, Player, getOrientationData } from './movegen/movegen';
+import {
+    Move,
+    Player,
+    getMoveLocation,
+    getMoveOrientation,
+    getMovePieceType,
+    getMovePlayer,
+    getOrientationData,
+} from './movegen/movegen';
 import { Coordinate } from './types';
 
 export const render = (
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     boardState: Board,
-    previewPiece?: PlacedPiece
+    previewPiece?: Move
 ) => {
     canvas.width = 500;
     canvas.height = 500;
@@ -66,18 +74,14 @@ export const startPos = (ctx: CanvasRenderingContext2D, c: Coordinate) => {
     ctx.fill();
 };
 
-export const renderPiece = (
-    ctx: CanvasRenderingContext2D,
-    piece: PlacedPiece,
-    preview?: boolean
-) => {
-    for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
+export const renderPiece = (ctx: CanvasRenderingContext2D, piece: Move, preview?: boolean) => {
+    for (const tile of getOrientationData(getMovePieceType(piece), getMoveOrientation(piece))) {
         const tileCoordinate: Coordinate = {
-            x: tile.x + piece.location.x,
-            y: tile.y + piece.location.y,
+            x: tile.x + getMoveLocation(piece).x,
+            y: tile.y + getMoveLocation(piece).y,
         };
 
-        renderTile(ctx, tileCoordinate, piece.player, preview);
+        renderTile(ctx, tileCoordinate, getMovePlayer(piece), preview);
     }
 };
 

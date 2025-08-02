@@ -1,14 +1,6 @@
 "use strict";
 (() => {
   // src/bitboard.ts
-  var getBitBoardValue = (bitBoard, c) => {
-    const validYCoordinate = c.y >= 0 && c.y <= 13;
-    const validXCoordinate = c.x >= 0 && c.x <= 13;
-    if (!validYCoordinate || !validXCoordinate) {
-      return 0;
-    }
-    return bitBoard[c.y] >> c.x & 1;
-  };
   var setBitBoardValue = (bitBoard, c, value) => {
     const validYCoordinate = c.y >= 0 && c.y <= 13;
     const validXCoordinate = c.x >= 0 && c.x <= 13;
@@ -47,6 +39,30 @@
   };
 
   // src/movegen/movegen.ts
+  var MOVE_ORIENTATION_MASK = 7;
+  var MOVE_Y_MASK = 120;
+  var MOVE_X_MASK = 1920;
+  var MOVE_TYPE_MASK = 63488;
+  var MOVE_PLAYER_BIT = 65536;
+  var getMoveOrientation = (packedMove) => {
+    return packedMove & MOVE_ORIENTATION_MASK;
+  };
+  var getMoveLocation = (packedMove) => {
+    const x = (packedMove & MOVE_X_MASK) >> 7;
+    const y = (packedMove & MOVE_Y_MASK) >> 3;
+    return { x, y };
+  };
+  var getMovePieceType = (packedMove) => {
+    return (packedMove & MOVE_TYPE_MASK) >> 11;
+  };
+  var getMovePlayer = (packedMove) => {
+    const player = (packedMove & MOVE_PLAYER_BIT) >> 16;
+    return player;
+  };
+  var NULL_MOVE = 30720;
+  var serializePlacedPiece = (placedPiece) => {
+    return placedPiece.orientation | placedPiece.location.y << 3 | placedPiece.location.x << 7 | placedPiece.pieceType << 11 | placedPiece.player << 16;
+  };
   var orientationData = piece_orientations_default;
   var orientationBitBoarddata = piece_orientations_bitboard_default;
   var orientationBitBoardHaloData = piece_orientations_bitboard_halo_default;
@@ -57,14 +73,14 @@
     return orientationData[pieceType][orientation];
   };
   var isMoveLegal = (pseudoLegalMove, state) => {
-    if (pseudoLegalMove.piece === null) {
+    if (pseudoLegalMove === NULL_MOVE) {
       return true;
     }
-    const toMove = pseudoLegalMove.piece.player;
-    const location = pseudoLegalMove.piece.location;
+    const toMove = getMovePlayer(pseudoLegalMove);
+    const location = getMoveLocation(pseudoLegalMove);
     const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
     const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
-    const shortBoundingBox = shortBoundingBoxData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+    const shortBoundingBox = shortBoundingBoxData[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
     const bottomRightBB = {
       x: location.x + shortBoundingBox[0],
       y: location.y + shortBoundingBox[1]
@@ -72,7 +88,7 @@
     if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
       return false;
     }
-    const pieceBitboard = orientationBitBoarddata[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+    const pieceBitboard = orientationBitBoarddata[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
     for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
       const bitBoardRow = pieceBitboard[bitboardY] << location.x;
       const gameRow = opponentBitBoard[bitboardY + location.y];
@@ -80,7 +96,7 @@
         return false;
       }
     }
-    const haloData = orientationBitBoardHaloData[pseudoLegalMove.piece.pieceType][pseudoLegalMove.piece.orientation];
+    const haloData = orientationBitBoardHaloData[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
     for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
       if (location.y + bitboardY - 1 < 0 || location.y + bitboardY - 1 >= myBitBoard.length) {
         continue;
@@ -99,22 +115,22 @@
       const orientationCorners = cornersData[piece][i];
       for (const corner of orientationCorners) {
         const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
+        if (!coordinateInBounds(pieceMiddle)) {
+          continue;
+        }
         let placedPiece = {
           location: pieceMiddle,
           player: state.state.toMove,
           pieceType: piece,
           orientation: i
         };
-        moves.push({
-          piece: placedPiece,
-          previousNullMoveCounter: state.state.nullMoveCounter
-        });
+        const move = serializePlacedPiece(placedPiece);
+        moves.push(move);
       }
     }
     return moves.filter((p) => isMoveLegal(p, state));
   };
   var generateFirstMove = (board2) => {
-    const myState = board2.state.toMove === 0 ? board2.state.playerARemaining : board2.state.playerBRemaining;
     const startPos = board2.startPositions[board2.state.toMove];
     if (board2.state.nullMoveCounter !== 0) {
       throw new Error("Null move counter is not 0 at the beginning of the game?");
@@ -131,10 +147,7 @@
             pieceType: piece,
             orientation: i
           };
-          moves.push({
-            piece: placedPiece,
-            previousNullMoveCounter: board2.state.nullMoveCounter
-          });
+          moves.push(serializePlacedPiece(placedPiece));
         }
       }
     }
@@ -144,39 +157,23 @@
     if (board2.gameOver()) {
       return [];
     }
-    const myPlacedPieces = board2.state.pieces.filter((p) => p.player === board2.state.toMove);
+    const myPlacedPieces = board2.state.pieces.filter(
+      (p) => getMovePlayer(p) === board2.state.toMove
+    );
     if (myPlacedPieces.length === 0) {
       return generateFirstMove(board2);
     }
-    const myState = board2.state.toMove === 0 ? board2.state.playerARemaining : board2.state.playerBRemaining;
-    const moves = [];
-    for (const placedPiece of myPlacedPieces) {
-      const cornerAttachers = cornerAttachersData[placedPiece.pieceType][placedPiece.orientation];
-      for (const cornerAttacher of cornerAttachers) {
-        const cornerAbsolute = {
-          x: cornerAttacher.x + placedPiece.location.x,
-          y: cornerAttacher.y + placedPiece.location.y
-        };
-        if (!coordinateInBounds(cornerAbsolute)) {
-          continue;
-        }
-        const playerATile = getBitBoardValue(board2.state.playerABitBoard, cornerAbsolute);
-        const playerBTile = getBitBoardValue(board2.state.playerBBitBoard, cornerAbsolute);
-        if (playerATile || playerBTile) {
-          continue;
-        }
-        for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
-          if (!(myState & 1 << unplacedPiece)) {
-            continue;
-          }
-          moves.push(...getLegalMovesFrom(cornerAbsolute, unplacedPiece, board2));
-        }
-      }
+    let moves = [];
+    if (board2.state.toMove === 0) {
+      moves = Array.from(board2.state.playerACornerMoves.values()).flat();
+    } else {
+      moves = Array.from(board2.state.playerBCornerMoves.values()).flat();
     }
-    if (moves.length === 0) {
-      moves.push({ piece: null, previousNullMoveCounter: board2.state.nullMoveCounter });
+    const uniqueMoves = Array.from(new Set(moves));
+    if (uniqueMoves.length === 0) {
+      uniqueMoves.push(NULL_MOVE);
     }
-    return moves;
+    return uniqueMoves;
   };
 
   // src/board.ts
@@ -201,7 +198,9 @@
     playerABitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     startPosName: "middle",
-    nullMoveCounter: 0
+    nullMoveCounter: 0,
+    playerACornerMoves: /* @__PURE__ */ new Map(),
+    playerBCornerMoves: /* @__PURE__ */ new Map()
   };
   var Board = class _Board {
     constructor(startPosition, state) {
@@ -219,8 +218,8 @@
     }
     score() {
       return {
-        playerA: this.state.pieces.filter((p) => p.player === 0).map((p) => getOrientationData(p.pieceType, 0).length).reduce((a, b) => a + b, 0),
-        playerB: this.state.pieces.filter((p) => p.player === 1).map((p) => getOrientationData(p.pieceType, 0).length).reduce((a, b) => a + b, 0)
+        playerA: this.state.pieces.filter((p) => getMovePlayer(p) === 0).map((p) => getOrientationData(getMovePieceType(p), 0).length).reduce((a, b) => a + b, 0),
+        playerB: this.state.pieces.filter((p) => getMovePlayer(p) === 1).map((p) => getOrientationData(getMovePieceType(p), 0).length).reduce((a, b) => a + b, 0)
       };
     }
     winner() {
@@ -241,64 +240,66 @@
       return new _Board(state.startPosName, state);
     }
     doMove(move) {
-      const piece = move.piece;
-      if (piece === null) {
+      if (move === NULL_MOVE) {
         this.state.nullMoveCounter++;
         this.skipTurn();
         return;
       }
       this.state.nullMoveCounter = 0;
-      this.state.pieces.push(piece);
-      if (piece.player === 0) {
-        this.state.playerARemaining &= ~(1 << piece.pieceType);
+      this.state.pieces.push(move);
+      if (getMovePlayer(move) === 0) {
+        this.state.playerARemaining &= ~(1 << getMovePieceType(move));
       } else {
-        this.state.playerBRemaining &= ~(1 << piece.pieceType);
+        this.state.playerBRemaining &= ~(1 << getMovePieceType(move));
       }
-      const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][piece.player];
-      for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
+      const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][getMovePlayer(move)];
+      for (const tile of getOrientationData(getMovePieceType(move), getMoveOrientation(move))) {
         const pieceCoord = {
-          x: tile.x + piece.location.x,
-          y: tile.y + piece.location.y
+          x: tile.x + getMoveLocation(move).x,
+          y: tile.y + getMoveLocation(move).y
         };
         setBitBoardValue(bitBoard, pieceCoord, 1);
+      }
+      const placedPiece = getMovePieceType(move);
+      const placedPieceOrientation = getMoveOrientation(move);
+      const placedPieceLocation = getMoveLocation(move);
+      const myCachedMoves = this.state.toMove === 0 ? this.state.playerACornerMoves : this.state.playerBCornerMoves;
+      const relativeCorner = cornersData[placedPiece][placedPieceOrientation];
+      for (const corner of relativeCorner) {
+        const cornerCoord = {
+          x: corner.x + placedPieceLocation.x,
+          y: corner.y + placedPieceLocation.y
+        };
+        const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
+        this.state.playerACornerMoves.delete(cornerIdx);
+      }
+      for (const [idx, moves] of myCachedMoves) {
+        const newMoves = moves.filter((m) => isMoveLegal(m, this));
+        myCachedMoves.set(idx, newMoves);
+      }
+      const cornerAttachers = cornerAttachersData[placedPiece][placedPieceOrientation];
+      for (const cornerAttacher of cornerAttachers) {
+        const cornerCoord = {
+          x: cornerAttacher.x + placedPieceLocation.x,
+          y: cornerAttacher.y + placedPieceLocation.y
+        };
+        if (!coordinateInBounds(cornerCoord)) {
+          continue;
+        }
+        const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
+        if (myCachedMoves.has(cornerIdx)) {
+          continue;
+        }
+        const moves = getLegalMovesFrom(cornerCoord, placedPiece, this);
+        myCachedMoves.set(cornerIdx, moves);
       }
       this.skipTurn();
     }
     skipTurn() {
       this.state.toMove = otherPlayer(this.state.toMove);
     }
-    undoMove(move) {
-      const piece = move.piece;
-      this.state.nullMoveCounter = move.previousNullMoveCounter;
-      if (piece === null) {
-        this.skipTurn();
-        return;
-      }
-      const moveIndex = this.state.pieces.findIndex((p) => {
-        return p.location.x === piece.location.x && p.location.y === piece.location.y && piece.pieceType === p.pieceType;
-      });
-      if (moveIndex === -1) {
-        console.error("Err with move: ", move);
-        throw new Error(`could not identify piece`);
-      }
-      this.state.pieces.splice(moveIndex, 1);
-      if (piece.player === 0) {
-        this.state.playerARemaining |= 1 << piece.pieceType;
-      } else {
-        this.state.playerBRemaining |= 1 << piece.pieceType;
-      }
-      const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][piece.player];
-      for (const tile of getOrientationData(piece.pieceType, piece.orientation)) {
-        const pieceCoord = {
-          x: tile.x + piece.location.x,
-          y: tile.y + piece.location.y
-        };
-        setBitBoardValue(bitBoard, pieceCoord, 0);
-      }
-      this.skipTurn();
-    }
-    placedPieceHash(piece) {
-      return `${piece.pieceType}-${piece.location.x}-${piece.location.y}-${piece.orientation}`;
+    placedPieceHash(move) {
+      return `${move}`;
     }
     hash() {
       return this.state.pieces.map((p) => this.placedPieceHash(p)).join("/") + `+${this.state.nullMoveCounter}`;
@@ -307,10 +308,7 @@
 
   // src/mcts/MonteCarloNode.ts
   var moveHash = (move) => {
-    if (move.piece === null) {
-      return "null";
-    }
-    return `${move.piece.pieceType}-${move.piece.location.x}-${move.piece.location.y}-${move.piece.orientation}`;
+    return `${move}`;
   };
   var MonteCarloNode = class _MonteCarloNode {
     constructor(parent, play, state, unexpandedPlays) {
@@ -384,7 +382,7 @@
       this.makeNode(state);
       let end = Date.now() + timeout;
       let i = 0;
-      for (; i < 1e3 || Date.now() < end; i++) {
+      for (; i < 15e3 || Date.now() < end; i++) {
         let node = this.select(state);
         let winner = node.state.winner();
         if (node.isLeaf() === false && winner === "none") {
@@ -506,9 +504,18 @@
   };
 
   // src/worker.ts
-  var board = new Board("middle");
-  var mcts = new MonteCarlo(board);
+  var board;
+  var mcts;
   onmessage = (e) => {
+    if (e.data.type === "init") {
+      console.log("initialization");
+      board = new Board(e.data.startPos);
+      mcts = new MonteCarlo(board);
+      return;
+    }
+    if (board === void 0 || mcts === void 0) {
+      throw new Error("No initialization! :(");
+    }
     if (e.data.lastMove) {
       board.doMove(e.data.lastMove);
     }
@@ -528,7 +535,7 @@
       const bestMove = mcts.bestPlay(board);
       const stats = mcts.getStats(board);
       const bestMoveStats = stats.children.find(
-        (child) => child.play && child.play.piece && bestMove.piece && child.play.piece.pieceType === bestMove.piece.pieceType && child.play.piece.location.x === bestMove.piece.location.x && child.play.piece.location.y === bestMove.piece.location.y && child.play.piece.orientation === bestMove.piece.orientation
+        (child) => child.play && bestMove && child.play === bestMove
       );
       console.log("clearing");
       mcts.nodes.clear();

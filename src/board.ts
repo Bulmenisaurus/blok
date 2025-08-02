@@ -1,18 +1,33 @@
 import { BitBoard, setBitBoardValue } from './bitboard';
-import { Move, PlacedPiece, Player, StartPosition, getOrientationData } from './movegen/movegen';
-import { otherPlayer } from './movegen/movegen-utils';
+import {
+    NULL_MOVE,
+    Move,
+    PackedMove,
+    Player,
+    StartPosition,
+    getMoveLocation,
+    getMoveOrientation,
+    getMovePieceType,
+    getMovePlayer,
+    getOrientationData,
+    cornersData,
+    isMoveLegal,
+    cornerAttachersData,
+    getLegalMovesFrom,
+} from './movegen/movegen';
+import { coordinateInBounds, otherPlayer } from './movegen/movegen-utils';
 import { Coordinate } from './types';
 
 const getStartPosition = (position: StartPosition): [Coordinate, Coordinate] => {
     if (position === 'middle') {
-        // return [
-        //     { x: 4, y: 4 },
-        //     { x: 9, y: 9 },
-        // ];
         return [
-            { x: 6, y: 6 },
-            { x: 7, y: 7 },
+            { x: 4, y: 4 },
+            { x: 9, y: 9 },
         ];
+        // return [
+        //     { x: 6, y: 6 },
+        //     { x: 7, y: 7 },
+        // ];
     } else {
         return [
             { x: 0, y: 13 },
@@ -28,7 +43,7 @@ const getStartPosition = (position: StartPosition): [Coordinate, Coordinate] => 
  */
 interface BoardState {
     /** The pieces on the board, stored with coordinates, orientation and player */
-    pieces: PlacedPiece[];
+    pieces: PackedMove[];
     /** The player to move next */
     toMove: Player;
 
@@ -43,6 +58,10 @@ interface BoardState {
 
     /** The number of null moves played in a row */
     nullMoveCounter: number;
+
+    /** Cached corner moves for each player */
+    playerACornerMoves: Map<number, Move[]>;
+    playerBCornerMoves: Map<number, Move[]>;
 }
 
 /**
@@ -57,6 +76,8 @@ const defaultBoardState: BoardState = {
     playerBBitBoard: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     startPosName: 'middle',
     nullMoveCounter: 0,
+    playerACornerMoves: new Map(),
+    playerBCornerMoves: new Map(),
 };
 export class Board {
     state: BoardState;
@@ -82,12 +103,12 @@ export class Board {
     score(): { playerA: number; playerB: number } {
         return {
             playerA: this.state.pieces
-                .filter((p) => p.player === 0)
-                .map((p) => getOrientationData(p.pieceType, 0).length)
+                .filter((p) => getMovePlayer(p) === 0)
+                .map((p) => getOrientationData(getMovePieceType(p), 0).length)
                 .reduce((a, b) => a + b, 0),
             playerB: this.state.pieces
-                .filter((p) => p.player === 1)
-                .map((p) => getOrientationData(p.pieceType, 0).length)
+                .filter((p) => getMovePlayer(p) === 1)
+                .map((p) => getOrientationData(getMovePieceType(p), 0).length)
                 .reduce((a, b) => a + b, 0),
         };
     }
@@ -113,9 +134,21 @@ export class Board {
     }
 
     doMove(move: Move) {
-        if (move === null) {
+        if (move === NULL_MOVE) {
             this.state.nullMoveCounter++;
+
+            const opponentCachedMoves =
+                this.state.toMove === 0
+                    ? this.state.playerBCornerMoves
+                    : this.state.playerACornerMoves;
+
             this.skipTurn();
+
+            // 2: filter: need to filter opponent's moves, since they are the ones that move next
+            for (const [idx, moves] of opponentCachedMoves) {
+                const newMoves = moves.filter((m) => isMoveLegal(m, this));
+                opponentCachedMoves.set(idx, newMoves);
+            }
             return;
         }
 
@@ -123,34 +156,106 @@ export class Board {
         this.state.nullMoveCounter = 0;
 
         this.state.pieces.push(move);
-        if (move.player === 0) {
-            this.state.playerARemaining &= ~(1 << move.pieceType);
+
+        if (getMovePlayer(move) === 0) {
+            this.state.playerARemaining &= ~(1 << getMovePieceType(move));
         } else {
-            this.state.playerBRemaining &= ~(1 << move.pieceType);
+            this.state.playerBRemaining &= ~(1 << getMovePieceType(move));
         }
 
         // update bitboard
-        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][move.player];
+        const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][
+            getMovePlayer(move)
+        ];
 
         //TODO: use the piece bitboards, not individual tiles
-        for (const tile of getOrientationData(move.pieceType, move.orientation)) {
+        for (const tile of getOrientationData(getMovePieceType(move), getMoveOrientation(move))) {
             // mark coordinate as set
             const pieceCoord = {
-                x: tile.x + move.location.x,
-                y: tile.y + move.location.y,
+                x: tile.x + getMoveLocation(move).x,
+                y: tile.y + getMoveLocation(move).y,
             };
             setBitBoardValue(bitBoard, pieceCoord, 1);
         }
 
+        // Update the corner data.
+        // 1. For each of the corners of the placed piece, clear the corner moves for that corner (because there cannot be any moves there anymore)
+        // 2. Filter out the moves that are no longer valid
+        // 3. Add the new moves to the corner moves
+
+        const placedPiece = getMovePieceType(move);
+        const placedPieceOrientation = getMoveOrientation(move);
+        const placedPieceLocation = getMoveLocation(move);
+        const myCachedMoves =
+            this.state.toMove === 0 ? this.state.playerACornerMoves : this.state.playerBCornerMoves;
+
+        const opponentCachedMoves =
+            this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
+
+        // 1: delete the corner moves for the placed piece
+        const relativeCorner = cornersData[placedPiece][placedPieceOrientation];
+        for (const corner of relativeCorner) {
+            const cornerCoord = {
+                x: corner.x + placedPieceLocation.x,
+                y: corner.y + placedPieceLocation.y,
+            };
+            const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
+
+            // both player's moves are invalidated for this corner
+            myCachedMoves.delete(cornerIdx);
+            opponentCachedMoves.delete(cornerIdx);
+        }
+
+        // 3: add new
+        const cornerAttachers = cornerAttachersData[placedPiece][placedPieceOrientation];
+        for (const cornerAttacher of cornerAttachers) {
+            const cornerCoord = {
+                x: cornerAttacher.x + placedPieceLocation.x,
+                y: cornerAttacher.y + placedPieceLocation.y,
+            };
+
+            if (!coordinateInBounds(cornerCoord)) {
+                continue;
+            }
+
+            const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
+
+            // might already have this corner in the cache
+            if (myCachedMoves.has(cornerIdx)) {
+                continue;
+            }
+
+            // otherwise, add new moves for all piece types
+            const myRemaining =
+                this.state.toMove === 0 ? this.state.playerARemaining : this.state.playerBRemaining;
+            const legalMoves = [];
+
+            for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
+                if (!(myRemaining & (1 << unplacedPiece))) {
+                    continue;
+                }
+
+                legalMoves.push(...getLegalMovesFrom(cornerCoord, unplacedPiece, this));
+            }
+
+            myCachedMoves.set(cornerIdx, legalMoves);
+        }
+
         this.skipTurn();
+
+        // 2: filter: need to filter opponent's moves, since they are the ones that move next
+        for (const [idx, moves] of opponentCachedMoves) {
+            const newMoves = moves.filter((m) => isMoveLegal(m, this));
+            opponentCachedMoves.set(idx, newMoves);
+        }
     }
 
     skipTurn() {
         this.state.toMove = otherPlayer(this.state.toMove);
     }
 
-    placedPieceHash(piece: PlacedPiece) {
-        return `${piece.pieceType}-${piece.location.x}-${piece.location.y}-${piece.orientation}`;
+    placedPieceHash(move: Move) {
+        return `${move}`;
     }
 
     hash() {

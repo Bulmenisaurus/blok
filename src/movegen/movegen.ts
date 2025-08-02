@@ -18,6 +18,39 @@ export type PieceData = Coordinate[];
 export type PieceType = number;
 export type Player = 0 | 1;
 
+// 16 bit integer bitfield
+export type PackedMove = number;
+
+const MOVE_ORIENTATION_MASK = 0x7;
+const MOVE_Y_MASK = 0x78;
+const MOVE_X_MASK = 0x780;
+const MOVE_TYPE_MASK = 0xf800;
+const MOVE_PLAYER_BIT = 0x10000;
+
+export const getMoveOrientation = (packedMove: PackedMove): number => {
+    return packedMove & MOVE_ORIENTATION_MASK;
+};
+
+export const getMoveLocation = (packedMove: PackedMove): Coordinate => {
+    const x = (packedMove & MOVE_X_MASK) >> 7;
+    const y = (packedMove & MOVE_Y_MASK) >> 3;
+
+    return { x, y };
+};
+
+export const getMovePieceType = (packedMove: PackedMove): number => {
+    return (packedMove & MOVE_TYPE_MASK) >> 11;
+};
+
+export const getMovePlayer = (packedMove: PackedMove): Player => {
+    const player = (packedMove & MOVE_PLAYER_BIT) >> 16;
+
+    return player as Player;
+};
+
+// Sentinel value, invalid for an actual move since there cannot be a move with piece type 31.
+export const NULL_MOVE = 0x7800;
+
 export interface PlacedPiece {
     pieceType: PieceType;
     location: Coordinate;
@@ -25,13 +58,20 @@ export interface PlacedPiece {
     orientation: number;
 }
 
+export const serializePlacedPiece = (placedPiece: PlacedPiece): PackedMove => {
+    return (
+        placedPiece.orientation |
+        (placedPiece.location.y << 3) |
+        (placedPiece.location.x << 7) |
+        (placedPiece.pieceType << 11) |
+        (placedPiece.player << 16)
+    );
+};
+
 /**
  * A move is either a placement of a piece or a transfer of the turn to the other player.
  */
-export type Move = PlacedPiece | null;
-// export interface Move {
-//     piece: PlacedPiece | null;
-// }
+export type Move = PackedMove;
 
 export interface Permutation {
     rotation: number;
@@ -64,21 +104,30 @@ export type StartPosition = 'middle' | 'corner';
  * @param state The context within which it's legality is checked
  * @returns Whether the move is legal
  */
-const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
+export const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     // We assume if a null move was generated, it was legal
     // We don't check if there is actually a reason for a null move - like if there are zero valid moves
-    if (pseudoLegalMove === null) {
+    if (pseudoLegalMove === NULL_MOVE) {
         return true;
     }
 
-    const toMove = pseudoLegalMove.player;
-    const location = pseudoLegalMove.location;
+    const toMove = getMovePlayer(pseudoLegalMove);
+    const location = getMoveLocation(pseudoLegalMove);
+
+    // otherwise, check if we already placed this piece
+    const myPlacedPiece = [state.state.playerARemaining, state.state.playerBRemaining][toMove];
+    if (!(myPlacedPiece & (1 << getMovePieceType(pseudoLegalMove)))) {
+        return false;
+    }
 
     const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
     const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
 
     const shortBoundingBox =
-        shortBoundingBoxData[pseudoLegalMove.pieceType][pseudoLegalMove.orientation];
+        shortBoundingBoxData[getMovePieceType(pseudoLegalMove)][
+            getMoveOrientation(pseudoLegalMove)
+        ];
+
     const bottomRightBB = {
         x: location.x + shortBoundingBox[0],
         y: location.y + shortBoundingBox[1],
@@ -95,7 +144,9 @@ const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     // |xx
     // i.e. the L piece
     const pieceBitboard =
-        orientationBitBoarddata[pseudoLegalMove.pieceType][pseudoLegalMove.orientation];
+        orientationBitBoarddata[getMovePieceType(pseudoLegalMove)][
+            getMoveOrientation(pseudoLegalMove)
+        ];
 
     // it's easier to check the opponent bitboards first: check if there is no intersection
     for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
@@ -112,7 +163,9 @@ const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
     // for this we also need to do a "halo" - checking 4 tiles around each piece
     // thus for each row, we need to add a couple more options: the row, the rows above and below it, and the row shifted left and right
     const haloData =
-        orientationBitBoardHaloData[pseudoLegalMove.pieceType][pseudoLegalMove.orientation];
+        orientationBitBoardHaloData[getMovePieceType(pseudoLegalMove)][
+            getMoveOrientation(pseudoLegalMove)
+        ];
 
     for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
         if (location.y + bitboardY - 1 < 0 || location.y + bitboardY - 1 >= myBitBoard.length) {
@@ -137,7 +190,7 @@ const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
  * @param state Current board state
  * @returns An array of legal moves
  */
-const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Move[] => {
+export const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Move[] => {
     const moves: Move[] = [];
 
     //TODO: could we hardcode every single valid placement?
@@ -155,14 +208,20 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Mo
         for (const corner of orientationCorners) {
             // position of the (0,0) tile
             const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
+
+            if (!coordinateInBounds(pieceMiddle)) {
+                continue;
+            }
+
             let placedPiece: PlacedPiece = {
                 location: pieceMiddle,
                 player: state.state.toMove,
                 pieceType: piece,
                 orientation: i,
             };
+            const move = serializePlacedPiece(placedPiece);
 
-            moves.push(placedPiece);
+            moves.push(move);
         }
     }
 
@@ -176,8 +235,6 @@ const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Mo
  * @returns
  */
 const generateFirstMove = (board: Board): Move[] => {
-    const myState =
-        board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const startPos = board.startPositions[board.state.toMove];
 
     if (board.state.nullMoveCounter !== 0) {
@@ -201,7 +258,7 @@ const generateFirstMove = (board: Board): Move[] => {
                     orientation: i,
                 };
 
-                moves.push(placedPiece);
+                moves.push(serializePlacedPiece(placedPiece));
             }
         }
     }
@@ -225,12 +282,25 @@ export const getAllLegalMoves = (board: Board): Move[] => {
         return [];
     }
 
-    const myPlacedPieces = board.state.pieces.filter((p) => p.player === board.state.toMove);
+    const myPlacedPieces = board.state.pieces.filter(
+        (p) => getMovePlayer(p) === board.state.toMove
+    );
 
     if (myPlacedPieces.length === 0) {
         return generateFirstMove(board);
     }
 
+    // If not generating the first move, used the cached moves for each corner
+    let moves: Move[] = [];
+    if (board.state.toMove === 0) {
+        moves = Array.from(board.state.playerACornerMoves.values()).flat();
+    } else {
+        moves = Array.from(board.state.playerBCornerMoves.values()).flat();
+    }
+
+    // deduplicate
+    const uniqueMoves = Array.from(new Set(moves));
+    /*
     const myState =
         board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
     const moves: Move[] = [];
@@ -242,11 +312,12 @@ export const getAllLegalMoves = (board: Board): Move[] => {
         // o x
         // oo
         //x  x
-        const cornerAttachers = cornerAttachersData[placedPiece.pieceType][placedPiece.orientation];
+        const cornerAttachers =
+            cornerAttachersData[getMovePieceType(placedPiece)][getMoveOrientation(placedPiece)];
         for (const cornerAttacher of cornerAttachers) {
             const cornerAbsolute: Coordinate = {
-                x: cornerAttacher.x + placedPiece.location.x,
-                y: cornerAttacher.y + placedPiece.location.y,
+                x: cornerAttacher.x + getMoveLocation(placedPiece).x,
+                y: cornerAttacher.y + getMoveLocation(placedPiece).y,
             };
 
             if (!coordinateInBounds(cornerAbsolute)) {
@@ -269,11 +340,11 @@ export const getAllLegalMoves = (board: Board): Move[] => {
                 moves.push(...getLegalMovesFrom(cornerAbsolute, unplacedPiece, board));
             }
         }
+    }*/
+
+    if (uniqueMoves.length === 0) {
+        uniqueMoves.push(NULL_MOVE);
     }
 
-    if (moves.length === 0) {
-        moves.push(null);
-    }
-
-    return moves;
+    return uniqueMoves;
 };

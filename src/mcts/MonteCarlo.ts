@@ -20,7 +20,7 @@ export class MonteCarlo {
         let end = Date.now() + timeout;
 
         let i = 0;
-        for (; i < 15_000 || Date.now() < end; i++) {
+        for (; i < 1_000 || Date.now() < end; i++) {
             let node = this.select(state);
             let winner = node.state.winner();
             if (node.isLeaf() === false && winner === 'none') {

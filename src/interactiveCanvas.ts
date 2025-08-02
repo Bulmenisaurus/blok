@@ -2,14 +2,17 @@ import { Board } from './board';
 import { findMove } from './mcts/mcts-bot';
 import {
     Move,
+    NULL_MOVE,
     PieceData,
     PieceType,
     PlacedPiece,
     Player,
     RRData,
     getAllLegalMoves,
+    getMovePlayer,
     getOrientationData,
     pieceData,
+    serializePlacedPiece,
 } from './movegen/movegen';
 import { getBoundingBox, otherPlayer } from './movegen/movegen-utils';
 import { render } from './renderer';
@@ -82,7 +85,7 @@ export class InteractiveCanvas {
 
         const skipButton = document.getElementById('skip-button')!;
         skipButton.addEventListener('click', () => {
-            const skipMove: Move = null;
+            const skipMove = NULL_MOVE;
             if (!this.isMoveLegal(skipMove)) {
                 console.error('Illegal skip move');
                 return;
@@ -99,6 +102,10 @@ export class InteractiveCanvas {
      * The board state is assumed to have been update already
      */
     onMoveReady() {
+        if (this.board.gameOver()) {
+            return;
+        }
+
         const botPlayer: Player = otherPlayer(this.userPlayer);
         const toPlay = this.board.state.toMove;
         const appStatus = getAppMode();
@@ -110,7 +117,8 @@ export class InteractiveCanvas {
                 this.botMove();
             } else {
                 const moves = getAllLegalMoves(this.board);
-                const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                // const randomMove = moves[Math.floor(Math.random() * moves.length)];
+                const randomMove = moves[0];
                 this.board.doMove(randomMove);
                 this.playedMoves.push(randomMove);
                 this.updateScore();
@@ -166,12 +174,12 @@ export class InteractiveCanvas {
 
         const orientation = RRData[this.selectedPiece][rotationReflection];
 
-        const move: Move = {
+        const move = serializePlacedPiece({
             location: this.mousePosition,
             pieceType: this.selectedPiece,
             player: this.userPlayer,
             orientation,
-        };
+        });
 
         if (!this.isMoveLegal(move)) {
             console.error('Illegal move');
@@ -317,22 +325,19 @@ export class InteractiveCanvas {
                 orientation,
             };
         }
-        render(this.canvas, this.ctx, this.board, piecePreview);
+
+        render(
+            this.canvas,
+            this.ctx,
+            this.board,
+            piecePreview ? serializePlacedPiece(piecePreview) : undefined
+        );
 
         window.requestAnimationFrame(() => this.drawLoop());
     }
 
     score(): { playerA: number; playerB: number } {
-        return {
-            playerA: this.board.state.pieces
-                .filter((p) => p.player === 0)
-                .map((p) => getOrientationData(p.pieceType, 0).length)
-                .reduce((a, b) => a + b, 0),
-            playerB: this.board.state.pieces
-                .filter((p) => p.player === 1)
-                .map((p) => getOrientationData(p.pieceType, 0).length)
-                .reduce((a, b) => a + b, 0),
-        };
+        return this.board.score();
     }
 
     updateScore() {
@@ -357,15 +362,6 @@ export class InteractiveCanvas {
 
     isMoveLegal(move: Move): boolean {
         // check if either we can skip or we can place that piece
-        return !!this.legalMoves.find(
-            (legalMove) =>
-                (move === null && legalMove === null) ||
-                (move !== null &&
-                    legalMove !== null &&
-                    move.location.x === legalMove.location.x &&
-                    move.location.y === legalMove.location.y &&
-                    move.orientation === legalMove.orientation &&
-                    move.pieceType === legalMove.pieceType)
-        );
+        return this.legalMoves.includes(move);
     }
 }
