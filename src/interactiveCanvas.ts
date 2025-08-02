@@ -224,10 +224,10 @@ export class InteractiveCanvas {
         }
         this.board.doMove(move);
         this.playedMoves.push(move);
+        this.selectedPiece = null;
+
         this.updateScore();
         this.updateCarouselVisibility();
-
-        console.log({ winner: this.board.winner() });
 
         this.onMoveReady();
     }
