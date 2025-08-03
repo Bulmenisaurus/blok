@@ -19,8 +19,13 @@ export class MonteCarlo {
         this.makeNode(state);
         const start = Date.now();
 
+        // some randomness :P
+        timeout += Math.random() * 3_000;
+
+        const searchDepth = 15_000;
+
         let i = 0;
-        for (; i < 15_000 || Date.now() < start + timeout; i++) {
+        for (; i < searchDepth || Date.now() < start + timeout; i++) {
             let node = this.select(state);
             let winner = node.state.winner();
             if (node.isLeaf() === false && winner === 'none') {

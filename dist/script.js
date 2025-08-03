@@ -276,6 +276,16 @@
     }
     return moves.filter((p) => isMoveLegal(p, state));
   };
+  var isMoveBlokeeLegal = (move, pieceTiles) => {
+    return pieceTiles.every((relCoord) => {
+      const absolute = { x: relCoord.x + move.location.x, y: relCoord.y + move.location.y };
+      if (move.player === 0) {
+        return absolute.x <= 6 && absolute.y > 6;
+      } else {
+        return absolute.x > 6 && absolute.y <= 6;
+      }
+    });
+  };
   var generateFirstMove = (board) => {
     const startPos2 = board.startPositions[board.state.toMove];
     if (board.state.nullMoveCounter !== 0) {
@@ -293,6 +303,9 @@
             pieceType: piece,
             orientation: i
           };
+          if (board.state.startPosName === "middle-blokee" && !isMoveBlokeeLegal(placedPiece, pieceTiles)) {
+            continue;
+          }
           moves.push(serializePlacedPiece(placedPiece));
         }
       }
@@ -436,7 +449,6 @@
       }
       const skipButton = document.getElementById("skip-button");
       skipButton.addEventListener("click", () => {
-        debugger;
         const skipMove = NULL_MOVE;
         if (!this.isMoveLegal(skipMove)) {
           console.error("Illegal skip move");
@@ -593,8 +605,12 @@
       }
     }
     updateCarouselVisibility() {
+      const myPiecesRemaining = [
+        this.board.state.playerARemaining,
+        this.board.state.playerBRemaining
+      ][this.userPlayer];
       for (const [pieceType, piece] of pieceData.entries()) {
-        const visible = this.board.state.playerARemaining & 1 << pieceType;
+        const visible = myPiecesRemaining & 1 << pieceType;
         this.carouselCanvases[pieceType].classList.toggle("hidden", !visible);
       }
     }
@@ -618,22 +634,22 @@
         pieceCtx.rect(canvasCoords.x, canvasCoords.y, 100, 100);
         pieceCtx.fillStyle = this.userPlayer === 0 ? "green" : "red";
         pieceCtx.fill();
-        const numRows = pieceBoundingBox.height;
-        const numCols = pieceBoundingBox.width;
-        for (let i = 0; i < numRows; i++) {
-          pieceCtx.lineWidth = 5;
-          pieceCtx.strokeStyle = "#fff";
-          pieceCtx.beginPath();
-          pieceCtx.moveTo(0, pieceCanvas.height / numRows * (i + 1));
-          pieceCtx.lineTo(pieceCanvas.width, pieceCanvas.height / numRows * (i + 1));
-          pieceCtx.stroke();
-        }
-        for (let i = 0; i < numCols; i++) {
-          pieceCtx.beginPath();
-          pieceCtx.moveTo(pieceCanvas.width / numCols * (i + 1), 0);
-          pieceCtx.lineTo(pieceCanvas.width / numCols * (i + 1), pieceCanvas.height);
-          pieceCtx.stroke();
-        }
+      }
+      const numRows = pieceBoundingBox.height;
+      const numCols = pieceBoundingBox.width;
+      for (let i = 0; i < numRows; i++) {
+        pieceCtx.lineWidth = 5;
+        pieceCtx.strokeStyle = "#fff";
+        pieceCtx.beginPath();
+        pieceCtx.moveTo(0, pieceCanvas.height / numRows * (i + 1));
+        pieceCtx.lineTo(pieceCanvas.width, pieceCanvas.height / numRows * (i + 1));
+        pieceCtx.stroke();
+      }
+      for (let i = 0; i < numCols; i++) {
+        pieceCtx.beginPath();
+        pieceCtx.moveTo(pieceCanvas.width / numCols * (i + 1), 0);
+        pieceCtx.lineTo(pieceCanvas.width / numCols * (i + 1), pieceCanvas.height);
+        pieceCtx.stroke();
       }
       return pieceCanvas;
     }
@@ -778,11 +794,18 @@
         { x: 4, y: 4 },
         { x: 9, y: 9 }
       ];
-    } else {
+    } else if (position === "corner") {
       return [
-        { x: 0, y: 13 },
-        { x: 13, y: 0 }
+        { x: 0, y: 0 },
+        { x: 13, y: 13 }
       ];
+    } else if (position === "middle-blokee") {
+      return [
+        { x: 6, y: 7 },
+        { x: 7, y: 6 }
+      ];
+    } else {
+      throw new Error(`Unrecognized start position ${position}`);
     }
   };
   var defaultBoardState = {
@@ -935,6 +958,7 @@
       threads.append(optionElement);
     }
     submitButton.addEventListener("click", () => {
+      popupContainer.style.display = "none";
       window.addEventListener("beforeunload", (e) => {
         e.preventDefault();
         return false;
@@ -951,7 +975,6 @@
         shouldPlaySound,
         player.value
       );
-      popupContainer.style.display = "none";
       const urlParams = new URLSearchParams(window.location.search);
       const debugMode = urlParams.get("debug") === "true";
       if (getAppMode() !== "perf") {

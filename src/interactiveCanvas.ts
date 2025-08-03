@@ -87,7 +87,6 @@ export class InteractiveCanvas {
 
         const skipButton = document.getElementById('skip-button')!;
         skipButton.addEventListener('click', () => {
-            debugger;
             const skipMove = NULL_MOVE;
             if (!this.isMoveLegal(skipMove)) {
                 console.error('Illegal skip move');
@@ -256,8 +255,13 @@ export class InteractiveCanvas {
     }
 
     updateCarouselVisibility() {
+        const myPiecesRemaining = [
+            this.board.state.playerARemaining,
+            this.board.state.playerBRemaining,
+        ][this.userPlayer];
+
         for (const [pieceType, piece] of pieceData.entries()) {
-            const visible = this.board.state.playerARemaining & (1 << pieceType);
+            const visible = myPiecesRemaining & (1 << pieceType);
             this.carouselCanvases[pieceType].classList.toggle('hidden', !visible);
         }
     }
@@ -288,29 +292,28 @@ export class InteractiveCanvas {
             pieceCtx.rect(canvasCoords.x, canvasCoords.y, 100, 100);
             pieceCtx.fillStyle = this.userPlayer === 0 ? 'green' : 'red';
             pieceCtx.fill();
-
-            const numRows = pieceBoundingBox.height;
-            const numCols = pieceBoundingBox.width;
-
-            for (let i = 0; i < numRows; i++) {
-                // horizontal
-                pieceCtx.lineWidth = 5;
-                pieceCtx.strokeStyle = '#fff';
-
-                pieceCtx.beginPath();
-                pieceCtx.moveTo(0, (pieceCanvas.height / numRows) * (i + 1));
-                pieceCtx.lineTo(pieceCanvas.width, (pieceCanvas.height / numRows) * (i + 1));
-                pieceCtx.stroke();
-            }
-
-            for (let i = 0; i < numCols; i++) {
-                // vertical
-                pieceCtx.beginPath();
-                pieceCtx.moveTo((pieceCanvas.width / numCols) * (i + 1), 0);
-                pieceCtx.lineTo((pieceCanvas.width / numCols) * (i + 1), pieceCanvas.height);
-                pieceCtx.stroke();
-            }
         }
+        const numRows = pieceBoundingBox.height;
+        const numCols = pieceBoundingBox.width;
+        for (let i = 0; i < numRows; i++) {
+            // horizontal
+            pieceCtx.lineWidth = 5;
+            pieceCtx.strokeStyle = '#fff';
+
+            pieceCtx.beginPath();
+            pieceCtx.moveTo(0, (pieceCanvas.height / numRows) * (i + 1));
+            pieceCtx.lineTo(pieceCanvas.width, (pieceCanvas.height / numRows) * (i + 1));
+            pieceCtx.stroke();
+        }
+
+        for (let i = 0; i < numCols; i++) {
+            // vertical
+            pieceCtx.beginPath();
+            pieceCtx.moveTo((pieceCanvas.width / numCols) * (i + 1), 0);
+            pieceCtx.lineTo((pieceCanvas.width / numCols) * (i + 1), pieceCanvas.height);
+            pieceCtx.stroke();
+        }
+
         return pieceCanvas;
     }
 

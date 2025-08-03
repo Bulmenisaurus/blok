@@ -24,15 +24,18 @@ const getStartPosition = (position: StartPosition): [Coordinate, Coordinate] => 
             { x: 4, y: 4 },
             { x: 9, y: 9 },
         ];
-        // return [
-        //     { x: 6, y: 6 },
-        //     { x: 7, y: 7 },
-        // ];
-    } else {
+    } else if (position === 'corner') {
         return [
-            { x: 0, y: 13 },
-            { x: 13, y: 0 },
+            { x: 0, y: 0 },
+            { x: 13, y: 13 },
         ];
+    } else if (position === 'middle-blokee') {
+        return [
+            { x: 6, y: 7 },
+            { x: 7, y: 6 },
+        ];
+    } else {
+        throw new Error(`Unrecognized start position ${position}`);
     }
 };
 

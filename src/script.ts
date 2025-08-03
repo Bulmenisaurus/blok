@@ -30,6 +30,8 @@ const main = () => {
     }
 
     submitButton.addEventListener('click', () => {
+        popupContainer.style.display = 'none';
+
         // prevent navigating away
         window.addEventListener('beforeunload', (e) => {
             e.preventDefault();
@@ -50,8 +52,6 @@ const main = () => {
             shouldPlaySound,
             player.value
         );
-
-        popupContainer.style.display = 'none';
 
         // Check if debug mode is enabled via URL query parameter
         const urlParams = new URLSearchParams(window.location.search);

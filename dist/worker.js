@@ -134,6 +134,16 @@
     }
     return moves.filter((p) => isMoveLegal(p, state));
   };
+  var isMoveBlokeeLegal = (move, pieceTiles) => {
+    return pieceTiles.every((relCoord) => {
+      const absolute = { x: relCoord.x + move.location.x, y: relCoord.y + move.location.y };
+      if (move.player === 0) {
+        return absolute.x <= 6 && absolute.y > 6;
+      } else {
+        return absolute.x > 6 && absolute.y <= 6;
+      }
+    });
+  };
   var generateFirstMove = (board2) => {
     const startPos = board2.startPositions[board2.state.toMove];
     if (board2.state.nullMoveCounter !== 0) {
@@ -151,6 +161,9 @@
             pieceType: piece,
             orientation: i
           };
+          if (board2.state.startPosName === "middle-blokee" && !isMoveBlokeeLegal(placedPiece, pieceTiles)) {
+            continue;
+          }
           moves.push(serializePlacedPiece(placedPiece));
         }
       }
@@ -187,11 +200,18 @@
         { x: 4, y: 4 },
         { x: 9, y: 9 }
       ];
-    } else {
+    } else if (position === "corner") {
       return [
-        { x: 0, y: 13 },
-        { x: 13, y: 0 }
+        { x: 0, y: 0 },
+        { x: 13, y: 13 }
       ];
+    } else if (position === "middle-blokee") {
+      return [
+        { x: 6, y: 7 },
+        { x: 7, y: 6 }
+      ];
+    } else {
+      throw new Error(`Unrecognized start position ${position}`);
     }
   };
   var defaultBoardState = {
@@ -399,8 +419,10 @@
     runSearch(state, timeout = 1e4) {
       this.makeNode(state);
       const start = Date.now();
+      timeout += Math.random() * 3e3;
+      const searchDepth = 15e3;
       let i = 0;
-      for (; i < 15e3 || Date.now() < start + timeout; i++) {
+      for (; i < searchDepth || Date.now() < start + timeout; i++) {
         let node = this.select(state);
         let winner = node.state.winner();
         if (node.isLeaf() === false && winner === "none") {
