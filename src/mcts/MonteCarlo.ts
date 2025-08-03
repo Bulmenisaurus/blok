@@ -17,10 +17,10 @@ export class MonteCarlo {
     /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
     runSearch(state: Board, timeout = 10000) {
         this.makeNode(state);
-        let end = Date.now() + timeout;
+        const start = Date.now();
 
         let i = 0;
-        for (; i < 1_000 || Date.now() < end; i++) {
+        for (; i < 15_000 || Date.now() < start + timeout; i++) {
             let node = this.select(state);
             let winner = node.state.winner();
             if (node.isLeaf() === false && winner === 'none') {
@@ -30,7 +30,7 @@ export class MonteCarlo {
             this.backpropagate(node, winner);
         }
 
-        console.log('runSearch', i);
+        console.log('runSearch', i, 'took', Date.now() - start, 'ms');
     }
 
     /** If given state does not exist, create dangling node. */

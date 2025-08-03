@@ -87,6 +87,7 @@ export class InteractiveCanvas {
 
         const skipButton = document.getElementById('skip-button')!;
         skipButton.addEventListener('click', () => {
+            debugger;
             const skipMove = NULL_MOVE;
             if (!this.isMoveLegal(skipMove)) {
                 console.error('Illegal skip move');
@@ -123,8 +124,8 @@ export class InteractiveCanvas {
                 const randomMove = moves[0];
                 this.board.doMove(randomMove);
                 this.playedMoves.push(randomMove);
-                this.updateScore();
                 this.legalMoves = getAllLegalMoves(this.board);
+                this.updateScore();
             }
         } else {
             // It is the player's move. Don't do anything.
@@ -148,8 +149,8 @@ export class InteractiveCanvas {
                 this.board.doMove(move);
                 this.playedMoves.push(move);
             }
-            this.updateScore();
             this.legalMoves = getAllLegalMoves(this.board);
+            this.updateScore();
         });
     }
 
@@ -352,6 +353,7 @@ export class InteractiveCanvas {
         botScore.innerText = playerB.toString();
 
         // update the skip button
+
         const canSkip = this.legalMoves.includes(NULL_MOVE);
         const skipButton = document.getElementById('skip-button') as HTMLButtonElement;
         skipButton.disabled = !canSkip;

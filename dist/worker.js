@@ -78,6 +78,10 @@
     }
     const toMove = getMovePlayer(pseudoLegalMove);
     const location = getMoveLocation(pseudoLegalMove);
+    const myPlacedPiece = [state.state.playerARemaining, state.state.playerBRemaining][toMove];
+    if (!(myPlacedPiece & 1 << getMovePieceType(pseudoLegalMove))) {
+      return false;
+    }
     const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
     const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
     const shortBoundingBox = shortBoundingBoxData[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
@@ -180,8 +184,8 @@
   var getStartPosition = (position) => {
     if (position === "middle") {
       return [
-        { x: 6, y: 6 },
-        { x: 7, y: 7 }
+        { x: 4, y: 4 },
+        { x: 9, y: 9 }
       ];
     } else {
       return [
@@ -242,7 +246,12 @@
     doMove(move) {
       if (move === NULL_MOVE) {
         this.state.nullMoveCounter++;
+        const opponentCachedMoves2 = this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
         this.skipTurn();
+        for (const [idx, moves] of opponentCachedMoves2) {
+          const newMoves = moves.filter((m) => isMoveLegal(m, this));
+          opponentCachedMoves2.set(idx, newMoves);
+        }
         return;
       }
       this.state.nullMoveCounter = 0;
@@ -264,6 +273,7 @@
       const placedPieceOrientation = getMoveOrientation(move);
       const placedPieceLocation = getMoveLocation(move);
       const myCachedMoves = this.state.toMove === 0 ? this.state.playerACornerMoves : this.state.playerBCornerMoves;
+      const opponentCachedMoves = this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
       const relativeCorner = cornersData[placedPiece][placedPieceOrientation];
       for (const corner of relativeCorner) {
         const cornerCoord = {
@@ -271,11 +281,8 @@
           y: corner.y + placedPieceLocation.y
         };
         const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
-        this.state.playerACornerMoves.delete(cornerIdx);
-      }
-      for (const [idx, moves] of myCachedMoves) {
-        const newMoves = moves.filter((m) => isMoveLegal(m, this));
-        myCachedMoves.set(idx, newMoves);
+        myCachedMoves.delete(cornerIdx);
+        opponentCachedMoves.delete(cornerIdx);
       }
       const cornerAttachers = cornerAttachersData[placedPiece][placedPieceOrientation];
       for (const cornerAttacher of cornerAttachers) {
@@ -290,10 +297,21 @@
         if (myCachedMoves.has(cornerIdx)) {
           continue;
         }
-        const moves = getLegalMovesFrom(cornerCoord, placedPiece, this);
-        myCachedMoves.set(cornerIdx, moves);
+        const myRemaining = this.state.toMove === 0 ? this.state.playerARemaining : this.state.playerBRemaining;
+        const legalMoves = [];
+        for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
+          if (!(myRemaining & 1 << unplacedPiece)) {
+            continue;
+          }
+          legalMoves.push(...getLegalMovesFrom(cornerCoord, unplacedPiece, this));
+        }
+        myCachedMoves.set(cornerIdx, legalMoves);
       }
       this.skipTurn();
+      for (const [idx, moves] of opponentCachedMoves) {
+        const newMoves = moves.filter((m) => isMoveLegal(m, this));
+        opponentCachedMoves.set(idx, newMoves);
+      }
     }
     skipTurn() {
       this.state.toMove = otherPlayer(this.state.toMove);
@@ -380,9 +398,9 @@
     /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
     runSearch(state, timeout = 1e4) {
       this.makeNode(state);
-      let end = Date.now() + timeout;
+      const start = Date.now();
       let i = 0;
-      for (; i < 15e3 || Date.now() < end; i++) {
+      for (; i < 15e3 || Date.now() < start + timeout; i++) {
         let node = this.select(state);
         let winner = node.state.winner();
         if (node.isLeaf() === false && winner === "none") {
@@ -391,7 +409,7 @@
         }
         this.backpropagate(node, winner);
       }
-      console.log("runSearch", i);
+      console.log("runSearch", i, "took", Date.now() - start, "ms");
     }
     /** If given state does not exist, create dangling node. */
     makeNode(state) {

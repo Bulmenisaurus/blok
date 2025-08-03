@@ -220,6 +220,10 @@
     }
     const toMove = getMovePlayer(pseudoLegalMove);
     const location = getMoveLocation(pseudoLegalMove);
+    const myPlacedPiece = [state.state.playerARemaining, state.state.playerBRemaining][toMove];
+    if (!(myPlacedPiece & 1 << getMovePieceType(pseudoLegalMove))) {
+      return false;
+    }
     const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
     const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
     const shortBoundingBox = shortBoundingBoxData[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
@@ -422,6 +426,7 @@
       this.carousel = document.getElementById("blocks-carousel");
       this.initCarousel();
       this.legalMoves = getAllLegalMoves(board);
+      this.updateScore();
       this.canvas.addEventListener("mousemove", (e) => this.mouseMove(e));
       this.canvas.addEventListener("click", (e) => this.click(e));
       window.addEventListener("keydown", (e) => this.keyDown(e));
@@ -431,6 +436,7 @@
       }
       const skipButton = document.getElementById("skip-button");
       skipButton.addEventListener("click", () => {
+        debugger;
         const skipMove = NULL_MOVE;
         if (!this.isMoveLegal(skipMove)) {
           console.error("Illegal skip move");
@@ -445,6 +451,9 @@
      * The board state is assumed to have been update already
      */
     onMoveReady() {
+      if (this.board.gameOver()) {
+        return;
+      }
       const botPlayer = otherPlayer(this.userPlayer);
       const toPlay = this.board.state.toMove;
       const appStatus = getAppMode();
@@ -453,11 +462,11 @@
           this.botMove();
         } else {
           const moves = getAllLegalMoves(this.board);
-          const randomMove = moves[Math.floor(Math.random() * moves.length)];
+          const randomMove = moves[0];
           this.board.doMove(randomMove);
           this.playedMoves.push(randomMove);
-          this.updateScore();
           this.legalMoves = getAllLegalMoves(this.board);
+          this.updateScore();
         }
       } else {
       }
@@ -478,8 +487,8 @@
           this.board.doMove(move);
           this.playedMoves.push(move);
         }
-        this.updateScore();
         this.legalMoves = getAllLegalMoves(this.board);
+        this.updateScore();
       });
     }
     mouseMove(e) {
@@ -540,9 +549,9 @@
       }
       this.board.doMove(move);
       this.playedMoves.push(move);
+      this.selectedPiece = null;
       this.updateScore();
       this.updateCarouselVisibility();
-      console.log({ winner: this.board.winner() });
       this.onMoveReady();
     }
     initCarousel() {
@@ -657,6 +666,9 @@
       const { playerA, playerB } = this.score();
       userScore.innerText = playerA.toString();
       botScore.innerText = playerB.toString();
+      const canSkip = this.legalMoves.includes(NULL_MOVE);
+      const skipButton = document.getElementById("skip-button");
+      skipButton.disabled = !canSkip;
       if (this.board.gameOver()) {
         const winner = this.board.winner();
         if (winner === "draw") {
@@ -763,8 +775,8 @@
   var getStartPosition = (position) => {
     if (position === "middle") {
       return [
-        { x: 6, y: 6 },
-        { x: 7, y: 7 }
+        { x: 4, y: 4 },
+        { x: 9, y: 9 }
       ];
     } else {
       return [
@@ -825,7 +837,12 @@
     doMove(move) {
       if (move === NULL_MOVE) {
         this.state.nullMoveCounter++;
+        const opponentCachedMoves2 = this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
         this.skipTurn();
+        for (const [idx, moves] of opponentCachedMoves2) {
+          const newMoves = moves.filter((m) => isMoveLegal(m, this));
+          opponentCachedMoves2.set(idx, newMoves);
+        }
         return;
       }
       this.state.nullMoveCounter = 0;
@@ -847,6 +864,7 @@
       const placedPieceOrientation = getMoveOrientation(move);
       const placedPieceLocation = getMoveLocation(move);
       const myCachedMoves = this.state.toMove === 0 ? this.state.playerACornerMoves : this.state.playerBCornerMoves;
+      const opponentCachedMoves = this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
       const relativeCorner = cornersData[placedPiece][placedPieceOrientation];
       for (const corner of relativeCorner) {
         const cornerCoord = {
@@ -854,11 +872,8 @@
           y: corner.y + placedPieceLocation.y
         };
         const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
-        this.state.playerACornerMoves.delete(cornerIdx);
-      }
-      for (const [idx, moves] of myCachedMoves) {
-        const newMoves = moves.filter((m) => isMoveLegal(m, this));
-        myCachedMoves.set(idx, newMoves);
+        myCachedMoves.delete(cornerIdx);
+        opponentCachedMoves.delete(cornerIdx);
       }
       const cornerAttachers = cornerAttachersData[placedPiece][placedPieceOrientation];
       for (const cornerAttacher of cornerAttachers) {
@@ -873,10 +888,21 @@
         if (myCachedMoves.has(cornerIdx)) {
           continue;
         }
-        const moves = getLegalMovesFrom(cornerCoord, placedPiece, this);
-        myCachedMoves.set(cornerIdx, moves);
+        const myRemaining = this.state.toMove === 0 ? this.state.playerARemaining : this.state.playerBRemaining;
+        const legalMoves = [];
+        for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
+          if (!(myRemaining & 1 << unplacedPiece)) {
+            continue;
+          }
+          legalMoves.push(...getLegalMovesFrom(cornerCoord, unplacedPiece, this));
+        }
+        myCachedMoves.set(cornerIdx, legalMoves);
       }
       this.skipTurn();
+      for (const [idx, moves] of opponentCachedMoves) {
+        const newMoves = moves.filter((m) => isMoveLegal(m, this));
+        opponentCachedMoves.set(idx, newMoves);
+      }
     }
     skipTurn() {
       this.state.toMove = otherPlayer(this.state.toMove);
