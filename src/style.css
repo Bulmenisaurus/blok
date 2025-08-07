@@ -123,7 +123,8 @@ body {
 
 #message-box #message-user,
 #message-box #message-cpu,
-#message-box #message-skip {
+#message-box #message-skip,
+#message-gameover {
     display: none;
 }
 
