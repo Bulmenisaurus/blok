@@ -166,6 +166,7 @@ export class InteractiveCanvas {
     }
 
     click(e: MouseEvent) {
+        debugger;
         if (this.selectedPiece === null) {
             console.log('tried placing without selecting any piece');
             return;

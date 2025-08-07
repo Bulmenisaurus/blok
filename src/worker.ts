@@ -33,6 +33,7 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
     const moves = getAllLegalMoves(board);
     if (moves.length === 1) {
         const bestMove = moves[0];
+        board.doMove(bestMove);
         postMessage({ move: bestMove, score: 0 });
         return;
     }

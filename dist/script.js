@@ -513,6 +513,7 @@
       this.mousePosition = mouseBoardC;
     }
     click(e) {
+      debugger;
       if (this.selectedPiece === null) {
         console.log("tried placing without selecting any piece");
         return;
