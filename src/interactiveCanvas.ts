@@ -357,10 +357,17 @@ export class InteractiveCanvas {
         const messageUser = document.getElementById('message-user')!;
         const messageCPU = document.getElementById('message-cpu')!;
         const messageSkip = document.getElementById('message-skip')!;
+        const messageGame = document.getElementById('message-gameover')!;
 
         messageUser.style.display = 'none';
         messageCPU.style.display = 'none';
         messageSkip.style.display = 'none';
+        messageGame.style.display = 'none';
+
+        if (this.board.gameOver()) {
+            messageGame.style.display = 'block';
+            return;
+        }
 
         if (this.board.state.toMove !== this.userPlayer) {
             messageCPU.style.display = 'block';
