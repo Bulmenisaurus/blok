@@ -73,7 +73,7 @@ export class InteractiveCanvas {
 
         this.legalMoves = getAllLegalMoves(board);
 
-        this.updateScore();
+        this.updateUI();
 
         this.canvas.addEventListener('mousemove', (e) => this.mouseMove(e));
         this.canvas.addEventListener('click', (e) => this.click(e));
@@ -124,7 +124,8 @@ export class InteractiveCanvas {
                 this.board.doMove(randomMove);
                 this.playedMoves.push(randomMove);
                 this.legalMoves = getAllLegalMoves(this.board);
-                this.updateScore();
+
+                this.updateUI();
             }
         } else {
             // It is the player's move. Don't do anything.
@@ -149,7 +150,7 @@ export class InteractiveCanvas {
                 this.playedMoves.push(move);
             }
             this.legalMoves = getAllLegalMoves(this.board);
-            this.updateScore();
+            this.updateUI();
         });
     }
 
@@ -166,7 +167,6 @@ export class InteractiveCanvas {
     }
 
     click(e: MouseEvent) {
-        debugger;
         if (this.selectedPiece === null) {
             console.log('tried placing without selecting any piece');
             return;
@@ -227,8 +227,7 @@ export class InteractiveCanvas {
         this.playedMoves.push(move);
         this.selectedPiece = null;
 
-        this.updateScore();
-        this.updateCarouselVisibility();
+        this.updateUI();
 
         this.onMoveReady();
     }
@@ -345,6 +344,34 @@ export class InteractiveCanvas {
 
     score(): { playerA: number; playerB: number } {
         return this.board.score();
+    }
+
+    updateUI() {
+        console.log('updating UI, player to move', this.board.state.toMove);
+        this.updateScore();
+        this.updateMessage();
+        this.updateCarouselVisibility();
+    }
+
+    updateMessage() {
+        const messageUser = document.getElementById('message-user')!;
+        const messageCPU = document.getElementById('message-cpu')!;
+        const messageSkip = document.getElementById('message-skip')!;
+
+        messageUser.style.display = 'none';
+        messageCPU.style.display = 'none';
+        messageSkip.style.display = 'none';
+
+        if (this.board.state.toMove !== this.userPlayer) {
+            messageCPU.style.display = 'block';
+        } else {
+            // player to move
+            if (this.isMoveLegal(NULL_MOVE)) {
+                messageSkip.style.display = 'block';
+            } else {
+                messageUser.style.display = 'block';
+            }
+        }
     }
 
     updateScore() {

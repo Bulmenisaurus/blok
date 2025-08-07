@@ -439,7 +439,7 @@
       this.carousel = document.getElementById("blocks-carousel");
       this.initCarousel();
       this.legalMoves = getAllLegalMoves(board);
-      this.updateScore();
+      this.updateUI();
       this.canvas.addEventListener("mousemove", (e) => this.mouseMove(e));
       this.canvas.addEventListener("click", (e) => this.click(e));
       window.addEventListener("keydown", (e) => this.keyDown(e));
@@ -478,7 +478,7 @@
           this.board.doMove(randomMove);
           this.playedMoves.push(randomMove);
           this.legalMoves = getAllLegalMoves(this.board);
-          this.updateScore();
+          this.updateUI();
         }
       } else {
       }
@@ -500,7 +500,7 @@
           this.playedMoves.push(move);
         }
         this.legalMoves = getAllLegalMoves(this.board);
-        this.updateScore();
+        this.updateUI();
       });
     }
     mouseMove(e) {
@@ -513,7 +513,6 @@
       this.mousePosition = mouseBoardC;
     }
     click(e) {
-      debugger;
       if (this.selectedPiece === null) {
         console.log("tried placing without selecting any piece");
         return;
@@ -563,8 +562,7 @@
       this.board.doMove(move);
       this.playedMoves.push(move);
       this.selectedPiece = null;
-      this.updateScore();
-      this.updateCarouselVisibility();
+      this.updateUI();
       this.onMoveReady();
     }
     initCarousel() {
@@ -676,6 +674,29 @@
     }
     score() {
       return this.board.score();
+    }
+    updateUI() {
+      console.log("updating UI, player to move", this.board.state.toMove);
+      this.updateScore();
+      this.updateMessage();
+      this.updateCarouselVisibility();
+    }
+    updateMessage() {
+      const messageUser = document.getElementById("message-user");
+      const messageCPU = document.getElementById("message-cpu");
+      const messageSkip = document.getElementById("message-skip");
+      messageUser.style.display = "none";
+      messageCPU.style.display = "none";
+      messageSkip.style.display = "none";
+      if (this.board.state.toMove !== this.userPlayer) {
+        messageCPU.style.display = "block";
+      } else {
+        if (this.isMoveLegal(NULL_MOVE)) {
+          messageSkip.style.display = "block";
+        } else {
+          messageUser.style.display = "block";
+        }
+      }
     }
     updateScore() {
       const userScore = document.querySelector("#user-score-container > .score");

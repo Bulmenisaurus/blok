@@ -116,13 +116,44 @@ body {
     padding: 10px 20px;
 }
 
-#skip {
+#message-box {
     display: flex;
     justify-content: center;
 }
 
+#message-box #message-user,
+#message-box #message-cpu,
+#message-box #message-skip {
+    display: none;
+}
+
+@keyframes typewriter {
+    0% {
+        content: '';
+    }
+    25% {
+        content: '.';
+    }
+    50% {
+        content: '..';
+    }
+    75% {
+        content: '...';
+    }
+    100% {
+        content: '';
+    }
+}
+#think::after {
+    width: 3ch;
+    display: inline-block;
+    content: '';
+    animation: typewriter 2s infinite;
+    white-space: nowrap;
+}
+
 #skip-button {
-    padding: 10px 20px;
+    padding: 8px 16px;
     background-color: white;
     border: 1px solid black;
     border-radius: 2px;
