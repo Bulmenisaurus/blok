@@ -15,14 +15,21 @@ export class MonteCarlo {
         this.nodes = new Map(); // map: State.hash() => MonteCarloNode
     }
     /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
-    runSearch(state: Board, timeout = 10000) {
+    runSearch(state: Board, difficulty: string) {
         this.makeNode(state);
         const start = Date.now();
 
-        // some randomness :P
-        timeout += Math.random() * 3_000;
+        const timeout = {
+            easy: 2_000,
+            medium: 10_000,
+            hard: 20_000,
+        }[difficulty]!;
 
-        const searchDepth = 15_000;
+        const searchDepth = {
+            easy: 1_000,
+            medium: 5_000,
+            hard: 15_000,
+        }[difficulty]!;
 
         let i = 0;
         for (; i < searchDepth || Date.now() < start + timeout; i++) {

@@ -702,8 +702,9 @@
 
   // src/workerManager.ts
   var WorkerManager = class {
-    constructor(numThreads) {
+    constructor(numThreads, difficulty) {
       this.workers = [];
+      this.difficulty = difficulty;
       this.numWorkers = numThreads;
       for (let i = 0; i < this.numWorkers; i++) {
         this.workers.push(new Worker("./dist/worker.js"));
@@ -751,7 +752,8 @@
     workerInit(worker, board) {
       const initMessage = {
         type: "init",
-        startPos: board.state.startPosName
+        startPos: board.state.startPosName,
+        difficulty: this.difficulty
       };
       worker.postMessage(initMessage);
     }
@@ -965,9 +967,9 @@
       });
       const userNumThreads = parseInt(threads.value);
       const startPosition = startPos2.value;
-      const shouldPlaySound = sound.value === "on";
+      const shouldPlaySound = sound.checked;
       const boardState = new Board(startPosition);
-      const workers = new WorkerManager(userNumThreads);
+      const workers = new WorkerManager(userNumThreads, difficulty.value);
       workers.initAll(boardState);
       const interactiveCanvas = new InteractiveCanvas(
         boardState,

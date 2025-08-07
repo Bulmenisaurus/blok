@@ -40,10 +40,10 @@ const main = () => {
 
         const userNumThreads = parseInt(threads.value);
         const startPosition = startPos.value as StartPosition;
-        const shouldPlaySound = sound.value === 'on';
+        const shouldPlaySound = sound.checked;
 
         const boardState = new Board(startPosition);
-        const workers = new WorkerManager(userNumThreads);
+        const workers = new WorkerManager(userNumThreads, difficulty.value);
 
         workers.initAll(boardState);
         const interactiveCanvas = new InteractiveCanvas(

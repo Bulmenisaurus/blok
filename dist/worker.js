@@ -416,11 +416,19 @@
       this.nodes = /* @__PURE__ */ new Map();
     }
     /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
-    runSearch(state, timeout = 1e4) {
+    runSearch(state, difficulty2) {
       this.makeNode(state);
       const start = Date.now();
-      timeout += Math.random() * 3e3;
-      const searchDepth = 15e3;
+      const timeout = {
+        easy: 2e3,
+        medium: 1e4,
+        hard: 2e4
+      }[difficulty2];
+      const searchDepth = {
+        easy: 1e3,
+        medium: 5e3,
+        hard: 15e3
+      }[difficulty2];
       let i = 0;
       for (; i < searchDepth || Date.now() < start + timeout; i++) {
         let node = this.select(state);
@@ -546,11 +554,13 @@
   // src/worker.ts
   var board;
   var mcts;
+  var difficulty = "easy";
   onmessage = (e) => {
     if (e.data.type === "init") {
       console.log("initialization");
       board = new Board(e.data.startPos);
       mcts = new MonteCarlo(board);
+      difficulty = e.data.difficulty;
       return;
     }
     if (board === void 0 || mcts === void 0) {
@@ -570,7 +580,7 @@
     }
     console.log("running mcts");
     console.log("running 5k search");
-    mcts.runSearch(board, 1e4);
+    mcts.runSearch(board, difficulty);
     try {
       const bestMove = mcts.bestPlay(board);
       const stats = mcts.getStats(board);

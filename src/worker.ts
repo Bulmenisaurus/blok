@@ -7,11 +7,14 @@ let board: Board | undefined;
 // Create Monte Carlo Tree Search instance
 let mcts: MonteCarlo | undefined;
 
+let difficulty: string = 'easy';
+
 onmessage = (e: MessageEvent<WorkerMessage>) => {
     if (e.data.type === 'init') {
         console.log('initialization');
         board = new Board(e.data.startPos);
         mcts = new MonteCarlo(board);
+        difficulty = e.data.difficulty;
         return;
     }
 
@@ -37,7 +40,7 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
     // Run MCTS search for a reasonable time (5 seconds)
     console.log('running mcts');
     console.log('running 5k search');
-    mcts.runSearch(board, 10_000);
+    mcts.runSearch(board, difficulty);
 
     try {
         // Get the best move from MCTS

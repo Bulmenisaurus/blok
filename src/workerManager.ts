@@ -16,6 +16,7 @@ export interface WorkerMessageMove {
 export interface WorkerMessageInit {
     type: 'init';
     startPos: StartPosition;
+    difficulty: string;
 }
 
 export type WorkerMessage = WorkerMessageMove | WorkerMessageInit;
@@ -23,9 +24,11 @@ export type WorkerMessage = WorkerMessageMove | WorkerMessageInit;
 export class WorkerManager {
     workers: Worker[];
     numWorkers: number;
+    difficulty: string;
 
-    constructor(numThreads: number) {
+    constructor(numThreads: number, difficulty: string) {
         this.workers = [];
+        this.difficulty = difficulty;
 
         this.numWorkers = numThreads;
         for (let i = 0; i < this.numWorkers; i++) {
@@ -93,6 +96,7 @@ export class WorkerManager {
         const initMessage: WorkerMessageInit = {
             type: 'init',
             startPos: board.state.startPosName,
+            difficulty: this.difficulty,
         };
 
         worker.postMessage(initMessage);
