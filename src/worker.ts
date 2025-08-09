@@ -22,7 +22,7 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
         throw new Error('No initialization! :(');
     }
 
-    if (e.data.lastMove) {
+    if (e.data.lastMove !== undefined) {
         board.doMove(e.data.lastMove);
     }
 

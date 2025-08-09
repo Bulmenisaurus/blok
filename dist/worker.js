@@ -566,7 +566,7 @@
     if (board === void 0 || mcts === void 0) {
       throw new Error("No initialization! :(");
     }
-    if (e.data.lastMove) {
+    if (e.data.lastMove !== void 0) {
       board.doMove(e.data.lastMove);
     }
     if (board.gameOver()) {
