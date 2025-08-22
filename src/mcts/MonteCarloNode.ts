@@ -13,27 +13,37 @@ export class MonteCarloNode {
     state: Board;
     n_plays: number;
     n_wins: number;
+    own_idx: number;
     parent: MonteCarloNode | null;
+    parent_idx: number | null;
+    // lazily evaluated chilren
     children: Map<string, { play: Move; node: MonteCarloNode | null }>;
+    children_idx: Map<string, { play: Move; node: number | null }>;
     constructor(
+        idx: number,
         parent: MonteCarloNode | null,
+        parentIdx: number | null,
         play: Move | null,
         state: Board,
         unexpandedPlays: Move[]
     ) {
+        this.own_idx = idx;
         this.play = play;
         this.state = state; // Monte Carlo stuff
         this.n_plays = 0;
         this.n_wins = 0; // Tree stuff
         this.parent = parent;
+        this.parent_idx = parentIdx;
         this.children = new Map();
+        this.children_idx = new Map();
         for (let play of unexpandedPlays) {
             this.children.set(moveHash(play), { play: play, node: null });
+            this.children_idx.set(moveHash(play), { play: play, node: null });
         }
     }
 
     /** Get the MonteCarloNode corresponding to the given play. */
-    childNode(play: Move): MonteCarloNode {
+    childNode(play: Move, all_nodes: MonteCarloNode[]): MonteCarloNode {
         let child = this.children.get(moveHash(play));
         if (child === undefined) {
             throw new Error('Child not found');
@@ -45,12 +55,26 @@ export class MonteCarloNode {
     }
 
     /** Expand the specified child play and return the new child node. */
-    expand(play: Move, childState: Board, unexpandedPlays: Move[]): MonteCarloNode {
+    expand(
+        play: Move,
+        childState: Board,
+        unexpandedPlays: Move[],
+        new_idx: number
+    ): MonteCarloNode {
         if (!this.children.has(moveHash(play))) {
             throw new Error('Child not found');
         }
-        let childNode = new MonteCarloNode(this, play, childState, unexpandedPlays);
+        let childNode = new MonteCarloNode(
+            new_idx,
+            this,
+            this.own_idx,
+            play,
+            childState,
+            unexpandedPlays
+        );
+
         this.children.set(moveHash(play), { play: play, node: childNode });
+        this.children_idx.set(moveHash(play), { play: play, node: new_idx });
         return childNode;
     }
 

@@ -54,7 +54,8 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
         );
         // clear memory
         console.log('clearing');
-        mcts.nodes.clear();
+        //* mcts.nodes.clear();
+        mcts.all_nodes = [];
 
         const score = bestMoveStats
             ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0)

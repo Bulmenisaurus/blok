@@ -8,11 +8,15 @@ type GameOutcome = Player | 'draw' | 'none';
 export class MonteCarlo {
     game: Board;
     UCB1ExploreParam: number;
-    nodes: Map<string, MonteCarloNode>;
+    //* nodes: Map<string, MonteCarloNode>;
+    all_nodes: MonteCarloNode[];
+    root_node_idx: number;
     constructor(game: Board, UCB1ExploreParam = 2) {
         this.game = game;
         this.UCB1ExploreParam = UCB1ExploreParam;
-        this.nodes = new Map(); // map: State.hash() => MonteCarloNode
+        //* this.nodes = new Map(); // map: State.hash() => MonteCarloNode
+        this.all_nodes = [];
+        this.root_node_idx = -1;
     }
     /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
     runSearch(state: Board, difficulty: string) {
@@ -45,28 +49,44 @@ export class MonteCarlo {
         console.log('runSearch', i, 'took', Date.now() - start, 'ms');
     }
 
-    /** If given state does not exist, create dangling node. */
+    // Creates a new node from which to start a search
+    // Since I clear the entire tree after every search, this will always create a root node
     makeNode(state: Board) {
-        if (!this.nodes.has(state.hash())) {
-            let unexpandedPlays = getAllLegalMoves(state);
-            let node = new MonteCarloNode(null, null, state, unexpandedPlays);
-            this.nodes.set(state.hash(), node);
+        let unexpandedPlays = getAllLegalMoves(state);
+        const new_idx = this.all_nodes.length;
+
+        if (new_idx !== 0) {
+            throw new Error(
+                'Search started from a non empty tree. Was the tree not cleared between searches?'
+            );
         }
+
+        this.root_node_idx = 0;
+
+        let node = new MonteCarloNode(new_idx, null, null, null, state, unexpandedPlays);
+        //* this.nodes.set(state.hash(), node);
+        this.all_nodes.push(node);
+
+        // index of the node
+        return this.all_nodes.length - 1;
     }
 
     /** Get the best move from available statistics. */
     bestPlay(state: Board) {
-        this.makeNode(state);
         // If not all children are expanded, not enough information
-        if (!this.nodes.get(state.hash())!.isFullyExpanded()) {
+        //* if (!this.nodes.get(state.hash())!.isFullyExpanded()) {
+        //*     throw new Error('Not enough information!');
+        //* }
+        if (!this.all_nodes[this.root_node_idx].isFullyExpanded()) {
             throw new Error('Not enough information!');
         }
-        let node = this.nodes.get(state.hash())!;
+        //* let node = this.nodes.get(state.hash())!;
+        let node = this.all_nodes[this.root_node_idx];
         let allPlays = node.allPlays();
         let bestPlay;
         let max = -Infinity;
         for (let play of allPlays) {
-            let childNode = node.childNode(play);
+            let childNode = node.childNode(play, this.all_nodes);
             // skip unexpanded nodes (probably would've been caught by the condition above)
             if (childNode.n_plays === 0) {
                 continue;
@@ -83,13 +103,14 @@ export class MonteCarlo {
     }
     /** Phase 1, Selection: Select until not fully expanded OR leaf */
     select(state: Board): MonteCarloNode {
-        let node = this.nodes.get(state.hash())!;
+        //* let node = this.nodes.get(state.hash())!;
+        let node = this.all_nodes[this.root_node_idx];
         while (node.isFullyExpanded() && !node.isLeaf()) {
             let plays = node.allPlays();
             let bestPlay;
             let bestUCB1 = -Infinity;
             for (let play of plays) {
-                let childUCB1 = node.childNode(play).getUCB1(this.UCB1ExploreParam);
+                let childUCB1 = node.childNode(play, this.all_nodes).getUCB1(this.UCB1ExploreParam);
                 if (childUCB1 > bestUCB1) {
                     bestPlay = play;
                     bestUCB1 = childUCB1;
@@ -98,7 +119,7 @@ export class MonteCarlo {
             if (bestPlay === undefined) {
                 throw new Error('No best play found. Was select called on a leaf node?');
             }
-            node = node.childNode(bestPlay);
+            node = node.childNode(bestPlay, this.all_nodes);
         }
         return node;
     }
@@ -111,8 +132,12 @@ export class MonteCarlo {
         const childState = node.state.copy();
         childState.doMove(randomMove);
         let childUnexpandedPlays = getAllLegalMoves(childState);
-        let childNode = node.expand(randomMove, childState, childUnexpandedPlays);
-        this.nodes.set(childState.hash(), childNode);
+
+        const new_idx = this.all_nodes.length;
+
+        let childNode = node.expand(randomMove, childState, childUnexpandedPlays, new_idx);
+        //* this.nodes.set(childState.hash(), childNode);
+        this.all_nodes.push(childNode);
         return childNode;
     }
 
@@ -143,7 +168,8 @@ export class MonteCarlo {
     }
 
     getStats(state: Board) {
-        let node = this.nodes.get(state.hash())!;
+        let node = this.all_nodes[this.root_node_idx];
+        //* let node = this.nodes.get(state.hash())!;
         let stats: {
             n_plays: number;
             n_wins: number;
