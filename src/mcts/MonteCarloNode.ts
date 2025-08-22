@@ -14,10 +14,10 @@ export class MonteCarloNode {
     n_plays: number;
     n_wins: number;
     own_idx: number;
-    parent: MonteCarloNode | null;
+    //* parent: MonteCarloNode | null;
     parent_idx: number | null;
     // lazily evaluated chilren
-    children: Map<string, { play: Move; node: MonteCarloNode | null }>;
+    //* children: Map<string, { play: Move; node: MonteCarloNode | null }>;
     children_idx: Map<string, { play: Move; node: number | null }>;
     constructor(
         idx: number,
@@ -32,26 +32,27 @@ export class MonteCarloNode {
         this.state = state; // Monte Carlo stuff
         this.n_plays = 0;
         this.n_wins = 0; // Tree stuff
-        this.parent = parent;
+        //* this.parent = parent;
         this.parent_idx = parentIdx;
-        this.children = new Map();
+        //* this.children = new Map();
         this.children_idx = new Map();
         for (let play of unexpandedPlays) {
-            this.children.set(moveHash(play), { play: play, node: null });
+            //* this.children.set(moveHash(play), { play: play, node: null });
             this.children_idx.set(moveHash(play), { play: play, node: null });
         }
     }
 
     /** Get the MonteCarloNode corresponding to the given play. */
     childNode(play: Move, all_nodes: MonteCarloNode[]): MonteCarloNode {
-        let child = this.children.get(moveHash(play));
+        //* let child = this.children.get(moveHash(play));
+        let child = this.children_idx.get(moveHash(play));
         if (child === undefined) {
             throw new Error('Child not found');
         }
         if (child.node === null) {
             throw new Error('Child not expanded');
         }
-        return child.node;
+        return all_nodes[child.node];
     }
 
     /** Expand the specified child play and return the new child node. */
@@ -61,7 +62,7 @@ export class MonteCarloNode {
         unexpandedPlays: Move[],
         new_idx: number
     ): MonteCarloNode {
-        if (!this.children.has(moveHash(play))) {
+        if (!this.children_idx.has(moveHash(play))) {
             throw new Error('Child not found');
         }
         let childNode = new MonteCarloNode(
@@ -73,44 +74,45 @@ export class MonteCarloNode {
             unexpandedPlays
         );
 
-        this.children.set(moveHash(play), { play: play, node: childNode });
+        //* this.children.set(moveHash(play), { play: play, node: childNode });
         this.children_idx.set(moveHash(play), { play: play, node: new_idx });
         return childNode;
     }
 
     /** Get all legal plays from this node. */
     allPlays(): Move[] {
-        return Array.from(this.children.values()).map((child) => child.play);
+        return Array.from(this.children_idx.values()).map((child) => child.play);
     }
 
     /** Get all unexpanded legal plays from this node. */
     unexpandedPlays(): Move[] {
-        return Array.from(this.children.values())
+        return Array.from(this.children_idx.values())
             .filter((child) => child.node === null)
             .map((child) => child.play);
     }
 
     /** Whether this node is fully expanded. */
     isFullyExpanded(): boolean {
-        return Array.from(this.children.values()).every((child) => child.node !== null);
+        return Array.from(this.children_idx.values()).every((child) => child.node !== null);
     }
 
     /** Whether this node is terminal in the game tree, 
       NOT INCLUSIVE of termination due to winning. */
     isLeaf(): boolean {
-        return this.children.size === 0;
+        return this.children_idx.size === 0;
     }
 
     /** Get the UCB1 value for this node.
      * Not defined for the root node.
      */
-    getUCB1(biasParam: number): number {
-        if (this.parent === null) {
+    getUCB1(biasParam: number, all_nodes: MonteCarloNode[]): number {
+        if (this.parent_idx === null) {
             throw new Error('UCB1 not defined for root node');
         }
+        const parent = all_nodes[this.parent_idx];
         return (
             this.n_wins / this.n_plays +
-            Math.sqrt((biasParam * Math.log(this.parent.n_plays)) / this.n_plays)
+            Math.sqrt((biasParam * Math.log(parent.n_plays)) / this.n_plays)
         );
     }
 }

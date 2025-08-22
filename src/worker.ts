@@ -49,17 +49,13 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
 
         // Get statistics for the best move
         const stats = mcts.getStats(board);
-        const bestMoveStats = stats.children.find(
-            (child) => child.play && bestMove && child.play === bestMove
-        );
+        const score = stats.n_wins / stats.n_plays;
+        console.log('score: ', score);
+
         // clear memory
         console.log('clearing');
         //* mcts.nodes.clear();
         mcts.all_nodes = [];
-
-        const score = bestMoveStats
-            ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0)
-            : 0;
 
         board.doMove(bestMove);
 

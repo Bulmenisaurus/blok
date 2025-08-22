@@ -110,7 +110,9 @@ export class MonteCarlo {
             let bestPlay;
             let bestUCB1 = -Infinity;
             for (let play of plays) {
-                let childUCB1 = node.childNode(play, this.all_nodes).getUCB1(this.UCB1ExploreParam);
+                let childUCB1 = node
+                    .childNode(play, this.all_nodes)
+                    .getUCB1(this.UCB1ExploreParam, this.all_nodes);
                 if (childUCB1 > bestUCB1) {
                     bestPlay = play;
                     bestUCB1 = childUCB1;
@@ -163,7 +165,9 @@ export class MonteCarlo {
             if (otherPlayer(currentNode.state.state.toMove) === winner) {
                 currentNode.n_wins += 1;
             }
-            currentNode = currentNode!.parent;
+
+            let parentNodeIdx: number | null = currentNode.parent_idx;
+            currentNode = parentNodeIdx === null ? null : this.all_nodes[parentNodeIdx];
         }
     }
 
@@ -173,24 +177,11 @@ export class MonteCarlo {
         let stats: {
             n_plays: number;
             n_wins: number;
-            children: { play: Move; n_plays: number | null; n_wins: number | null }[];
         } = {
             n_plays: node.n_plays,
             n_wins: node.n_wins,
-            children: [],
         };
 
-        for (let child of node.children.values()) {
-            if (child.node === null) {
-                stats.children.push({ play: child.play, n_plays: null, n_wins: null });
-            } else {
-                stats.children.push({
-                    play: child.play,
-                    n_plays: child.node.n_plays,
-                    n_wins: child.node.n_wins,
-                });
-            }
-        }
         return stats;
     }
 }

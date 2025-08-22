@@ -355,29 +355,26 @@
       this.state = state;
       this.n_plays = 0;
       this.n_wins = 0;
-      this.parent = parent;
       this.parent_idx = parentIdx;
-      this.children = /* @__PURE__ */ new Map();
       this.children_idx = /* @__PURE__ */ new Map();
       for (let play2 of unexpandedPlays) {
-        this.children.set(moveHash(play2), { play: play2, node: null });
         this.children_idx.set(moveHash(play2), { play: play2, node: null });
       }
     }
     /** Get the MonteCarloNode corresponding to the given play. */
     childNode(play, all_nodes) {
-      let child = this.children.get(moveHash(play));
+      let child = this.children_idx.get(moveHash(play));
       if (child === void 0) {
         throw new Error("Child not found");
       }
       if (child.node === null) {
         throw new Error("Child not expanded");
       }
-      return child.node;
+      return all_nodes[child.node];
     }
     /** Expand the specified child play and return the new child node. */
     expand(play, childState, unexpandedPlays, new_idx) {
-      if (!this.children.has(moveHash(play))) {
+      if (!this.children_idx.has(moveHash(play))) {
         throw new Error("Child not found");
       }
       let childNode = new _MonteCarloNode(
@@ -388,35 +385,35 @@
         childState,
         unexpandedPlays
       );
-      this.children.set(moveHash(play), { play, node: childNode });
       this.children_idx.set(moveHash(play), { play, node: new_idx });
       return childNode;
     }
     /** Get all legal plays from this node. */
     allPlays() {
-      return Array.from(this.children.values()).map((child) => child.play);
+      return Array.from(this.children_idx.values()).map((child) => child.play);
     }
     /** Get all unexpanded legal plays from this node. */
     unexpandedPlays() {
-      return Array.from(this.children.values()).filter((child) => child.node === null).map((child) => child.play);
+      return Array.from(this.children_idx.values()).filter((child) => child.node === null).map((child) => child.play);
     }
     /** Whether this node is fully expanded. */
     isFullyExpanded() {
-      return Array.from(this.children.values()).every((child) => child.node !== null);
+      return Array.from(this.children_idx.values()).every((child) => child.node !== null);
     }
     /** Whether this node is terminal in the game tree, 
       NOT INCLUSIVE of termination due to winning. */
     isLeaf() {
-      return this.children.size === 0;
+      return this.children_idx.size === 0;
     }
     /** Get the UCB1 value for this node.
      * Not defined for the root node.
      */
-    getUCB1(biasParam) {
-      if (this.parent === null) {
+    getUCB1(biasParam, all_nodes) {
+      if (this.parent_idx === null) {
         throw new Error("UCB1 not defined for root node");
       }
-      return this.n_wins / this.n_plays + Math.sqrt(biasParam * Math.log(this.parent.n_plays) / this.n_plays);
+      const parent = all_nodes[this.parent_idx];
+      return this.n_wins / this.n_plays + Math.sqrt(biasParam * Math.log(parent.n_plays) / this.n_plays);
     }
   };
 
@@ -501,7 +498,7 @@
         let bestPlay;
         let bestUCB1 = -Infinity;
         for (let play of plays) {
-          let childUCB1 = node.childNode(play, this.all_nodes).getUCB1(this.UCB1ExploreParam);
+          let childUCB1 = node.childNode(play, this.all_nodes).getUCB1(this.UCB1ExploreParam, this.all_nodes);
           if (childUCB1 > bestUCB1) {
             bestPlay = play;
             bestUCB1 = childUCB1;
@@ -546,27 +543,16 @@
         if (otherPlayer(currentNode.state.state.toMove) === winner) {
           currentNode.n_wins += 1;
         }
-        currentNode = currentNode.parent;
+        let parentNodeIdx = currentNode.parent_idx;
+        currentNode = parentNodeIdx === null ? null : this.all_nodes[parentNodeIdx];
       }
     }
     getStats(state) {
       let node = this.all_nodes[this.root_node_idx];
       let stats = {
         n_plays: node.n_plays,
-        n_wins: node.n_wins,
-        children: []
+        n_wins: node.n_wins
       };
-      for (let child of node.children.values()) {
-        if (child.node === null) {
-          stats.children.push({ play: child.play, n_plays: null, n_wins: null });
-        } else {
-          stats.children.push({
-            play: child.play,
-            n_plays: child.node.n_plays,
-            n_wins: child.node.n_wins
-          });
-        }
-      }
       return stats;
     }
   };
@@ -605,12 +591,10 @@
     try {
       const bestMove = mcts.bestPlay(board);
       const stats = mcts.getStats(board);
-      const bestMoveStats = stats.children.find(
-        (child) => child.play && bestMove && child.play === bestMove
-      );
+      const score = stats.n_wins / stats.n_plays;
+      console.log("score: ", score);
       console.log("clearing");
       mcts.all_nodes = [];
-      const score = bestMoveStats ? (bestMoveStats.n_wins ?? 0) / (bestMoveStats.n_plays ?? 0) : 0;
       board.doMove(bestMove);
       postMessage({
         move: bestMove,
