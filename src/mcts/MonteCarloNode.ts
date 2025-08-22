@@ -1,27 +1,30 @@
 import { Board } from '../board';
 import { Move } from '../movegen/movegen';
 
-/** Class representing a node in the search tree. */
-
 //TODO: dedup
 const moveHash = (move: Move) => {
     return `${move}`;
 };
 
+/** Class representing a node in the search tree. */
 export class MonteCarloNode {
+    /** The move that got us to this position. Null if it is a root node */
     play: Move | null;
+    parent_idx: number | null;
+    /** The current board state that simulations play out from */
     state: Board;
+
+    /** n_plays and n_wins updated by MonteCarlo.backpropagate() */
     n_plays: number;
     n_wins: number;
+
+    /** The index of this node in the nodes array, used for giving children parents */
     own_idx: number;
-    //* parent: MonteCarloNode | null;
-    parent_idx: number | null;
-    // lazily evaluated chilren
-    //* children: Map<string, { play: Move; node: MonteCarloNode | null }>;
+
+    /** Lazily evaluated chilren. Once children are explored the node is no longer null */
     children_idx: Map<string, { play: Move; node: number | null }>;
     constructor(
         idx: number,
-        parent: MonteCarloNode | null,
         parentIdx: number | null,
         play: Move | null,
         state: Board,
@@ -29,22 +32,18 @@ export class MonteCarloNode {
     ) {
         this.own_idx = idx;
         this.play = play;
-        this.state = state; // Monte Carlo stuff
+        this.state = state;
         this.n_plays = 0;
-        this.n_wins = 0; // Tree stuff
-        //* this.parent = parent;
+        this.n_wins = 0;
         this.parent_idx = parentIdx;
-        //* this.children = new Map();
         this.children_idx = new Map();
         for (let play of unexpandedPlays) {
-            //* this.children.set(moveHash(play), { play: play, node: null });
             this.children_idx.set(moveHash(play), { play: play, node: null });
         }
     }
 
     /** Get the MonteCarloNode corresponding to the given play. */
     childNode(play: Move, all_nodes: MonteCarloNode[]): MonteCarloNode {
-        //* let child = this.children.get(moveHash(play));
         let child = this.children_idx.get(moveHash(play));
         if (child === undefined) {
             throw new Error('Child not found');
@@ -67,14 +66,12 @@ export class MonteCarloNode {
         }
         let childNode = new MonteCarloNode(
             new_idx,
-            this,
             this.own_idx,
             play,
             childState,
             unexpandedPlays
         );
 
-        //* this.children.set(moveHash(play), { play: play, node: childNode });
         this.children_idx.set(moveHash(play), { play: play, node: new_idx });
         return childNode;
     }
@@ -104,6 +101,7 @@ export class MonteCarloNode {
 
     /** Get the UCB1 value for this node.
      * Not defined for the root node.
+     * Needs all_nodes to get information from the parent
      */
     getUCB1(biasParam: number, all_nodes: MonteCarloNode[]): number {
         if (this.parent_idx === null) {

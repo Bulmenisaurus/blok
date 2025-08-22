@@ -8,14 +8,14 @@ type GameOutcome = Player | 'draw' | 'none';
 export class MonteCarlo {
     game: Board;
     UCB1ExploreParam: number;
-    //* nodes: Map<string, MonteCarloNode>;
     all_nodes: MonteCarloNode[];
     root_node_idx: number;
     constructor(game: Board, UCB1ExploreParam = 2) {
         this.game = game;
         this.UCB1ExploreParam = UCB1ExploreParam;
-        //* this.nodes = new Map(); // map: State.hash() => MonteCarloNode
         this.all_nodes = [];
+
+        // should always be zero
         this.root_node_idx = -1;
     }
     /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
@@ -36,6 +36,7 @@ export class MonteCarlo {
         }[difficulty]!;
 
         let i = 0;
+        // Run the loop until either we search a given number of nodes associated with the difficulty of until a minimum thinking time passes
         for (; i < searchDepth || Date.now() < start + timeout; i++) {
             let node = this.select(state);
             let winner = node.state.winner();
@@ -63,8 +64,7 @@ export class MonteCarlo {
 
         this.root_node_idx = 0;
 
-        let node = new MonteCarloNode(new_idx, null, null, null, state, unexpandedPlays);
-        //* this.nodes.set(state.hash(), node);
+        let node = new MonteCarloNode(new_idx, null, null, state, unexpandedPlays);
         this.all_nodes.push(node);
 
         // index of the node
@@ -74,13 +74,9 @@ export class MonteCarlo {
     /** Get the best move from available statistics. */
     bestPlay(state: Board) {
         // If not all children are expanded, not enough information
-        //* if (!this.nodes.get(state.hash())!.isFullyExpanded()) {
-        //*     throw new Error('Not enough information!');
-        //* }
         if (!this.all_nodes[this.root_node_idx].isFullyExpanded()) {
             throw new Error('Not enough information!');
         }
-        //* let node = this.nodes.get(state.hash())!;
         let node = this.all_nodes[this.root_node_idx];
         let allPlays = node.allPlays();
         let bestPlay;
@@ -103,7 +99,6 @@ export class MonteCarlo {
     }
     /** Phase 1, Selection: Select until not fully expanded OR leaf */
     select(state: Board): MonteCarloNode {
-        //* let node = this.nodes.get(state.hash())!;
         let node = this.all_nodes[this.root_node_idx];
         while (node.isFullyExpanded() && !node.isLeaf()) {
             let plays = node.allPlays();
@@ -138,7 +133,7 @@ export class MonteCarlo {
         const new_idx = this.all_nodes.length;
 
         let childNode = node.expand(randomMove, childState, childUnexpandedPlays, new_idx);
-        //* this.nodes.set(childState.hash(), childNode);
+
         this.all_nodes.push(childNode);
         return childNode;
     }
