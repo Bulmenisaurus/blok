@@ -199,7 +199,7 @@
     const player = (packedMove & MOVE_PLAYER_BIT) >> 16;
     return player;
   };
-  var NULL_MOVE = 30720;
+  var NULL_MOVE = 63488;
   var serializePlacedPiece = (placedPiece) => {
     return placedPiece.orientation | placedPiece.location.y << 3 | placedPiece.location.x << 7 | placedPiece.pieceType << 11 | placedPiece.player << 16;
   };

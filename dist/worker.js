@@ -59,7 +59,7 @@
     const player = (packedMove & MOVE_PLAYER_BIT) >> 16;
     return player;
   };
-  var NULL_MOVE = 30720;
+  var NULL_MOVE = 63488;
   var serializePlacedPiece = (placedPiece) => {
     return placedPiece.orientation | placedPiece.location.y << 3 | placedPiece.location.x << 7 | placedPiece.pieceType << 11 | placedPiece.player << 16;
   };
@@ -349,7 +349,7 @@
     return `${move}`;
   };
   var MonteCarloNode = class _MonteCarloNode {
-    constructor(idx, parent, parentIdx, play, state, unexpandedPlays) {
+    constructor(idx, parentIdx, play, state, unexpandedPlays) {
       this.own_idx = idx;
       this.play = play;
       this.state = state;
@@ -379,7 +379,6 @@
       }
       let childNode = new _MonteCarloNode(
         new_idx,
-        this,
         this.own_idx,
         play,
         childState,
@@ -407,6 +406,7 @@
     }
     /** Get the UCB1 value for this node.
      * Not defined for the root node.
+     * Needs all_nodes to get information from the parent
      */
     getUCB1(biasParam, all_nodes) {
       if (this.parent_idx === null) {
@@ -462,7 +462,7 @@
         );
       }
       this.root_node_idx = 0;
-      let node = new MonteCarloNode(new_idx, null, null, null, state, unexpandedPlays);
+      let node = new MonteCarloNode(new_idx, null, null, state, unexpandedPlays);
       this.all_nodes.push(node);
       return this.all_nodes.length - 1;
     }

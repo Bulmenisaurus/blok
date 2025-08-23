@@ -49,7 +49,7 @@ export const getMovePlayer = (packedMove: PackedMove): Player => {
 };
 
 // Sentinel value, invalid for an actual move since there cannot be a move with piece type 31.
-export const NULL_MOVE = 0x7800;
+export const NULL_MOVE = 0xf800;
 
 export interface PlacedPiece {
     pieceType: PieceType;
