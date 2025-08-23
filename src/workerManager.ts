@@ -1,5 +1,6 @@
 import { Move, PlacedPiece, StartPosition } from './movegen/movegen';
 import { Board } from './board';
+import { ControllerOptions } from './util';
 
 export type WorkerResponse = null | {
     move: Move;
@@ -26,18 +27,18 @@ export class WorkerManager {
     numWorkers: number;
     difficulty: string;
 
-    constructor(numThreads: number, difficulty: string) {
+    constructor(options: ControllerOptions) {
         this.workers = [];
-        this.difficulty = difficulty;
+        this.difficulty = options.difficulty;
 
-        this.numWorkers = numThreads;
+        this.numWorkers = options.numThreads;
         for (let i = 0; i < this.numWorkers; i++) {
             this.workers.push(new Worker('./dist/worker.js'));
         }
     }
 
     // simplified version of findMove that just uses one worker
-    async findMoveMCTS(
+    async findMove(
         moves: Move[],
         board: Board,
         lastMove: Move | undefined
@@ -47,6 +48,7 @@ export class WorkerManager {
         return response?.move;
     }
 
+    /*
     async findMove(moves: Move[], board: Board, lastMove: Move): Promise<WorkerResponse> {
         const workerTasks: Move[][] = [];
 
@@ -85,8 +87,9 @@ export class WorkerManager {
 
         return bestResponse;
     }
+    */
 
-    initAll(board: Board) {
+    init(board: Board) {
         for (const worker of this.workers) {
             this.workerInit(worker, board);
         }

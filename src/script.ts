@@ -2,7 +2,8 @@ import { getAllLegalMoves, StartPosition } from './movegen/movegen';
 import { InteractiveCanvas } from './interactiveCanvas';
 import { WorkerManager } from './workerManager';
 import { Board } from './board';
-import { getAppMode } from './util';
+import { Controller, getAppMode } from './util';
+import { WSManager } from './wsManager';
 
 const main = () => {
     const popupContainer = document.getElementById('popup-bg') as HTMLDivElement;
@@ -12,6 +13,7 @@ const main = () => {
     const difficulty = document.getElementById('difficulty') as HTMLSelectElement;
     const threads = document.getElementById('threads') as HTMLSelectElement;
     const sound = document.getElementById('sound') as HTMLInputElement;
+    const local = document.getElementById('local') as HTMLInputElement;
 
     const submitButton = document.getElementById('play') as HTMLButtonElement;
 
@@ -43,12 +45,20 @@ const main = () => {
         const shouldPlaySound = sound.checked;
 
         const boardState = new Board(startPosition);
-        const workers = new WorkerManager(userNumThreads, difficulty.value);
+        let controller: Controller;
+        if (local.checked) {
+            controller = new WSManager();
+        } else {
+            controller = new WorkerManager({
+                numThreads: userNumThreads,
+                difficulty: difficulty.value,
+            });
+        }
 
-        workers.initAll(boardState);
+        controller.init(boardState);
         const interactiveCanvas = new InteractiveCanvas(
             boardState,
-            workers,
+            controller,
             shouldPlaySound,
             player.value
         );

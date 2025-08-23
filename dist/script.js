@@ -337,7 +337,7 @@
 
   // src/mcts/mcts-bot.ts
   var findMove = async (board, workers, lastMove) => {
-    const move = await workers.findMoveMCTS(getAllLegalMoves(board), board, lastMove);
+    const move = await workers.findMove(getAllLegalMoves(board), board, lastMove);
     return move;
   };
 
@@ -730,49 +730,61 @@
 
   // src/workerManager.ts
   var WorkerManager = class {
-    constructor(numThreads, difficulty) {
+    constructor(options) {
       this.workers = [];
-      this.difficulty = difficulty;
-      this.numWorkers = numThreads;
+      this.difficulty = options.difficulty;
+      this.numWorkers = options.numThreads;
       for (let i = 0; i < this.numWorkers; i++) {
         this.workers.push(new Worker("./dist/worker.js"));
       }
     }
     // simplified version of findMove that just uses one worker
-    async findMoveMCTS(moves, board, lastMove) {
+    async findMove(moves, board, lastMove) {
       const request = this.workerRequest(this.workers[0], board, moves, lastMove);
       const response = await request;
       return response?.move;
     }
-    async findMove(moves, board, lastMove) {
-      const workerTasks = [];
-      for (let i = 0; i < this.numWorkers; i++) {
-        workerTasks.push([]);
-      }
-      for (let i = 0; i < moves.length; i++) {
-        workerTasks[i % this.numWorkers].push(moves[i]);
-      }
-      const requests = [];
-      for (let i = 0; i < this.numWorkers; i++) {
-        requests.push(this.workerRequest(this.workers[i], board, workerTasks[i], lastMove));
-      }
-      console.log(requests);
-      const responses = await Promise.all(requests);
-      let bestResponse = null;
-      for (const response of responses) {
-        if (response === null) {
-          continue;
+    /*
+        async findMove(moves: Move[], board: Board, lastMove: Move): Promise<WorkerResponse> {
+            const workerTasks: Move[][] = [];
+    
+            for (let i = 0; i < this.numWorkers; i++) {
+                workerTasks.push([]);
+            }
+    
+            for (let i = 0; i < moves.length; i++) {
+                workerTasks[i % this.numWorkers].push(moves[i]);
+            }
+    
+            const requests: Promise<WorkerResponse>[] = [];
+    
+            for (let i = 0; i < this.numWorkers; i++) {
+                requests.push(this.workerRequest(this.workers[i], board, workerTasks[i], lastMove));
+            }
+    
+            console.log(requests);
+            const responses = await Promise.all(requests);
+    
+            let bestResponse: WorkerResponse = null;
+    
+            for (const response of responses) {
+                if (response === null) {
+                    continue;
+                }
+    
+                if (bestResponse === null) {
+                    bestResponse = response;
+                }
+    
+                if (response.score > bestResponse.score) {
+                    bestResponse = response;
+                }
+            }
+    
+            return bestResponse;
         }
-        if (bestResponse === null) {
-          bestResponse = response;
-        }
-        if (response.score > bestResponse.score) {
-          bestResponse = response;
-        }
-      }
-      return bestResponse;
-    }
-    initAll(board) {
+        */
+    init(board) {
       for (const worker of this.workers) {
         this.workerInit(worker, board);
       }
@@ -968,6 +980,56 @@
     }
   };
 
+  // src/wsManager.ts
+  var WSManager = class {
+    constructor() {
+      this.ws = new WebSocket("ws://127.0.0.1:8080");
+      this.intialized = new Promise((resolve) => {
+        this.ws.onopen = () => {
+          console.log("ws opened");
+          resolve();
+        };
+      });
+      this.ws.onclose = () => {
+        console.log("ws closed");
+      };
+      this.ws.onerror = (event) => {
+        console.log("Error: ", event);
+      };
+    }
+    async init() {
+      await this.intialized;
+      this.ws.send(
+        JSON.stringify({
+          type: "init"
+        })
+      );
+    }
+    async findMove(moves, board, lastMove) {
+      await this.intialized;
+      const start = Date.now();
+      const responsePromise = new Promise((resolve) => {
+        this.ws.onmessage = (event) => {
+          console.log("ws message", event.data);
+          const data = JSON.parse(event.data);
+          if (data.type === "move") {
+            this.ws.onmessage = null;
+            const end = Date.now();
+            console.log(`findMove took ${end - start}ms`);
+            resolve(data.move);
+          }
+        };
+      });
+      this.ws.send(
+        JSON.stringify({
+          type: "findMove",
+          move: lastMove
+        })
+      );
+      return responsePromise;
+    }
+  };
+
   // src/script.ts
   var main = () => {
     const popupContainer = document.getElementById("popup-bg");
@@ -976,6 +1038,7 @@
     const difficulty = document.getElementById("difficulty");
     const threads = document.getElementById("threads");
     const sound = document.getElementById("sound");
+    const local = document.getElementById("local");
     const submitButton = document.getElementById("play");
     const browserNumThreads = navigator.hardwareConcurrency || 1;
     for (let i = 1; i <= browserNumThreads; i++) {
@@ -997,11 +1060,19 @@
       const startPosition = startPos2.value;
       const shouldPlaySound = sound.checked;
       const boardState = new Board(startPosition);
-      const workers = new WorkerManager(userNumThreads, difficulty.value);
-      workers.initAll(boardState);
+      let controller;
+      if (local.checked) {
+        controller = new WSManager();
+      } else {
+        controller = new WorkerManager({
+          numThreads: userNumThreads,
+          difficulty: difficulty.value
+        });
+      }
+      controller.init(boardState);
       const interactiveCanvas = new InteractiveCanvas(
         boardState,
-        workers,
+        controller,
         shouldPlaySound,
         player.value
       );

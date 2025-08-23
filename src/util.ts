@@ -1,3 +1,6 @@
+import { Board } from './board';
+import { Move } from './movegen/movegen';
+
 export type AppMode = 'perf' | 'interactive' | 'ai';
 
 export const getAppMode = (): AppMode => {
@@ -7,3 +10,13 @@ export const getAppMode = (): AppMode => {
 
     return appModeParam as AppMode;
 };
+
+export interface ControllerOptions {
+    numThreads: number;
+    difficulty: string;
+}
+// Generic interface for engine
+export interface Controller {
+    init(board: Board): void;
+    findMove(moves: Move[], board: Board, lastMove: Move | undefined): Promise<Move | undefined>;
+}

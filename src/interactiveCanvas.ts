@@ -17,7 +17,7 @@ import {
 import { getBoundingBox, otherPlayer } from './movegen/movegen-utils';
 import { render } from './renderer';
 import { Coordinate } from './types';
-import { getAppMode } from './util';
+import { Controller, getAppMode } from './util';
 import { WorkerManager } from './workerManager';
 
 /**
@@ -45,7 +45,7 @@ export class InteractiveCanvas {
     /** Whether the piece is horizontally flipped or not */
     selectedPieceFlipped: boolean = false;
 
-    workers: WorkerManager;
+    workers: Controller;
     moveAlertSound: HTMLAudioElement | undefined;
 
     /** The legal moves in the current position, used to check move validity */
@@ -53,12 +53,7 @@ export class InteractiveCanvas {
     /** The list of moves played this game, used to update the bot */
     playedMoves: Move[] = [];
 
-    constructor(
-        board: Board,
-        workers: WorkerManager,
-        shouldPlaySound: boolean,
-        userPlayer: string
-    ) {
+    constructor(board: Board, workers: Controller, shouldPlaySound: boolean, userPlayer: string) {
         const canvas = document.getElementById('canvas') as HTMLCanvasElement;
         const ctx = canvas.getContext('2d')!;
 
