@@ -1,10 +1,15 @@
 import { Board } from './board';
-import { Move } from './movegen/movegen';
+import { Move, StartPosition } from './movegen/movegen';
+import { ControllerOptions } from './util';
 
 export class WSManager {
     ws: WebSocket;
     intialized: Promise<void> | undefined;
-    constructor() {
+    boardStartPos: StartPosition;
+    difficulty: string;
+    constructor(options: ControllerOptions) {
+        this.boardStartPos = options.startPos;
+        this.difficulty = options.difficulty;
         this.ws = new WebSocket('ws://127.0.0.1:8080');
 
         this.intialized = new Promise((resolve) => {
@@ -28,6 +33,8 @@ export class WSManager {
         this.ws.send(
             JSON.stringify({
                 type: 'init',
+                startPos: this.boardStartPos,
+                difficulty: this.difficulty,
             })
         );
     }

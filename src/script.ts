@@ -47,11 +47,16 @@ const main = () => {
         const boardState = new Board(startPosition);
         let controller: Controller;
         if (local.checked) {
-            controller = new WSManager();
+            controller = new WSManager({
+                numThreads: userNumThreads,
+                difficulty: difficulty.value,
+                startPos: boardState.state.startPosName,
+            });
         } else {
             controller = new WorkerManager({
                 numThreads: userNumThreads,
                 difficulty: difficulty.value,
+                startPos: boardState.state.startPosName,
             });
         }
 

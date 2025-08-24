@@ -1,5 +1,5 @@
 import { Board } from './board';
-import { Move } from './movegen/movegen';
+import { Move, StartPosition } from './movegen/movegen';
 
 export type AppMode = 'perf' | 'interactive' | 'ai';
 
@@ -14,6 +14,7 @@ export const getAppMode = (): AppMode => {
 export interface ControllerOptions {
     numThreads: number;
     difficulty: string;
+    startPos: StartPosition;
 }
 // Generic interface for engine
 export interface Controller {

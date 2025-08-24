@@ -982,7 +982,9 @@
 
   // src/wsManager.ts
   var WSManager = class {
-    constructor() {
+    constructor(options) {
+      this.boardStartPos = options.startPos;
+      this.difficulty = options.difficulty;
       this.ws = new WebSocket("ws://127.0.0.1:8080");
       this.intialized = new Promise((resolve) => {
         this.ws.onopen = () => {
@@ -1001,7 +1003,9 @@
       await this.intialized;
       this.ws.send(
         JSON.stringify({
-          type: "init"
+          type: "init",
+          startPos: this.boardStartPos,
+          difficulty: this.difficulty
         })
       );
     }
@@ -1062,11 +1066,16 @@
       const boardState = new Board(startPosition);
       let controller;
       if (local.checked) {
-        controller = new WSManager();
+        controller = new WSManager({
+          numThreads: userNumThreads,
+          difficulty: difficulty.value,
+          startPos: boardState.state.startPosName
+        });
       } else {
         controller = new WorkerManager({
           numThreads: userNumThreads,
-          difficulty: difficulty.value
+          difficulty: difficulty.value,
+          startPos: boardState.state.startPosName
         });
       }
       controller.init(boardState);
