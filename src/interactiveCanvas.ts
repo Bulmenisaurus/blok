@@ -382,8 +382,9 @@ export class InteractiveCanvas {
 
         const { playerA, playerB } = this.score();
 
-        userScore.innerText = playerA.toString();
-        botScore.innerText = playerB.toString();
+        // playerA is always green (0), playerB always red (1)
+        userScore.innerText = (this.userPlayer === 0 ? playerA : playerB).toString();
+        botScore.innerText = (this.userPlayer === 0 ? playerB : playerA).toString();
 
         // update the skip button
 
