@@ -997,6 +997,7 @@
       };
       this.ws.onerror = (event) => {
         console.log("Error: ", event);
+        alert("Failed to connect to local WebSocket server. Is it running?\nDebug messages: " + event.message || event.toString());
       };
     }
     async init() {
