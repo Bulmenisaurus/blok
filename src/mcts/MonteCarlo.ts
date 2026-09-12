@@ -1,182 +1,279 @@
 import { Board } from '../board';
-import { getAllLegalMoves, Move, Player } from '../movegen/movegen';
+import {
+    getAllLegalMoves,
+    Move,
+    Player,
+    pickSizeWeightedMove,
+    sizeWeight,
+} from '../movegen/movegen';
 import { otherPlayer } from '../movegen/movegen-utils';
-import { MonteCarloNode } from './MonteCarloNode';
+import { ChildSlot, MonteCarloNode } from './MonteCarloNode';
 
-type GameOutcome = Player | 'draw' | 'none';
+/** Typical AlphaZero-range PUCT constant. Prior is 2^size, not a net. */
+const PUCT_C = 1.5;
+/** Progressive widening: allow C * n^alpha children before selecting among them. */
+const PW_C = 4.0;
+const PW_ALPHA = 0.5;
+
+export interface SearchInfo {
+    move: Move;
+    visits: number;
+    q: number;
+    iterations: number;
+    nodes: number;
+}
 
 export class MonteCarlo {
-    game: Board;
-    UCB1ExploreParam: number;
     all_nodes: MonteCarloNode[];
-    root_node_idx: number;
-    constructor(game: Board, UCB1ExploreParam = 2) {
-        this.game = game;
-        this.UCB1ExploreParam = UCB1ExploreParam;
+    iterations: number;
+    private scratch: Board | null;
+
+    constructor() {
         this.all_nodes = [];
-
-        // should always be zero
-        this.root_node_idx = -1;
+        this.iterations = 0;
+        this.scratch = null;
     }
-    /** From given state, repeatedly run MCTS to build statistics. Timeout in ms. */
-    runSearch(state: Board, difficulty: string) {
-        this.makeNode(state);
-        const start = Date.now();
 
-        const timeout = {
-            easy: 2_000,
-            medium: 10_000,
-            hard: 20_000,
-        }[difficulty]!;
+    clear() {
+        this.all_nodes = [];
+        this.iterations = 0;
+    }
 
-        const searchDepth = {
-            easy: 1_000,
-            medium: 5_000,
-            hard: 15_000,
-        }[difficulty]!;
-
+    /** From given state, run MCTS until `timeoutMs` elapses. */
+    runSearch(state: Board, timeoutMs: number) {
+        this.startSearch(state);
+        const deadline = Date.now() + timeoutMs;
         let i = 0;
-        // Run the loop until either we search a given number of nodes associated with the difficulty of until a minimum thinking time passes
-        for (; i < searchDepth || Date.now() < start + timeout; i++) {
-            let node = this.select(state);
-            let winner = node.state.winner();
-            if (node.isLeaf() === false && winner === 'none') {
-                node = this.expand(node);
-                winner = this.simulate(node);
+        while (true) {
+            this.iterate(state);
+            i++;
+            if ((i & 7) === 0 && Date.now() >= deadline) {
+                break;
             }
-            this.backpropagate(node, winner);
         }
-
-        console.log('runSearch', i, 'took', Date.now() - start, 'ms');
     }
 
-    // Creates a new node from which to start a search
-    // Since I clear the entire tree after every search, this will always create a root node
-    makeNode(state: Board) {
-        let unexpandedPlays = getAllLegalMoves(state);
-        const new_idx = this.all_nodes.length;
+    startSearch(state: Board) {
+        this.clear();
+        if (this.scratch === null) {
+            this.scratch = state.copy();
+        }
+        this.makeRoot(state);
+    }
 
-        if (new_idx !== 0) {
+    /** One select / expand / simulate / backprop iteration from `root`. */
+    iterate(root: Board) {
+        const treeState = this.scratch === null ? root.copy() : this.scratch;
+        this.scratch = treeState;
+        treeState.copyFrom(root);
+
+        const nodeIdx = this.select(treeState);
+        if (!this.all_nodes[nodeIdx].isLeaf() && !treeState.gameOver()) {
+            const newIdx = this.expand(nodeIdx, treeState);
+            const player = treeState.state.toMove;
+            const expander = otherPlayer(player);
+            const mobH = mobilityHeuristic(treeState, expander);
+            this.simulate(treeState);
+            this.backpropagate(newIdx, treeState.score(), player, mobH);
+        } else {
+            this.backpropagate(nodeIdx, treeState.score(), treeState.state.toMove, null);
+        }
+        this.iterations += 1;
+    }
+
+    makeRoot(state: Board) {
+        if (this.all_nodes.length !== 0) {
             throw new Error(
                 'Search started from a non empty tree. Was the tree not cleared between searches?'
             );
         }
-
-        this.root_node_idx = 0;
-
-        let node = new MonteCarloNode(new_idx, null, null, state, unexpandedPlays);
-        this.all_nodes.push(node);
-
-        // index of the node
-        return this.all_nodes.length - 1;
+        const unexpandedPlays = getAllLegalMoves(state);
+        this.all_nodes.push(new MonteCarloNode(0, null, unexpandedPlays, 1.0));
     }
 
-    /** Get the best move from available statistics. */
-    bestPlay(state: Board) {
-        // If not all children are expanded, not enough information
-        if (!this.all_nodes[this.root_node_idx].isFullyExpanded()) {
-            throw new Error('Not enough information!');
-        }
-        let node = this.all_nodes[this.root_node_idx];
-        let allPlays = node.allPlays();
-        let bestPlay;
-        let max = -Infinity;
-        for (let play of allPlays) {
-            let childNode = node.childNode(play, this.all_nodes);
-            // skip unexpanded nodes (probably would've been caught by the condition above)
-            if (childNode.n_plays === 0) {
+    bestPlay(): Move {
+        return this.bestPlayInfo().move;
+    }
+
+    bestPlayInfo(): SearchInfo {
+        const node = this.all_nodes[0];
+        let bestPlay: Move | undefined;
+        let maxPlays = 0;
+        let q = 0.5;
+        for (const child of node.children) {
+            if (child.node === null) {
                 continue;
             }
-            if (childNode.n_plays > max) {
-                bestPlay = play;
-                max = childNode.n_plays;
+            const childNode = this.all_nodes[child.node];
+            if (childNode.n_plays > maxPlays || bestPlay === undefined) {
+                bestPlay = child.play;
+                maxPlays = childNode.n_plays;
+                q = childNode.n_plays > 0 ? childNode.n_wins / childNode.n_plays : 0.5;
             }
+        }
+        if (bestPlay === undefined) {
+            bestPlay = node.children[0]?.play;
         }
         if (bestPlay === undefined) {
             throw new Error('No best play found. Was bestPlay called on a leaf node?');
         }
-        return bestPlay;
+        return {
+            move: bestPlay,
+            visits: maxPlays,
+            q,
+            iterations: this.iterations,
+            nodes: this.all_nodes.length,
+        };
     }
-    /** Phase 1, Selection: Select until not fully expanded OR leaf */
-    select(state: Board): MonteCarloNode {
-        let node = this.all_nodes[this.root_node_idx];
-        while (node.isFullyExpanded() && !node.isLeaf()) {
-            let plays = node.allPlays();
-            let bestPlay;
-            let bestUCB1 = -Infinity;
-            for (let play of plays) {
-                let childUCB1 = node
-                    .childNode(play, this.all_nodes)
-                    .getUCB1(this.UCB1ExploreParam, this.all_nodes);
-                if (childUCB1 > bestUCB1) {
-                    bestPlay = play;
-                    bestUCB1 = childUCB1;
-                }
+
+    select(state: Board): number {
+        let idx = 0;
+        while (true) {
+            if (this.all_nodes[idx].isLeaf() || this.shouldExpand(idx)) {
+                return idx;
             }
-            if (bestPlay === undefined) {
-                throw new Error('No best play found. Was select called on a leaf node?');
-            }
-            node = node.childNode(bestPlay, this.all_nodes);
+            const child = this.bestChild(idx);
+            state.doMove(child.play);
+            idx = child.node as number;
         }
-        return node;
     }
 
-    /** Phase 2, Expansion: Expand a random unexpanded child node */
-    expand(node: MonteCarloNode) {
-        let plays = node.unexpandedPlays();
-        let randomMove = plays[Math.floor(Math.random() * plays.length)];
+    shouldExpand(idx: number): boolean {
+        const node = this.all_nodes[idx];
+        if (node.isFullyExpanded()) {
+            return false;
+        }
+        if (node.n_expanded === 0) {
+            return true;
+        }
+        const k = PW_C * Math.pow(Math.max(node.n_plays, 1), PW_ALPHA);
+        return node.n_expanded < k;
+    }
 
-        const childState = node.state.copy();
-        childState.doMove(randomMove);
-        let childUnexpandedPlays = getAllLegalMoves(childState);
+    bestChild(idx: number): ChildSlot {
+        const node = this.all_nodes[idx];
+        const parentN = node.n_plays;
+        let best: ChildSlot | undefined;
+        let bestUcb = -Infinity;
+        for (const child of node.children) {
+            if (child.node === null) {
+                continue;
+            }
+            const ucb = this.all_nodes[child.node].getPUCT(PUCT_C, parentN);
+            if (ucb > bestUcb) {
+                bestUcb = ucb;
+                best = child;
+            }
+        }
+        if (best === undefined || best.node === null) {
+            throw new Error('No best play found. Was select called on a leaf node?');
+        }
+        return best;
+    }
 
-        const new_idx = this.all_nodes.length;
-
-        let childNode = node.expand(randomMove, childState, childUnexpandedPlays, new_idx);
-
+    expand(nodeIdx: number, currentState: Board): number {
+        const parent = this.all_nodes[nodeIdx];
+        const newIdx = this.all_nodes.length;
+        const randomMove = pickUnexpandedWeighted(parent);
+        currentState.doMove(randomMove);
+        const childPlays = getAllLegalMoves(currentState);
+        const prior = sizePrior(parent.children, randomMove);
+        const childNode = parent.expand(randomMove, childPlays, newIdx, prior);
         this.all_nodes.push(childNode);
-        return childNode;
+        return newIdx;
     }
 
-    /** Phase 3, Simulation: Play game to terminal state, return winner */
-    simulate(node: MonteCarloNode): GameOutcome {
-        let state = node.state.copy();
-        let winner = state.winner();
-        while (winner === 'none') {
-            let plays = getAllLegalMoves(state);
-            let play = plays[Math.floor(Math.random() * plays.length)];
-            state.doMove(play);
-            winner = state.winner();
+    simulate(currentState: Board) {
+        while (!currentState.gameOver()) {
+            currentState.doMove(pickSizeWeightedMove(currentState));
         }
-        return winner;
     }
-    /** Phase 4, Backpropagation: Update ancestor statistics */
-    backpropagate(node: MonteCarloNode, winner: GameOutcome) {
-        let currentNode: MonteCarloNode | null = node;
-        while (currentNode !== null) {
-            //TODO: do i have to increment n_wins on draw?
-            currentNode.n_plays += 1;
-            // Parent's choice
-            if (otherPlayer(currentNode.state.state.toMove) === winner) {
-                currentNode.n_wins += 1;
+
+    backpropagate(
+        nodeIdx: number,
+        squares: { playerA: number; playerB: number },
+        playerToMove: Player,
+        mobilityH: number | null
+    ) {
+        const expander = otherPlayer(playerToMove);
+        const value = (playerToWin: Player) => {
+            const term = squareValue(squares, playerToWin);
+            if (mobilityH === null) {
+                return term;
             }
+            if (playerToWin === expander) {
+                return 0.75 * term + 0.25 * mobilityH;
+            }
+            return 0.75 * term + 0.25 * (1 - mobilityH);
+        };
 
-            let parentNodeIdx: number | null = currentNode.parent_idx;
-            currentNode = parentNodeIdx === null ? null : this.all_nodes[parentNodeIdx];
+        let idx = nodeIdx;
+        let player = playerToMove;
+        while (true) {
+            const node = this.all_nodes[idx];
+            node.n_plays += 1;
+            node.n_wins += value(otherPlayer(player));
+            if (node.parent_idx === null) {
+                break;
+            }
+            idx = node.parent_idx;
+            player = otherPlayer(player);
         }
     }
 
-    getStats(state: Board) {
-        let node = this.all_nodes[this.root_node_idx];
-        //* let node = this.nodes.get(state.hash())!;
-        let stats: {
-            n_plays: number;
-            n_wins: number;
-        } = {
+    getStats() {
+        const node = this.all_nodes[0];
+        return {
             n_plays: node.n_plays,
             n_wins: node.n_wins,
         };
-
-        return stats;
     }
+}
+
+function squareValue(squares: { playerA: number; playerB: number }, playerToWin: Player): number {
+    const diff =
+        playerToWin === 0 ? squares.playerA - squares.playerB : squares.playerB - squares.playerA;
+    return 0.5 + 0.5 * Math.tanh(diff / 12);
+}
+
+function mobilityHeuristic(state: Board, playerToWin: Player): number {
+    const my = state.mobility(playerToWin);
+    const opp = state.mobility(otherPlayer(playerToWin));
+    return 0.5 + 0.5 * Math.tanh((my - opp) / 100);
+}
+
+function sizePrior(children: { play: Move }[], play: Move): number {
+    let total = 0;
+    let wPlay = 1;
+    for (let i = 0; i < children.length; i++) {
+        const w = sizeWeight(children[i].play);
+        total += w;
+        if (children[i].play === play) {
+            wPlay = w;
+        }
+    }
+    return total === 0 ? 1 : wPlay / total;
+}
+
+function pickUnexpandedWeighted(node: MonteCarloNode): Move {
+    let total = 0;
+    for (let i = 0; i < node.children.length; i++) {
+        if (node.children[i].node === null) {
+            total += sizeWeight(node.children[i].play);
+        }
+    }
+    let r = Math.random() * total;
+    let last = node.children[0].play;
+    for (let i = 0; i < node.children.length; i++) {
+        if (node.children[i].node !== null) {
+            continue;
+        }
+        last = node.children[i].play;
+        const w = sizeWeight(last);
+        if (r < w) {
+            return last;
+        }
+        r -= w;
+    }
+    return last;
 }

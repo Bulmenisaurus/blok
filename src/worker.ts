@@ -13,7 +13,7 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
     if (e.data.type === 'init') {
         console.log('initialization');
         board = new Board(e.data.startPos);
-        mcts = new MonteCarlo(board);
+        mcts = new MonteCarlo();
         difficulty = e.data.difficulty;
         return;
     }
@@ -38,24 +38,27 @@ onmessage = (e: MessageEvent<WorkerMessage>) => {
         return;
     }
 
-    // Run MCTS search for a reasonable time (5 seconds)
-    console.log('running mcts');
-    console.log('running 5k search');
-    mcts.runSearch(board, difficulty);
+    const timeout = {
+        easy: 2_000,
+        medium: 10_000,
+        hard: 20_000,
+    }[difficulty]!;
+
+    console.log('running mcts', timeout, 'ms');
+    const start = Date.now();
+    mcts.runSearch(board, timeout);
 
     try {
-        // Get the best move from MCTS
-        const bestMove = mcts.bestPlay(board);
+        const info = mcts.bestPlayInfo();
+        const bestMove = info.move;
+        const score = info.q;
+        console.log(
+            `mcts: iterations=${info.iterations} score=${score.toFixed(3)} visits=${
+                info.visits
+            } bestmove=${bestMove} took ${Date.now() - start} ms`
+        );
 
-        // Get statistics for the best move
-        const stats = mcts.getStats(board);
-        const score = stats.n_wins / stats.n_plays;
-        console.log('score: ', score);
-
-        // clear memory
-        console.log('clearing');
-        //* mcts.nodes.clear();
-        mcts.all_nodes = [];
+        mcts.clear();
 
         board.doMove(bestMove);
 

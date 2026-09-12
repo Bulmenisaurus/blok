@@ -31,11 +31,16 @@ export const getMoveOrientation = (packedMove: PackedMove): number => {
     return packedMove & MOVE_ORIENTATION_MASK;
 };
 
-export const getMoveLocation = (packedMove: PackedMove): Coordinate => {
-    const x = (packedMove & MOVE_X_MASK) >> 7;
-    const y = (packedMove & MOVE_Y_MASK) >> 3;
+export const getMoveX = (packedMove: PackedMove): number => {
+    return (packedMove & MOVE_X_MASK) >> 7;
+};
 
-    return { x, y };
+export const getMoveY = (packedMove: PackedMove): number => {
+    return (packedMove & MOVE_Y_MASK) >> 3;
+};
+
+export const getMoveLocation = (packedMove: PackedMove): Coordinate => {
+    return { x: getMoveX(packedMove), y: getMoveY(packedMove) };
 };
 
 export const getMovePieceType = (packedMove: PackedMove): number => {
@@ -43,9 +48,7 @@ export const getMovePieceType = (packedMove: PackedMove): number => {
 };
 
 export const getMovePlayer = (packedMove: PackedMove): Player => {
-    const player = (packedMove & MOVE_PLAYER_BIT) >> 16;
-
-    return player as Player;
+    return ((packedMove & MOVE_PLAYER_BIT) >> 16) as Player;
 };
 
 // Sentinel value, invalid for an actual move since there cannot be a move with piece type 31.
@@ -95,6 +98,9 @@ export const getOrientationData = (pieceType: PieceType, orientation: number) =>
     return orientationData[pieceType][orientation];
 };
 
+export const PIECE_SIZES: readonly number[] = pieceData.map((p) => p.length);
+export const PIECE_WEIGHTS: readonly number[] = PIECE_SIZES.map((s) => 1 << Math.min(s, 8));
+
 export type StartPosition = 'middle' | 'corner' | 'middle-blokee';
 
 /**
@@ -111,76 +117,66 @@ export const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
         return true;
     }
 
-    const toMove = getMovePlayer(pseudoLegalMove);
-    const location = getMoveLocation(pseudoLegalMove);
+    const player = (pseudoLegalMove & MOVE_PLAYER_BIT) >> 16;
+    const type = (pseudoLegalMove & MOVE_TYPE_MASK) >> 11;
+    const ori = pseudoLegalMove & MOVE_ORIENTATION_MASK;
+    const x = (pseudoLegalMove & MOVE_X_MASK) >> 7;
+    const y = (pseudoLegalMove & MOVE_Y_MASK) >> 3;
 
-    // otherwise, check if we already placed this piece
-    const myPlacedPiece = [state.state.playerARemaining, state.state.playerBRemaining][toMove];
-    if (!(myPlacedPiece & (1 << getMovePieceType(pseudoLegalMove)))) {
+    const remaining = player === 0 ? state.state.playerARemaining : state.state.playerBRemaining;
+    if ((remaining & (1 << type)) === 0) {
         return false;
     }
 
-    const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
-    const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
+    const myBitBoard = player === 0 ? state.state.playerABitBoard : state.state.playerBBitBoard;
+    const opponentBitBoard =
+        player === 0 ? state.state.playerBBitBoard : state.state.playerABitBoard;
 
-    const shortBoundingBox =
-        shortBoundingBoxData[getMovePieceType(pseudoLegalMove)][
-            getMoveOrientation(pseudoLegalMove)
-        ];
-
-    const bottomRightBB = {
-        x: location.x + shortBoundingBox[0],
-        y: location.y + shortBoundingBox[1],
-    };
-    if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
+    const shortBoundingBox = shortBoundingBoxData[type][ori];
+    const brx = x + shortBoundingBox[0];
+    const bry = y + shortBoundingBox[1];
+    if (x < 0 || y < 0 || x > 13 || y > 13 || brx < 0 || bry < 0 || brx > 13 || bry > 13) {
         return false;
     }
-    // this is an array of numbers, representing the piece
-    // for example, [1,1,1,3] corresponds to
-    // +------
-    // |x
-    // |x
-    // |x
-    // |xx
-    // i.e. the L piece
-    const pieceBitboard =
-        orientationBitBoarddata[getMovePieceType(pseudoLegalMove)][
-            getMoveOrientation(pseudoLegalMove)
-        ];
 
-    // it's easier to check the opponent bitboards first: check if there is no intersection
+    const pieceBitboard = orientationBitBoarddata[type][ori];
     for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
-        // translate the row right by the x coordinate of the piece
-        const bitBoardRow = pieceBitboard[bitboardY] << location.x;
-        // now compare it with the actual bitboard
-        const gameRow = opponentBitBoard[bitboardY + location.y];
-        if (bitBoardRow & gameRow) {
+        if ((pieceBitboard[bitboardY] << x) & opponentBitBoard[bitboardY + y]) {
             return false;
         }
     }
 
-    // check if there is any intersection with my bitboard
-    // for this we also need to do a "halo" - checking 4 tiles around each piece
-    // thus for each row, we need to add a couple more options: the row, the rows above and below it, and the row shifted left and right
-    const haloData =
-        orientationBitBoardHaloData[getMovePieceType(pseudoLegalMove)][
-            getMoveOrientation(pseudoLegalMove)
-        ];
-
+    const haloData = orientationBitBoardHaloData[type][ori];
+    const myLen = myBitBoard.length;
     for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
-        if (location.y + bitboardY - 1 < 0 || location.y + bitboardY - 1 >= myBitBoard.length) {
+        const row = y + bitboardY - 1;
+        if (row < 0 || row >= myLen) {
             continue;
         }
-        const cachedHalo = haloData[bitboardY] << location.x;
-
-        // shift by 1 to match the halo data
-        const gameRow = myBitBoard[bitboardY + location.y - 1] << 1;
-        if (cachedHalo & gameRow) {
+        if ((haloData[bitboardY] << x) & (myBitBoard[row] << 1)) {
             return false;
         }
     }
 
     return true;
+};
+
+/** True if the placement overlaps `bitboard` (no halo / remaining checks). */
+export const moveOverlaps = (move: Move, bitboard: number[]): boolean => {
+    if (move === NULL_MOVE) {
+        return false;
+    }
+    const type = (move & MOVE_TYPE_MASK) >> 11;
+    const ori = move & MOVE_ORIENTATION_MASK;
+    const x = (move & MOVE_X_MASK) >> 7;
+    const y = (move & MOVE_Y_MASK) >> 3;
+    const pieceBitboard = orientationBitBoarddata[type][ori];
+    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
+        if ((pieceBitboard[bitboardY] << x) & bitboard[bitboardY + y]) {
+            return true;
+        }
+    }
+    return false;
 };
 
 /**
@@ -192,40 +188,28 @@ export const isMoveLegal = (pseudoLegalMove: Move, state: Board): boolean => {
  */
 export const getLegalMovesFrom = (from: Coordinate, piece: PieceType, state: Board): Move[] => {
     const moves: Move[] = [];
+    const player = state.state.toMove;
+    const fromX = from.x;
+    const fromY = from.y;
+    const orientations = orientationData[piece];
 
-    //TODO: could we hardcode every single valid placement?
-    //TODO: can we always say that the two bounding boxes must not interstect? edit: no
-    // aa
-    // a b
-    // a b
-    //  bb
-
-    // go over each orientation
-    for (let i = 0; i < orientationData[piece].length; i++) {
+    for (let i = 0; i < orientations.length; i++) {
         const orientationCorners = cornersData[piece][i];
-
-        // each corner of the orientation
-        for (const corner of orientationCorners) {
-            // position of the (0,0) tile
-            const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
-
-            if (!coordinateInBounds(pieceMiddle)) {
+        for (let c = 0; c < orientationCorners.length; c++) {
+            const corner = orientationCorners[c];
+            const mx = fromX - corner.x;
+            const my = fromY - corner.y;
+            if (mx < 0 || my < 0 || mx > 13 || my > 13) {
                 continue;
             }
-
-            let placedPiece: PlacedPiece = {
-                location: pieceMiddle,
-                player: state.state.toMove,
-                pieceType: piece,
-                orientation: i,
-            };
-            const move = serializePlacedPiece(placedPiece);
-
-            moves.push(move);
+            const move = i | (my << 3) | (mx << 7) | (piece << 11) | (player << 16);
+            if (isMoveLegal(move, state)) {
+                moves.push(move);
+            }
         }
     }
 
-    return moves.filter((p) => isMoveLegal(p, state));
+    return moves;
 };
 
 /**
@@ -251,43 +235,88 @@ const isMoveBlokeeLegal = (move: PlacedPiece, pieceTiles: PieceData) => {
  * @param board The current state
  * @returns
  */
-const generateFirstMove = (board: Board): Move[] => {
-    const startPos = board.startPositions[board.state.toMove];
+const START_SQUARES: Record<StartPosition, [Coordinate, Coordinate]> = {
+    middle: [
+        { x: 4, y: 4 },
+        { x: 9, y: 9 },
+    ],
+    corner: [
+        { x: 0, y: 0 },
+        { x: 13, y: 13 },
+    ],
+    'middle-blokee': [
+        { x: 6, y: 7 },
+        { x: 7, y: 6 },
+    ],
+};
 
-    if (board.state.nullMoveCounter !== 0) {
-        throw new Error('Null move counter is not 0 at the beginning of the game?');
-    }
-
+const firstMoveCandidates = (startPosName: StartPosition, player: Player): Move[] => {
+    const startPos = START_SQUARES[startPosName][player];
     const moves: Move[] = [];
     for (let piece = 0; piece < 21; piece++) {
-        // go over each orientation
         for (let i = 0; i < orientationData[piece].length; i++) {
             const pieceTiles = orientationData[piece][i];
-
-            // each tile of the piece, center it over the starting position
-            for (const tile of pieceTiles) {
-                // position of the (0,0) tile
-                const pieceMiddle = { x: startPos.x - tile.x, y: startPos.y - tile.y };
-                let placedPiece: PlacedPiece = {
-                    location: pieceMiddle,
-                    player: board.state.toMove,
+            for (let t = 0; t < pieceTiles.length; t++) {
+                const tile = pieceTiles[t];
+                const mx = startPos.x - tile.x;
+                const my = startPos.y - tile.y;
+                if (mx < 0 || my < 0 || mx > 13 || my > 13) {
+                    continue;
+                }
+                const placedPiece: PlacedPiece = {
+                    location: { x: mx, y: my },
+                    player,
                     pieceType: piece,
                     orientation: i,
                 };
-
-                // special rules
                 if (
-                    board.state.startPosName === 'middle-blokee' &&
+                    startPosName === 'middle-blokee' &&
                     !isMoveBlokeeLegal(placedPiece, pieceTiles)
                 ) {
                     continue;
                 }
-
                 moves.push(serializePlacedPiece(placedPiece));
             }
         }
     }
-    return moves.filter((p) => isMoveLegal(p, board));
+    return moves;
+};
+
+const FIRST_MOVE_CANDIDATES: Record<StartPosition, [Move[], Move[]]> = {
+    middle: [firstMoveCandidates('middle', 0), firstMoveCandidates('middle', 1)],
+    corner: [firstMoveCandidates('corner', 0), firstMoveCandidates('corner', 1)],
+    'middle-blokee': [
+        firstMoveCandidates('middle-blokee', 0),
+        firstMoveCandidates('middle-blokee', 1),
+    ],
+};
+
+const EMPTY_FIRST_LEGAL: Partial<Record<string, Move[]>> = {};
+
+const generateFirstMove = (board: Board): Move[] => {
+    const candidates = FIRST_MOVE_CANDIDATES[board.state.startPosName][board.state.toMove];
+    if (board.state.pieces.length === 0) {
+        const key = `${board.state.startPosName}:${board.state.toMove}`;
+        const cached = EMPTY_FIRST_LEGAL[key];
+        if (cached !== undefined) {
+            return cached.slice();
+        }
+        const legal: Move[] = [];
+        for (let i = 0; i < candidates.length; i++) {
+            if (isMoveLegal(candidates[i], board)) {
+                legal.push(candidates[i]);
+            }
+        }
+        EMPTY_FIRST_LEGAL[key] = legal;
+        return legal.slice();
+    }
+    const legal: Move[] = [];
+    for (let i = 0; i < candidates.length; i++) {
+        if (isMoveLegal(candidates[i], board)) {
+            legal.push(candidates[i]);
+        }
+    }
+    return legal;
 };
 
 /**
@@ -296,80 +325,120 @@ const generateFirstMove = (board: Board): Move[] => {
  * @returns
  */
 export const getAllLegalMoves = (board: Board): Move[] => {
-    //for all of my already placed pieces:
-    //  - find their "corner attachers" (filter out occupied ones)
-    //  - for each of the "corner attachers":
-    //      - for each of my non-placed pieces
-    //          - for each orientation of that non-placed piece
-    //              - check if that orientation of that piece in that location intersects or is adjacent to any other piece
-
     if (board.gameOver()) {
         return [];
     }
 
-    const myPlacedPieces = board.state.pieces.filter(
-        (p) => getMovePlayer(p) === board.state.toMove
-    );
-
-    if (myPlacedPieces.length === 0) {
+    const myRemaining =
+        board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
+    if (myRemaining === 0x1fffff) {
         return generateFirstMove(board);
     }
 
-    // If not generating the first move, used the cached moves for each corner
-    let moves: Move[] = [];
-    if (board.state.toMove === 0) {
-        moves = Array.from(board.state.playerACornerMoves.values()).flat();
-    } else {
-        moves = Array.from(board.state.playerBCornerMoves.values()).flat();
-    }
-
-    // deduplicate
-    const uniqueMoves = Array.from(new Set(moves));
-    /*
-    const myState =
-        board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
-    const moves: Move[] = [];
-
-    for (const placedPiece of myPlacedPieces) {
-        // Find the corners of my placed pieces
-        //x  x
-        // oo
-        // o x
-        // oo
-        //x  x
-        const cornerAttachers =
-            cornerAttachersData[getMovePieceType(placedPiece)][getMoveOrientation(placedPiece)];
-        for (const cornerAttacher of cornerAttachers) {
-            const cornerAbsolute: Coordinate = {
-                x: cornerAttacher.x + getMoveLocation(placedPiece).x,
-                y: cornerAttacher.y + getMoveLocation(placedPiece).y,
-            };
-
-            if (!coordinateInBounds(cornerAbsolute)) {
-                continue;
-            }
-
-            // corner attacher must be unoccupied for us to place something there
-
-            const playerATile = getBitBoardValue(board.state.playerABitBoard, cornerAbsolute);
-            const playerBTile = getBitBoardValue(board.state.playerBBitBoard, cornerAbsolute);
-            if (playerATile || playerBTile) {
-                continue;
-            }
-
-            for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
-                if (!(myState & (1 << unplacedPiece))) {
-                    continue;
-                }
-
-                moves.push(...getLegalMovesFrom(cornerAbsolute, unplacedPiece, board));
-            }
-        }
-    }*/
+    const cache =
+        board.state.toMove === 0 ? board.state.playerACornerMoves : board.state.playerBCornerMoves;
+    const uniqueMoves = uniqueMovesFromCache(cache);
 
     if (uniqueMoves.length === 0) {
         uniqueMoves.push(NULL_MOVE);
     }
 
     return uniqueMoves;
+};
+
+const MOVE_SEEN = new Uint32Array(1 << 17);
+let MOVE_SEEN_EPOCH = 1;
+
+const uniqueMovesFromCache = (cache: Map<number, Move[]>): Move[] => {
+    MOVE_SEEN_EPOCH++;
+    if (MOVE_SEEN_EPOCH === 0xffffffff) {
+        MOVE_SEEN.fill(0);
+        MOVE_SEEN_EPOCH = 1;
+    }
+    const uniqueMoves: Move[] = [];
+    for (const moves of cache.values()) {
+        for (let i = 0; i < moves.length; i++) {
+            const move = moves[i];
+            if (MOVE_SEEN[move] !== MOVE_SEEN_EPOCH) {
+                MOVE_SEEN[move] = MOVE_SEEN_EPOCH;
+                uniqueMoves.push(move);
+            }
+        }
+    }
+    return uniqueMoves;
+};
+
+export const pieceSize = (move: Move): number => {
+    if (move === NULL_MOVE) {
+        return 1;
+    }
+    return PIECE_SIZES[getMovePieceType(move)];
+};
+
+export const sizeWeight = (move: Move): number => {
+    if (move === NULL_MOVE) {
+        return 2;
+    }
+    return PIECE_WEIGHTS[getMovePieceType(move)];
+};
+
+export const pickSizeWeightedFromList = (plays: Move[]): Move => {
+    if (plays.length === 1) {
+        return plays[0];
+    }
+    let total = 0;
+    for (const move of plays) {
+        total += sizeWeight(move);
+    }
+    let r = Math.floor(Math.random() * total);
+    for (const move of plays) {
+        const w = sizeWeight(move);
+        if (r < w) {
+            return move;
+        }
+        r -= w;
+    }
+    return plays[plays.length - 1];
+};
+
+/**
+ * Size-weighted sample for rollouts. Walks the corner cache and skips
+ * dedup (duplicates just add weight), packing only the chosen move.
+ */
+export const pickSizeWeightedMove = (board: Board): Move => {
+    if (board.gameOver()) {
+        return NULL_MOVE;
+    }
+
+    const myRemaining =
+        board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
+    if (myRemaining === 0x1fffff) {
+        return pickSizeWeightedFromList(getAllLegalMoves(board));
+    }
+
+    const cache =
+        board.state.toMove === 0 ? board.state.playerACornerMoves : board.state.playerBCornerMoves;
+
+    let total = 0;
+    for (const moves of cache.values()) {
+        for (let i = 0; i < moves.length; i++) {
+            total += PIECE_WEIGHTS[getMovePieceType(moves[i])];
+        }
+    }
+    if (total === 0) {
+        return NULL_MOVE;
+    }
+
+    let r = (Math.random() * total) | 0;
+    for (const moves of cache.values()) {
+        for (let i = 0; i < moves.length; i++) {
+            const move = moves[i];
+            const w = PIECE_WEIGHTS[getMovePieceType(move)];
+            if (r < w) {
+                return move;
+            }
+            r -= w;
+        }
+    }
+    return NULL_MOVE;
 };

@@ -154,11 +154,256 @@
   // src/movegen/piece-corner-attachers.json
   var piece_corner_attachers_default = [[[{ x: -1, y: 4 }, { x: 2, y: 4 }, { x: 2, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 4 }, { x: -1, y: 2 }, { x: -1, y: 4 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 4, y: 2 }, { x: 4, y: -1 }, { x: 2, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: -1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 4, y: -1 }, { x: 4, y: 2 }, { x: 2, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 2, y: 4 }, { x: 0, y: 4 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 1, y: 4 }, { x: -1, y: 4 }, { x: 2, y: 3 }, { x: 2, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 4, y: 1 }, { x: 4, y: -1 }, { x: 3, y: 2 }, { x: 1, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: 4, y: 2 }, { x: 4, y: 0 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }]], [[{ x: 2, y: 0 }, { x: 2, y: 4 }, { x: 0, y: 4 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 4 }, { x: -1, y: 4 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 0, y: -1 }, { x: 4, y: 1 }, { x: 4, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 1, y: 2 }, { x: 4, y: 2 }, { x: 4, y: 0 }], [{ x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: 4 }, { x: 0, y: 4 }], [{ x: 2, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: 3, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: 4, y: 1 }, { x: 4, y: -1 }], [{ x: 0, y: 2 }, { x: 4, y: 2 }, { x: 4, y: 0 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 2, y: -1 }, { x: 2, y: 2 }, { x: 0, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 2 }, { x: 2, y: 2 }, { x: 2, y: 0 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }]], [[{ x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 1 }, { x: -1, y: -1 }, { x: 2, y: -1 }], [{ x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 2 }, { x: -1, y: -1 }], [{ x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }, { x: 3, y: -1 }, { x: 3, y: 2 }]], [[{ x: -1, y: -1 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 3, y: -1 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }]], [[{ x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 3, y: 3 }, { x: 1, y: 3 }, { x: 3, y: -1 }, { x: 1, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 3 }, { x: 0, y: 3 }]], [[{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 2 }, { x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 2, y: 0 }, { x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 0, y: 0 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }]], [[{ x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 0 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 3 }, { x: -1, y: 3 }, { x: -1, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: -1, y: 2 }, { x: -1, y: -1 }, { x: 2, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }], [{ x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 3 }, { x: 0, y: 3 }], [{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: -1, y: -1 }, { x: -1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 3, y: -1 }, { x: 3, y: 2 }, { x: 0, y: 2 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 0, y: 3 }, { x: 3, y: 3 }, { x: 3, y: 1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 0 }, { x: 3, y: 3 }, { x: 1, y: 3 }]], [[{ x: -1, y: -1 }, { x: 2, y: -1 }, { x: 2, y: 2 }, { x: -1, y: 2 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: -1 }, { x: 1, y: -1 }], [{ x: 3, y: 2 }, { x: 3, y: 0 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: -1, y: -1 }, { x: 2, y: 1 }, { x: 2, y: -1 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 3, y: -1 }, { x: 3, y: 2 }, { x: 1, y: 2 }], [{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 3 }, { x: 2, y: 3 }, { x: 2, y: 1 }], [{ x: 2, y: -1 }, { x: 0, y: -1 }, { x: 2, y: 3 }, { x: -1, y: 1 }, { x: -1, y: 3 }]], [[{ x: -1, y: 0 }, { x: -1, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: 0, y: -1 }], [{ x: 2, y: 3 }, { x: 0, y: 3 }, { x: 2, y: -1 }, { x: 0, y: -1 }, { x: -1, y: 0 }, { x: -1, y: 2 }], [{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: 2, y: 2 }, { x: 2, y: 0 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 2 }, { x: 0, y: 2 }]], [[{ x: 2, y: 2 }, { x: -1, y: 0 }, { x: -1, y: 2 }, { x: 0, y: -1 }, { x: 3, y: 1 }, { x: 3, y: -1 }], [{ x: 0, y: 2 }, { x: 3, y: 2 }, { x: 3, y: 0 }, { x: 2, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }], [{ x: 2, y: 0 }, { x: 2, y: 3 }, { x: 0, y: 3 }, { x: -1, y: 2 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: -1, y: 0 }, { x: 1, y: 3 }, { x: -1, y: 3 }, { x: 2, y: 2 }, { x: 2, y: -1 }, { x: 0, y: -1 }]], [[{ x: 1, y: 1 }, { x: 1, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 2 }, { x: -1, y: 2 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 2, y: 1 }, { x: 2, y: -1 }]], [[{ x: 1, y: 3 }, { x: -1, y: 3 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 3, y: 1 }, { x: 3, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]], [[{ x: 1, y: -1 }, { x: -1, y: -1 }, { x: 1, y: 4 }, { x: -1, y: 4 }], [{ x: -1, y: -1 }, { x: -1, y: 1 }, { x: 4, y: 1 }, { x: 4, y: -1 }]], [[{ x: 1, y: 5 }, { x: -1, y: 5 }, { x: 1, y: -1 }, { x: -1, y: -1 }], [{ x: 5, y: 1 }, { x: 5, y: -1 }, { x: -1, y: -1 }, { x: -1, y: 1 }]]];
 
+  // src/movegen/movegen.ts
+  var MOVE_ORIENTATION_MASK = 7;
+  var MOVE_Y_MASK = 120;
+  var MOVE_X_MASK = 1920;
+  var MOVE_TYPE_MASK = 63488;
+  var MOVE_PLAYER_BIT = 65536;
+  var getMoveOrientation = (packedMove) => {
+    return packedMove & MOVE_ORIENTATION_MASK;
+  };
+  var getMoveX = (packedMove) => {
+    return (packedMove & MOVE_X_MASK) >> 7;
+  };
+  var getMoveY = (packedMove) => {
+    return (packedMove & MOVE_Y_MASK) >> 3;
+  };
+  var getMoveLocation = (packedMove) => {
+    return { x: getMoveX(packedMove), y: getMoveY(packedMove) };
+  };
+  var getMovePieceType = (packedMove) => {
+    return (packedMove & MOVE_TYPE_MASK) >> 11;
+  };
+  var getMovePlayer = (packedMove) => {
+    return (packedMove & MOVE_PLAYER_BIT) >> 16;
+  };
+  var NULL_MOVE = 63488;
+  var serializePlacedPiece = (placedPiece) => {
+    return placedPiece.orientation | placedPiece.location.y << 3 | placedPiece.location.x << 7 | placedPiece.pieceType << 11 | placedPiece.player << 16;
+  };
+  var pieceData = pieces_default;
+  var orientationData = piece_orientations_default;
+  var orientationBitBoarddata = piece_orientations_bitboard_default;
+  var orientationBitBoardHaloData = piece_orientations_bitboard_halo_default;
+  var RRData = piece_rr_default;
+  var cornersData = piece_corners_default;
+  var cornerAttachersData = piece_corner_attachers_default;
+  var shortBoundingBoxData = piece_short_bounding_box_default;
+  var getOrientationData = (pieceType, orientation) => {
+    return orientationData[pieceType][orientation];
+  };
+  var PIECE_SIZES = pieceData.map((p) => p.length);
+  var PIECE_WEIGHTS = PIECE_SIZES.map((s) => 1 << Math.min(s, 8));
+  var isMoveLegal = (pseudoLegalMove, state) => {
+    if (pseudoLegalMove === NULL_MOVE) {
+      return true;
+    }
+    const player = (pseudoLegalMove & MOVE_PLAYER_BIT) >> 16;
+    const type = (pseudoLegalMove & MOVE_TYPE_MASK) >> 11;
+    const ori = pseudoLegalMove & MOVE_ORIENTATION_MASK;
+    const x = (pseudoLegalMove & MOVE_X_MASK) >> 7;
+    const y = (pseudoLegalMove & MOVE_Y_MASK) >> 3;
+    const remaining = player === 0 ? state.state.playerARemaining : state.state.playerBRemaining;
+    if ((remaining & 1 << type) === 0) {
+      return false;
+    }
+    const myBitBoard = player === 0 ? state.state.playerABitBoard : state.state.playerBBitBoard;
+    const opponentBitBoard = player === 0 ? state.state.playerBBitBoard : state.state.playerABitBoard;
+    const shortBoundingBox = shortBoundingBoxData[type][ori];
+    const brx = x + shortBoundingBox[0];
+    const bry = y + shortBoundingBox[1];
+    if (x < 0 || y < 0 || x > 13 || y > 13 || brx < 0 || bry < 0 || brx > 13 || bry > 13) {
+      return false;
+    }
+    const pieceBitboard = orientationBitBoarddata[type][ori];
+    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
+      if (pieceBitboard[bitboardY] << x & opponentBitBoard[bitboardY + y]) {
+        return false;
+      }
+    }
+    const haloData = orientationBitBoardHaloData[type][ori];
+    const myLen = myBitBoard.length;
+    for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
+      const row = y + bitboardY - 1;
+      if (row < 0 || row >= myLen) {
+        continue;
+      }
+      if (haloData[bitboardY] << x & myBitBoard[row] << 1) {
+        return false;
+      }
+    }
+    return true;
+  };
+  var moveOverlaps = (move, bitboard) => {
+    if (move === NULL_MOVE) {
+      return false;
+    }
+    const type = (move & MOVE_TYPE_MASK) >> 11;
+    const ori = move & MOVE_ORIENTATION_MASK;
+    const x = (move & MOVE_X_MASK) >> 7;
+    const y = (move & MOVE_Y_MASK) >> 3;
+    const pieceBitboard = orientationBitBoarddata[type][ori];
+    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
+      if (pieceBitboard[bitboardY] << x & bitboard[bitboardY + y]) {
+        return true;
+      }
+    }
+    return false;
+  };
+  var getLegalMovesFrom = (from, piece, state) => {
+    const moves = [];
+    const player = state.state.toMove;
+    const fromX = from.x;
+    const fromY = from.y;
+    const orientations = orientationData[piece];
+    for (let i = 0; i < orientations.length; i++) {
+      const orientationCorners = cornersData[piece][i];
+      for (let c = 0; c < orientationCorners.length; c++) {
+        const corner = orientationCorners[c];
+        const mx = fromX - corner.x;
+        const my = fromY - corner.y;
+        if (mx < 0 || my < 0 || mx > 13 || my > 13) {
+          continue;
+        }
+        const move = i | my << 3 | mx << 7 | piece << 11 | player << 16;
+        if (isMoveLegal(move, state)) {
+          moves.push(move);
+        }
+      }
+    }
+    return moves;
+  };
+  var isMoveBlokeeLegal = (move, pieceTiles) => {
+    return pieceTiles.every((relCoord) => {
+      const absolute = { x: relCoord.x + move.location.x, y: relCoord.y + move.location.y };
+      if (move.player === 0) {
+        return absolute.x <= 6 && absolute.y > 6;
+      } else {
+        return absolute.x > 6 && absolute.y <= 6;
+      }
+    });
+  };
+  var START_SQUARES = {
+    middle: [
+      { x: 4, y: 4 },
+      { x: 9, y: 9 }
+    ],
+    corner: [
+      { x: 0, y: 0 },
+      { x: 13, y: 13 }
+    ],
+    "middle-blokee": [
+      { x: 6, y: 7 },
+      { x: 7, y: 6 }
+    ]
+  };
+  var firstMoveCandidates = (startPosName, player) => {
+    const startPos2 = START_SQUARES[startPosName][player];
+    const moves = [];
+    for (let piece = 0; piece < 21; piece++) {
+      for (let i = 0; i < orientationData[piece].length; i++) {
+        const pieceTiles = orientationData[piece][i];
+        for (let t = 0; t < pieceTiles.length; t++) {
+          const tile = pieceTiles[t];
+          const mx = startPos2.x - tile.x;
+          const my = startPos2.y - tile.y;
+          if (mx < 0 || my < 0 || mx > 13 || my > 13) {
+            continue;
+          }
+          const placedPiece = {
+            location: { x: mx, y: my },
+            player,
+            pieceType: piece,
+            orientation: i
+          };
+          if (startPosName === "middle-blokee" && !isMoveBlokeeLegal(placedPiece, pieceTiles)) {
+            continue;
+          }
+          moves.push(serializePlacedPiece(placedPiece));
+        }
+      }
+    }
+    return moves;
+  };
+  var FIRST_MOVE_CANDIDATES = {
+    middle: [firstMoveCandidates("middle", 0), firstMoveCandidates("middle", 1)],
+    corner: [firstMoveCandidates("corner", 0), firstMoveCandidates("corner", 1)],
+    "middle-blokee": [
+      firstMoveCandidates("middle-blokee", 0),
+      firstMoveCandidates("middle-blokee", 1)
+    ]
+  };
+  var EMPTY_FIRST_LEGAL = {};
+  var generateFirstMove = (board) => {
+    const candidates = FIRST_MOVE_CANDIDATES[board.state.startPosName][board.state.toMove];
+    if (board.state.pieces.length === 0) {
+      const key = `${board.state.startPosName}:${board.state.toMove}`;
+      const cached = EMPTY_FIRST_LEGAL[key];
+      if (cached !== void 0) {
+        return cached.slice();
+      }
+      const legal2 = [];
+      for (let i = 0; i < candidates.length; i++) {
+        if (isMoveLegal(candidates[i], board)) {
+          legal2.push(candidates[i]);
+        }
+      }
+      EMPTY_FIRST_LEGAL[key] = legal2;
+      return legal2.slice();
+    }
+    const legal = [];
+    for (let i = 0; i < candidates.length; i++) {
+      if (isMoveLegal(candidates[i], board)) {
+        legal.push(candidates[i]);
+      }
+    }
+    return legal;
+  };
+  var getAllLegalMoves = (board) => {
+    if (board.gameOver()) {
+      return [];
+    }
+    const myRemaining = board.state.toMove === 0 ? board.state.playerARemaining : board.state.playerBRemaining;
+    if (myRemaining === 2097151) {
+      return generateFirstMove(board);
+    }
+    const cache = board.state.toMove === 0 ? board.state.playerACornerMoves : board.state.playerBCornerMoves;
+    const uniqueMoves = uniqueMovesFromCache(cache);
+    if (uniqueMoves.length === 0) {
+      uniqueMoves.push(NULL_MOVE);
+    }
+    return uniqueMoves;
+  };
+  var MOVE_SEEN = new Uint32Array(1 << 17);
+  var MOVE_SEEN_EPOCH = 1;
+  var uniqueMovesFromCache = (cache) => {
+    MOVE_SEEN_EPOCH++;
+    if (MOVE_SEEN_EPOCH === 4294967295) {
+      MOVE_SEEN.fill(0);
+      MOVE_SEEN_EPOCH = 1;
+    }
+    const uniqueMoves = [];
+    for (const moves of cache.values()) {
+      for (let i = 0; i < moves.length; i++) {
+        const move = moves[i];
+        if (MOVE_SEEN[move] !== MOVE_SEEN_EPOCH) {
+          MOVE_SEEN[move] = MOVE_SEEN_EPOCH;
+          uniqueMoves.push(move);
+        }
+      }
+    }
+    return uniqueMoves;
+  };
+
+  // src/mcts/mcts-bot.ts
+  var findMove = async (board, workers, lastMove) => {
+    const move = await workers.findMove(getAllLegalMoves(board), board, lastMove);
+    return move;
+  };
+
   // src/movegen/movegen-utils.ts
   var otherPlayer = (player) => player === 1 ? 0 : 1;
-  var coordinateInBounds = (c) => {
-    return c.x >= 0 && c.x <= 13 && c.y >= 0 && c.y <= 13;
-  };
   var getBoundingBox = (pieceData2) => {
     let minX = pieceData2[0].x;
     let minY = pieceData2[0].y;
@@ -176,169 +421,6 @@
       width: maxX - minX + 1,
       height: maxY - minY + 1
     };
-  };
-
-  // src/movegen/movegen.ts
-  var MOVE_ORIENTATION_MASK = 7;
-  var MOVE_Y_MASK = 120;
-  var MOVE_X_MASK = 1920;
-  var MOVE_TYPE_MASK = 63488;
-  var MOVE_PLAYER_BIT = 65536;
-  var getMoveOrientation = (packedMove) => {
-    return packedMove & MOVE_ORIENTATION_MASK;
-  };
-  var getMoveLocation = (packedMove) => {
-    const x = (packedMove & MOVE_X_MASK) >> 7;
-    const y = (packedMove & MOVE_Y_MASK) >> 3;
-    return { x, y };
-  };
-  var getMovePieceType = (packedMove) => {
-    return (packedMove & MOVE_TYPE_MASK) >> 11;
-  };
-  var getMovePlayer = (packedMove) => {
-    const player = (packedMove & MOVE_PLAYER_BIT) >> 16;
-    return player;
-  };
-  var NULL_MOVE = 63488;
-  var serializePlacedPiece = (placedPiece) => {
-    return placedPiece.orientation | placedPiece.location.y << 3 | placedPiece.location.x << 7 | placedPiece.pieceType << 11 | placedPiece.player << 16;
-  };
-  var pieceData = pieces_default;
-  var orientationData = piece_orientations_default;
-  var orientationBitBoarddata = piece_orientations_bitboard_default;
-  var orientationBitBoardHaloData = piece_orientations_bitboard_halo_default;
-  var RRData = piece_rr_default;
-  var cornersData = piece_corners_default;
-  var cornerAttachersData = piece_corner_attachers_default;
-  var shortBoundingBoxData = piece_short_bounding_box_default;
-  var getOrientationData = (pieceType, orientation) => {
-    return orientationData[pieceType][orientation];
-  };
-  var isMoveLegal = (pseudoLegalMove, state) => {
-    if (pseudoLegalMove === NULL_MOVE) {
-      return true;
-    }
-    const toMove = getMovePlayer(pseudoLegalMove);
-    const location = getMoveLocation(pseudoLegalMove);
-    const myPlacedPiece = [state.state.playerARemaining, state.state.playerBRemaining][toMove];
-    if (!(myPlacedPiece & 1 << getMovePieceType(pseudoLegalMove))) {
-      return false;
-    }
-    const myBitBoard = [state.state.playerABitBoard, state.state.playerBBitBoard][toMove];
-    const opponentBitBoard = [state.state.playerBBitBoard, state.state.playerABitBoard][toMove];
-    const shortBoundingBox = shortBoundingBoxData[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
-    const bottomRightBB = {
-      x: location.x + shortBoundingBox[0],
-      y: location.y + shortBoundingBox[1]
-    };
-    if (!coordinateInBounds(bottomRightBB) || !coordinateInBounds(location)) {
-      return false;
-    }
-    const pieceBitboard = orientationBitBoarddata[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
-    for (let bitboardY = 0; bitboardY < pieceBitboard.length; bitboardY++) {
-      const bitBoardRow = pieceBitboard[bitboardY] << location.x;
-      const gameRow = opponentBitBoard[bitboardY + location.y];
-      if (bitBoardRow & gameRow) {
-        return false;
-      }
-    }
-    const haloData = orientationBitBoardHaloData[getMovePieceType(pseudoLegalMove)][getMoveOrientation(pseudoLegalMove)];
-    for (let bitboardY = 0; bitboardY < pieceBitboard.length + 2; bitboardY++) {
-      if (location.y + bitboardY - 1 < 0 || location.y + bitboardY - 1 >= myBitBoard.length) {
-        continue;
-      }
-      const cachedHalo = haloData[bitboardY] << location.x;
-      const gameRow = myBitBoard[bitboardY + location.y - 1] << 1;
-      if (cachedHalo & gameRow) {
-        return false;
-      }
-    }
-    return true;
-  };
-  var getLegalMovesFrom = (from, piece, state) => {
-    const moves = [];
-    for (let i = 0; i < orientationData[piece].length; i++) {
-      const orientationCorners = cornersData[piece][i];
-      for (const corner of orientationCorners) {
-        const pieceMiddle = { x: from.x - corner.x, y: from.y - corner.y };
-        if (!coordinateInBounds(pieceMiddle)) {
-          continue;
-        }
-        let placedPiece = {
-          location: pieceMiddle,
-          player: state.state.toMove,
-          pieceType: piece,
-          orientation: i
-        };
-        const move = serializePlacedPiece(placedPiece);
-        moves.push(move);
-      }
-    }
-    return moves.filter((p) => isMoveLegal(p, state));
-  };
-  var isMoveBlokeeLegal = (move, pieceTiles) => {
-    return pieceTiles.every((relCoord) => {
-      const absolute = { x: relCoord.x + move.location.x, y: relCoord.y + move.location.y };
-      if (move.player === 0) {
-        return absolute.x <= 6 && absolute.y > 6;
-      } else {
-        return absolute.x > 6 && absolute.y <= 6;
-      }
-    });
-  };
-  var generateFirstMove = (board) => {
-    const startPos2 = board.startPositions[board.state.toMove];
-    if (board.state.nullMoveCounter !== 0) {
-      throw new Error("Null move counter is not 0 at the beginning of the game?");
-    }
-    const moves = [];
-    for (let piece = 0; piece < 21; piece++) {
-      for (let i = 0; i < orientationData[piece].length; i++) {
-        const pieceTiles = orientationData[piece][i];
-        for (const tile of pieceTiles) {
-          const pieceMiddle = { x: startPos2.x - tile.x, y: startPos2.y - tile.y };
-          let placedPiece = {
-            location: pieceMiddle,
-            player: board.state.toMove,
-            pieceType: piece,
-            orientation: i
-          };
-          if (board.state.startPosName === "middle-blokee" && !isMoveBlokeeLegal(placedPiece, pieceTiles)) {
-            continue;
-          }
-          moves.push(serializePlacedPiece(placedPiece));
-        }
-      }
-    }
-    return moves.filter((p) => isMoveLegal(p, board));
-  };
-  var getAllLegalMoves = (board) => {
-    if (board.gameOver()) {
-      return [];
-    }
-    const myPlacedPieces = board.state.pieces.filter(
-      (p) => getMovePlayer(p) === board.state.toMove
-    );
-    if (myPlacedPieces.length === 0) {
-      return generateFirstMove(board);
-    }
-    let moves = [];
-    if (board.state.toMove === 0) {
-      moves = Array.from(board.state.playerACornerMoves.values()).flat();
-    } else {
-      moves = Array.from(board.state.playerBCornerMoves.values()).flat();
-    }
-    const uniqueMoves = Array.from(new Set(moves));
-    if (uniqueMoves.length === 0) {
-      uniqueMoves.push(NULL_MOVE);
-    }
-    return uniqueMoves;
-  };
-
-  // src/mcts/mcts-bot.ts
-  var findMove = async (board, workers, lastMove) => {
-    const move = await workers.findMove(getAllLegalMoves(board), board, lastMove);
-    return move;
   };
 
   // src/renderer.ts
@@ -708,8 +790,8 @@
       const userScore = document.querySelector("#user-score-container > .score");
       const botScore = document.querySelector("#bot-score-container > .score");
       const { playerA, playerB } = this.score();
-      userScore.innerText = playerA.toString();
-      botScore.innerText = playerB.toString();
+      userScore.innerText = (this.userPlayer === 0 ? playerA : playerB).toString();
+      botScore.innerText = (this.userPlayer === 0 ? playerB : playerA).toString();
       const canSkip = this.legalMoves.includes(NULL_MOVE);
       const skipButton = document.getElementById("skip-button");
       skipButton.disabled = !canSkip;
@@ -815,20 +897,6 @@
     }
   };
 
-  // src/bitboard.ts
-  var setBitBoardValue = (bitBoard, c, value) => {
-    const validYCoordinate = c.y >= 0 && c.y <= 13;
-    const validXCoordinate = c.x >= 0 && c.x <= 13;
-    if (!validYCoordinate || !validXCoordinate) {
-      return;
-    }
-    if (value == 0) {
-      bitBoard[c.y] &= ~(1 << c.x);
-    } else {
-      bitBoard[c.y] |= 1 << c.x;
-    }
-  };
-
   // src/board.ts
   var getStartPosition = (position) => {
     if (position === "middle") {
@@ -860,7 +928,14 @@
     startPosName: "middle",
     nullMoveCounter: 0,
     playerACornerMoves: /* @__PURE__ */ new Map(),
-    playerBCornerMoves: /* @__PURE__ */ new Map()
+    playerBCornerMoves: /* @__PURE__ */ new Map(),
+    playerASquares: 0,
+    playerBSquares: 0,
+    playerAMobility: 0,
+    playerBMobility: 0
+  };
+  var cloneCornerMoves = (cache) => {
+    return new Map(cache);
   };
   var Board = class _Board {
     constructor(startPosition, state) {
@@ -878,8 +953,8 @@
     }
     score() {
       return {
-        playerA: this.state.pieces.filter((p) => getMovePlayer(p) === 0).map((p) => getOrientationData(getMovePieceType(p), 0).length).reduce((a, b) => a + b, 0),
-        playerB: this.state.pieces.filter((p) => getMovePlayer(p) === 1).map((p) => getOrientationData(getMovePieceType(p), 0).length).reduce((a, b) => a + b, 0)
+        playerA: this.state.playerASquares,
+        playerB: this.state.playerBSquares
       };
     }
     winner() {
@@ -896,77 +971,169 @@
       }
     }
     copy() {
-      const state = structuredClone(this.state);
-      return new _Board(state.startPosName, state);
+      const s = this.state;
+      return new _Board(s.startPosName, this.cloneState());
+    }
+    copyFrom(other) {
+      const s = other.state;
+      const d = this.state;
+      d.pieces = s.pieces.slice();
+      d.toMove = s.toMove;
+      d.playerARemaining = s.playerARemaining;
+      d.playerBRemaining = s.playerBRemaining;
+      for (let i = 0; i < 14; i++) {
+        d.playerABitBoard[i] = s.playerABitBoard[i];
+        d.playerBBitBoard[i] = s.playerBBitBoard[i];
+      }
+      d.startPosName = s.startPosName;
+      d.nullMoveCounter = s.nullMoveCounter;
+      d.playerACornerMoves = cloneCornerMoves(s.playerACornerMoves);
+      d.playerBCornerMoves = cloneCornerMoves(s.playerBCornerMoves);
+      d.playerASquares = s.playerASquares;
+      d.playerBSquares = s.playerBSquares;
+      d.playerAMobility = s.playerAMobility;
+      d.playerBMobility = s.playerBMobility;
+      this.startPositions = other.startPositions;
+    }
+    cloneState() {
+      const s = this.state;
+      return {
+        pieces: s.pieces.slice(),
+        toMove: s.toMove,
+        playerARemaining: s.playerARemaining,
+        playerBRemaining: s.playerBRemaining,
+        playerABitBoard: s.playerABitBoard.slice(),
+        playerBBitBoard: s.playerBBitBoard.slice(),
+        startPosName: s.startPosName,
+        nullMoveCounter: s.nullMoveCounter,
+        playerACornerMoves: cloneCornerMoves(s.playerACornerMoves),
+        playerBCornerMoves: cloneCornerMoves(s.playerBCornerMoves),
+        playerASquares: s.playerASquares,
+        playerBSquares: s.playerBSquares,
+        playerAMobility: s.playerAMobility,
+        playerBMobility: s.playerBMobility
+      };
+    }
+    /** Cached legal-move count for `player`, including duplicate corner listings. */
+    mobility(player) {
+      return player === 0 ? this.state.playerAMobility : this.state.playerBMobility;
     }
     doMove(move) {
       if (move === NULL_MOVE) {
         this.state.nullMoveCounter++;
-        const opponentCachedMoves2 = this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
         this.skipTurn();
-        for (const [idx, moves] of opponentCachedMoves2) {
-          const newMoves = moves.filter((m) => isMoveLegal(m, this));
-          opponentCachedMoves2.set(idx, newMoves);
-        }
         return;
       }
       this.state.nullMoveCounter = 0;
       this.state.pieces.push(move);
-      if (getMovePlayer(move) === 0) {
-        this.state.playerARemaining &= ~(1 << getMovePieceType(move));
+      const player = getMovePlayer(move);
+      const type = getMovePieceType(move);
+      const ori = getMoveOrientation(move);
+      const locX = getMoveX(move);
+      const locY = getMoveY(move);
+      const squares = PIECE_SIZES[type];
+      if (player === 0) {
+        this.state.playerARemaining &= ~(1 << type);
+        this.state.playerASquares += squares;
       } else {
-        this.state.playerBRemaining &= ~(1 << getMovePieceType(move));
+        this.state.playerBRemaining &= ~(1 << type);
+        this.state.playerBSquares += squares;
       }
-      const bitBoard = [this.state.playerABitBoard, this.state.playerBBitBoard][getMovePlayer(move)];
-      for (const tile of getOrientationData(getMovePieceType(move), getMoveOrientation(move))) {
-        const pieceCoord = {
-          x: tile.x + getMoveLocation(move).x,
-          y: tile.y + getMoveLocation(move).y
-        };
-        setBitBoardValue(bitBoard, pieceCoord, 1);
+      const bitBoard = player === 0 ? this.state.playerABitBoard : this.state.playerBBitBoard;
+      const pieceBitboard = orientationBitBoarddata[type][ori];
+      for (let y = 0; y < pieceBitboard.length; y++) {
+        bitBoard[locY + y] |= pieceBitboard[y] << locX;
       }
-      const placedPiece = getMovePieceType(move);
-      const placedPieceOrientation = getMoveOrientation(move);
-      const placedPieceLocation = getMoveLocation(move);
       const myCachedMoves = this.state.toMove === 0 ? this.state.playerACornerMoves : this.state.playerBCornerMoves;
       const opponentCachedMoves = this.state.toMove === 0 ? this.state.playerBCornerMoves : this.state.playerACornerMoves;
-      const relativeCorner = cornersData[placedPiece][placedPieceOrientation];
-      for (const corner of relativeCorner) {
-        const cornerCoord = {
-          x: corner.x + placedPieceLocation.x,
-          y: corner.y + placedPieceLocation.y
-        };
-        const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
-        myCachedMoves.delete(cornerIdx);
-        opponentCachedMoves.delete(cornerIdx);
+      const myPlayer = this.state.toMove;
+      const oppPlayer = otherPlayer(myPlayer);
+      const relativeCorner = cornersData[type][ori];
+      for (let i = 0; i < relativeCorner.length; i++) {
+        const corner = relativeCorner[i];
+        const cornerIdx = corner.x + locX + (corner.y + locY) * 14;
+        this.deleteCorner(myCachedMoves, myPlayer, cornerIdx);
+        this.deleteCorner(opponentCachedMoves, oppPlayer, cornerIdx);
       }
-      const cornerAttachers = cornerAttachersData[placedPiece][placedPieceOrientation];
-      for (const cornerAttacher of cornerAttachers) {
-        const cornerCoord = {
-          x: cornerAttacher.x + placedPieceLocation.x,
-          y: cornerAttacher.y + placedPieceLocation.y
-        };
-        if (!coordinateInBounds(cornerCoord)) {
+      const cornerAttachers = cornerAttachersData[type][ori];
+      const myRemaining = player === 0 ? this.state.playerARemaining : this.state.playerBRemaining;
+      for (let i = 0; i < cornerAttachers.length; i++) {
+        const attacher = cornerAttachers[i];
+        const cx = attacher.x + locX;
+        const cy = attacher.y + locY;
+        if (cx < 0 || cy < 0 || cx > 13 || cy > 13) {
           continue;
         }
-        const cornerIdx = cornerCoord.x + cornerCoord.y * 14;
+        const cornerIdx = cx + cy * 14;
         if (myCachedMoves.has(cornerIdx)) {
           continue;
         }
-        const myRemaining = this.state.toMove === 0 ? this.state.playerARemaining : this.state.playerBRemaining;
+        const from = { x: cx, y: cy };
         const legalMoves = [];
         for (let unplacedPiece = 0; unplacedPiece < 21; unplacedPiece++) {
-          if (!(myRemaining & 1 << unplacedPiece)) {
+          if ((myRemaining & 1 << unplacedPiece) === 0) {
             continue;
           }
-          legalMoves.push(...getLegalMovesFrom(cornerCoord, unplacedPiece, this));
+          const extra = getLegalMovesFrom(from, unplacedPiece, this);
+          for (let m = 0; m < extra.length; m++) {
+            legalMoves.push(extra[m]);
+          }
         }
         myCachedMoves.set(cornerIdx, legalMoves);
+        this.addMobility(myPlayer, legalMoves.length);
       }
+      this.retainLegal(myCachedMoves, myPlayer);
       this.skipTurn();
-      for (const [idx, moves] of opponentCachedMoves) {
-        const newMoves = moves.filter((m) => isMoveLegal(m, this));
-        opponentCachedMoves.set(idx, newMoves);
+      this.retainUnblocked(opponentCachedMoves, oppPlayer, bitBoard);
+    }
+    deleteCorner(cache, player, cornerIdx) {
+      const old = cache.get(cornerIdx);
+      if (old === void 0) {
+        return;
+      }
+      this.addMobility(player, -old.length);
+      cache.delete(cornerIdx);
+    }
+    retainLegal(cache, player) {
+      for (const [idx, moves] of cache) {
+        const kept = [];
+        for (let i = 0; i < moves.length; i++) {
+          if (isMoveLegal(moves[i], this)) {
+            kept.push(moves[i]);
+          }
+        }
+        if (kept.length !== moves.length) {
+          this.addMobility(player, kept.length - moves.length);
+          cache.set(idx, kept);
+        }
+      }
+    }
+    /** Opponent cache: own halo is unchanged, so only remaining + new overlap matter. */
+    retainUnblocked(cache, player, blocker) {
+      const remaining = player === 0 ? this.state.playerARemaining : this.state.playerBRemaining;
+      for (const [idx, moves] of cache) {
+        const kept = [];
+        for (let i = 0; i < moves.length; i++) {
+          const move = moves[i];
+          if ((remaining & 1 << getMovePieceType(move)) === 0) {
+            continue;
+          }
+          if (moveOverlaps(move, blocker)) {
+            continue;
+          }
+          kept.push(move);
+        }
+        if (kept.length !== moves.length) {
+          this.addMobility(player, kept.length - moves.length);
+          cache.set(idx, kept);
+        }
+      }
+    }
+    addMobility(player, delta) {
+      if (player === 0) {
+        this.state.playerAMobility += delta;
+      } else {
+        this.state.playerBMobility += delta;
       }
     }
     skipTurn() {
